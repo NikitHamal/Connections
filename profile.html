@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile | Connections</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="profile.css">
+</head>
+<body>
+    <header class="profile-header-minimal">
+        <div class="container">
+            <button class="back-button" id="back-button" aria-label="Go back">
+                <span class="material-symbols-rounded">arrow_back</span>
+            </button>
+            <div class="header-title">Profile</div>
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+                    <span class="material-symbols-rounded light-icon">light_mode</span>
+                    <span class="material-symbols-rounded dark-icon">dark_mode</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="profile-main">
+        <div class="profile-container">
+            <!-- Profile Header -->
+            <div class="profile-header">
+                <div class="profile-header-content">
+                    <div class="profile-avatar-container">
+                        <img src="https://randomuser.me/api/portraits/women/42.jpg" alt="Profile" class="profile-avatar">
+                    </div>
+                    <div class="profile-header-info">
+                        <h1 class="profile-name">Sarah Johnson</h1>
+                        <div class="profile-username">@sarahjohnson</div>
+                        <div class="profile-meta">
+                            <div class="profile-meta-item">
+                                <span class="material-symbols-rounded">location_on</span>
+                                <span>San Francisco, CA</span>
+                            </div>
+                            <div class="profile-meta-item">
+                                <span class="material-symbols-rounded">calendar_month</span>
+                                <span>Joined May 2023</span>
+                            </div>
+                        </div>
+                        <p class="profile-bio">
+                            UX Designer and front-end developer with a passion for creating intuitive, accessible digital experiences.
+                        </p>
+                    </div>
+                    <div class="profile-actions">
+                        <button class="profile-edit-btn">
+                            <span class="material-symbols-rounded">edit</span>
+                            <span>Edit Profile</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Content -->
+            <div class="profile-content">
+                    <!-- Profile Tabs -->
+                    <div class="profile-tabs">
+                        <div class="profile-tab active" data-tab="posts">Posts</div>
+                        <div class="profile-tab" data-tab="activity">Activity</div>
+                        <div class="profile-tab" data-tab="connections">Connections</div>
+                    </div>
+
+                    <!-- Posts Tab Content -->
+                    <div class="profile-tab-content active" id="posts-tab">
+                        <div class="profile-posts">
+                        <!-- Posts will be loaded dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Activity Tab Content -->
+                    <div class="profile-tab-content" id="activity-tab">
+                        <div class="profile-activity-list">
+                        <!-- Activity items will be loaded dynamically -->
+                    </div>
+                </div>
+
+                <!-- Connections Tab Content -->
+                <div class="profile-tab-content" id="connections-tab">
+                    <div class="profile-connections-list">
+                        <!-- Connection cards will be loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Full-screen Image Viewer -->
+    <div class="fullscreen-image-viewer" id="image-viewer">
+        <div class="image-viewer-overlay"></div>
+        <div class="image-viewer-content">
+            <button class="image-viewer-close" id="image-viewer-close">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+            <img src="" alt="Full-size profile image" id="fullscreen-image">
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="script.js"></script>
+    <script src="firebase-init.js"></script>
+    <script src="profile.js"></script>
+</body>
+</html> 

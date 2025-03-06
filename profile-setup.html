@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Your Profile | Connections</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0..200">
+    <link rel="stylesheet" href="auth.css">
+    <link rel="stylesheet" href="profile-setup.css">
+</head>
+<body class="light-mode">
+    <div class="stars-container"></div>
+    
+    <header>
+        <button class="mobile-menu-toggle" aria-label="Toggle mobile menu">
+            <span class="material-symbols-rounded">menu</span>
+        </button>
+        <div class="logo">
+            <span class="logo-text">Connections</span>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html" class="nav-link"><span class="indicator"></span>Home</a></li>
+                <li><a href="explore.html" class="nav-link"><span class="indicator"></span>Explore</a></li>
+                <li><a href="topics.html" class="nav-link"><span class="indicator"></span>Topics</a></li>
+                <li><a href="write.html" class="nav-link"><span class="indicator"></span>Write</a></li>
+                <li><a href="about.html" class="nav-link"><span class="indicator"></span>About</a></li>
+            </ul>
+        </nav>
+        <div class="header-actions">
+            <button class="theme-toggle" aria-label="Toggle dark mode">
+                <span class="material-symbols-rounded light-icon">light_mode</span>
+                <span class="material-symbols-rounded dark-icon">dark_mode</span>
+            </button>
+            <button class="btn btn-secondary user-menu-btn">
+                <span class="material-symbols-rounded">account_circle</span>
+                <span class="user-name">Account</span>
+            </button>
+        </div>
+    </header>
+    <div class="mobile-menu-overlay"></div>
+
+    <main class="profile-setup-main">
+        <div class="profile-setup-container">
+            <div class="profile-setup-sidebar">
+                <div class="setup-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 25%"></div>
+                    </div>
+                    <div class="progress-steps">
+                        <div class="progress-step active" data-step="1">
+                            <div class="step-indicator">
+                                <span class="step-number">1</span>
+                                <span class="step-check material-symbols-rounded">check</span>
+                            </div>
+                            <span class="step-label">Basic Info</span>
+                        </div>
+                        <div class="progress-step" data-step="2">
+                            <div class="step-indicator">
+                                <span class="step-number">2</span>
+                                <span class="step-check material-symbols-rounded">check</span>
+                            </div>
+                            <span class="step-label">Profile Picture</span>
+                        </div>
+                        <div class="progress-step" data-step="3">
+                            <div class="step-indicator">
+                                <span class="step-number">3</span>
+                                <span class="step-check material-symbols-rounded">check</span>
+                            </div>
+                            <span class="step-label">Interests</span>
+                        </div>
+                        <div class="progress-step" data-step="4">
+                            <div class="step-indicator">
+                                <span class="step-number">4</span>
+                                <span class="step-check material-symbols-rounded">check</span>
+                            </div>
+                            <span class="step-label">Connections</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="setup-info">
+                    <h3>Why complete your profile?</h3>
+                    <ul class="setup-benefits">
+                        <li>
+                            <span class="material-symbols-rounded">person</span>
+                            <span>Help others find and connect with you</span>
+                        </li>
+                        <li>
+                            <span class="material-symbols-rounded">recommend</span>
+                            <span>Get personalized content recommendations</span>
+                        </li>
+                        <li>
+                            <span class="material-symbols-rounded">diversity_3</span>
+                            <span>Connect with like-minded individuals</span>
+                        </li>
+                        <li>
+                            <span class="material-symbols-rounded">verified_user</span>
+                            <span>Build credibility in the community</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="profile-setup-content">
+                <!-- Step 1: Basic Information -->
+                <div class="setup-step active" id="step-1">
+                    <div class="setup-header">
+                        <h1>Tell us about yourself</h1>
+                        <p class="setup-subtitle">Let's start with some basic information</p>
+                    </div>
+                    
+                    <form id="basic-info-form" class="setup-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="first-name">First Name*</label>
+                                <input type="text" id="first-name" name="first-name" required placeholder="Your first name">
+                                <div class="form-error" id="first-name-error"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="last-name">Last Name*</label>
+                                <input type="text" id="last-name" name="last-name" required placeholder="Your last name">
+                                <div class="form-error" id="last-name-error"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="display-name">Display Name*</label>
+                            <input type="text" id="display-name" name="display-name" required placeholder="How you'll appear to others">
+                            <div class="form-hint">This is how you'll appear to others on Connections</div>
+                            <div class="form-error" id="display-name-error"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="username">Username*</label>
+                            <div class="input-with-prefix">
+                                <span class="input-prefix">@</span>
+                                <input type="text" id="username" name="username" required placeholder="Choose a unique username">
+                            </div>
+                            <div class="form-hint">Your unique identifier on Connections (letters, numbers, and underscores only)</div>
+                            <div class="form-error" id="username-error"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="bio">Bio</label>
+                            <textarea id="bio" name="bio" placeholder="Tell us a bit about yourself" maxlength="160"></textarea>
+                            <div class="character-count"><span id="bio-count">0</span>/160</div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="location">Location</label>
+                                <input type="text" id="location" name="location" placeholder="City, Country">
+                            </div>
+                            <div class="form-group">
+                                <label for="birthdate">Date of Birth</label>
+                                <input type="date" id="birthdate" name="birthdate">
+                                <div class="form-hint">We'll never share your full birthdate</div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-outline btn-skip">Skip for now</button>
+                            <button type="submit" class="btn btn-primary">Continue</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Step 2: Profile Picture -->
+                <div class="setup-step" id="step-2">
+                    <div class="setup-header">
+                        <h1>Add a profile picture</h1>
+                        <p class="setup-subtitle">Help others recognize you with a profile picture</p>
+                    </div>
+                    
+                    <form id="profile-picture-form" class="setup-form">
+                        <div class="profile-picture-container">
+                            <div class="profile-picture-upload">
+                                <div class="profile-picture-preview" id="profile-picture-preview">
+                                    <span class="material-symbols-rounded profile-placeholder">account_circle</span>
+                                    <img src="" alt="Profile picture" id="profile-image" style="display: none;">
+                                </div>
+                                <div class="profile-picture-actions">
+                                    <button type="button" class="btn btn-outline btn-upload">
+                                        <span class="material-symbols-rounded">upload</span>
+                                        Upload Photo
+                                    </button>
+                                    <input type="file" id="profile-picture" name="profile-picture" accept="image/*" style="display: none;">
+                                    
+                                    <button type="button" class="btn btn-outline btn-remove" style="display: none;">
+                                        <span class="material-symbols-rounded">delete</span>
+                                        Remove
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="profile-picture-history">
+                                <h3>Profile Picture History</h3>
+                                <p class="history-empty">No previous profile pictures</p>
+                                <div class="history-images"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Profile Picture Guidelines</label>
+                            <ul class="guidelines-list">
+                                <li>Use a clear, recognizable photo of yourself</li>
+                                <li>Square images work best (we'll crop if needed)</li>
+                                <li>Maximum file size: 5MB</li>
+                                <li>Supported formats: JPG, PNG, GIF</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-outline btn-back">Back</button>
+                            <button type="submit" class="btn btn-primary">Continue</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Step 3: Interests -->
+                <div class="setup-step" id="step-3">
+                    <div class="setup-header">
+                        <h1>Select your interests</h1>
+                        <p class="setup-subtitle">Choose topics you're interested in to personalize your experience</p>
+                    </div>
+                    
+                    <form id="interests-form" class="setup-form">
+                        <div class="interests-container">
+                            <div class="search-interests">
+                                <div class="input-with-icon">
+                                    <span class="material-symbols-rounded">search</span>
+                                    <input type="text" id="interest-search" placeholder="Search topics...">
+                                </div>
+                            </div>
+                            
+                            <div class="selected-interests">
+                                <h3>Your selected topics (<span id="selected-count">0</span>)</h3>
+                                <div class="selected-topics" id="selected-topics">
+                                    <p class="no-topics-selected">No topics selected yet</p>
+                                </div>
+                            </div>
+                            
+                            <div class="interest-categories">
+                                <div class="interest-category">
+                                    <h3>Philosophy</h3>
+                                    <div class="interest-options">
+                                        <label class="interest-option">
+                                            <input type="checkbox" name="interests" value="ethics">
+                                            <span class="interest-name">Ethics</span>
+                                        </label>
+                                        <label class="interest-option">
+                                            <input type="checkbox" name="interests" value="metaphysics">
+                                            <span class="interest-name">Metaphysics</span>
+                                        </label>
+                                        <label class="interest-option">
+                                            <input type="checkbox" name="interests" value="epistemology">
+                                            <span class="interest-name">Epistemology</span>
+                                        </label>
+                                        <label class="interest-option">
+                                            <input type="checkbox" name="interests" value="existentialism">
+                                            <span class="interest-name">Existentialism</span>
+                                        </label>
+                                        <label class="interest-option">
+                                            <input type="checkbox" name="interests" value="political-philosophy">
+                                            <span class="interest-name">Political Philosophy</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="interest-category">
+                                    <h3>Science</h3>
+                                    <div class="interest-options">
+                                        <label class="interest-option">
+                                            <input type="checkbox" name="interests" value="physics">
+                                            <span class="interest-name">Physics</span>
+                                        </label>
+                                        <label class="interest-option">
+                                            <input type="checkbox" name="interests" value="biology">
+                                            <span class="interest-name">Biology</span>
+                                        </label>
+                                        <label class="interest-option">
+                                            <input type="checkbox" name="interests" value="astronomy">
+                                            <span class="interest-name">Astronomy</span>
+                                        </label>
+                                        <label class="interest-option">
+                                            <input type="checkbox" name="interests" value="neuroscience">
+                                            <span class="interest-name">Neuroscience</span>
+                                        </label>
+                                        <label class="interest-option">
+                                            <input type="checkbox" name="interests" value="environmental-science">
+                                            <span class="interest-name">Environmental Science</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="interest-category">
+                                    <h3>Literature</h3>
+                                    <div class="interest-options">
+                                        <label class="interest-option">
+                                            <input type="checkbox" name="interests" value="classic-literature">
+                                            <span class="interest-name">Classic Literature</span>
+                                        </label>
+                                        <label class="interest-option">
+                                            <input type="checkbox" name="interests" value="poetry">
+                                            <span class="interest-name">Poetry</span>
+                                        </label>
+                                        <label class="interest-option">
+                                            <input type="checkbox" name="interests" value="fiction">
+                                            <span class="interest-name">Fiction</span>
+                                        </label>
+                                        <label class="interest-option">
+                                            <input type="checkbox" name="interests" value="literary-criticism">
+                                            <span class="interest-name">Literary Criticism</span>
+                                        </label>
+                                        <label class="interest-option">
+                                            <input type="checkbox" name="interests" value="world-literature">
+                                            <span class="interest-name">World Literature</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="interest-category">
+                                    <h3>Current Affairs</h3>
+                                    <div class="interest-options">
+                                        <label class="interest-option">
+                                            <input type="checkbox" name="interests" value="politics">
+                                            <span class="interest-name">Politics</span>
+                                        </label>
+                                        <label class="interest-option">
+                                            <input type="checkbox" name="interests" value="economics">
+                                            <span class="interest-name">Economics</span>
+                                        </label>
+                                        <label class="interest-option">
+                                            <input type="checkbox" name="interests" value="social-issues">
+                                            <span class="interest-name">Social Issues</span>
+                                        </label>
+                                        <label class="interest-option">
+                                            <input type="checkbox" name="interests" value="technology">
+                                            <span class="interest-name">Technology</span>
+                                        </label>
+                                        <label class="interest-option">
+                                            <input type="checkbox" name="interests" value="global-affairs">
+                                            <span class="interest-name">Global Affairs</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-outline btn-back">Back</button>
+                            <button type="submit" class="btn btn-primary">Continue</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Step 4: Connections -->
+                <div class="setup-step" id="step-4">
+                    <div class="setup-header">
+                        <h1>Find people to follow</h1>
+                        <p class="setup-subtitle">Connect with writers and thinkers who inspire you</p>
+                    </div>
+                    
+                    <form id="connections-form" class="setup-form">
+                        <div class="search-connections">
+                            <div class="input-with-icon">
+                                <span class="material-symbols-rounded">search</span>
+                                <input type="text" id="connection-search" placeholder="Search people...">
+                            </div>
+                        </div>
+                        
+                        <div class="connections-container">
+                            <div class="connection-categories">
+                                <h3>Recommended for you</h3>
+                                <div class="connection-list">
+                                    <div class="connection-card">
+                                        <div class="connection-avatar" style="background-image: url('https://source.unsplash.com/random/100x100/?portrait=1')"></div>
+                                        <div class="connection-info">
+                                            <h4>Eleanor Richards</h4>
+                                            <p>Writer & Literature Professor</p>
+                                            <div class="connection-topics">
+                                                <span class="topic-tag">Literature</span>
+                                                <span class="topic-tag">Philosophy</span>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-outline btn-follow">Follow</button>
+                                    </div>
+                                    
+                                    <div class="connection-card">
+                                        <div class="connection-avatar" style="background-image: url('https://source.unsplash.com/random/100x100/?portrait=2')"></div>
+                                        <div class="connection-info">
+                                            <h4>Marcus Chen</h4>
+                                            <p>Physicist & Science Communicator</p>
+                                            <div class="connection-topics">
+                                                <span class="topic-tag">Physics</span>
+                                                <span class="topic-tag">Astronomy</span>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-outline btn-follow">Follow</button>
+                                    </div>
+                                    
+                                    <div class="connection-card">
+                                        <div class="connection-avatar" style="background-image: url('https://source.unsplash.com/random/100x100/?portrait=3')"></div>
+                                        <div class="connection-info">
+                                            <h4>Sophia Patel</h4>
+                                            <p>Political Analyst & Journalist</p>
+                                            <div class="connection-topics">
+                                                <span class="topic-tag">Politics</span>
+                                                <span class="topic-tag">Global Affairs</span>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-outline btn-follow">Follow</button>
+                                    </div>
+                                    
+                                    <div class="connection-card">
+                                        <div class="connection-avatar" style="background-image: url('https://source.unsplash.com/random/100x100/?portrait=4')"></div>
+                                        <div class="connection-info">
+                                            <h4>James Wilson</h4>
+                                            <p>Environmental Scientist & Activist</p>
+                                            <div class="connection-topics">
+                                                <span class="topic-tag">Environmental Science</span>
+                                                <span class="topic-tag">Social Issues</span>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-outline btn-follow">Follow</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="selected-connections">
+                                <h3>People you're following (<span id="following-count">0</span>)</h3>
+                                <div class="following-list" id="following-list">
+                                    <p class="no-following">You're not following anyone yet</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-outline btn-back">Back</button>
+                            <button type="submit" class="btn btn-primary">Complete Profile</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Completion Screen -->
+                <div class="setup-step" id="step-complete">
+                    <div class="completion-container">
+                        <div class="completion-animation">
+                            <span class="material-symbols-rounded">check_circle</span>
+                        </div>
+                        <h1>Your profile is ready!</h1>
+                        <p>You're all set to start exploring Connections</p>
+                        <div class="completion-stats">
+                            <div class="stat-item">
+                                <span class="stat-value">0</span>
+                                <span class="stat-label">Posts</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="stat-following">0</span>
+                                <span class="stat-label">Following</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">0</span>
+                                <span class="stat-label">Followers</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">1</span>
+                                <span class="stat-label">Level</span>
+                            </div>
+                        </div>
+                        <div class="completion-actions">
+                            <a href="profile.html" class="btn btn-outline">View Profile</a>
+                            <a href="index.html" class="btn btn-primary">Go to Homepage</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="script.js"></script>
+    <script src="firebase-init.js"></script>
+    <script src="profile-setup.js"></script>
+</body>
+</html> 

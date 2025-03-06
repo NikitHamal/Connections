@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Write a Post | Connections</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0..200">
+    <link rel="stylesheet" href="write.css">
+</head>
+<body class="light-mode">
+    <div class="stars-container"></div>
+    
+    <header>
+        <button class="mobile-menu-toggle" aria-label="Toggle mobile menu">
+            <span class="material-symbols-rounded">menu</span>
+        </button>
+        <div class="logo">
+            <span class="logo-text">Connections</span>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html" class="nav-link"><span class="indicator"></span>Home</a></li>
+                <li><a href="explore.html" class="nav-link"><span class="indicator"></span>Explore</a></li>
+                <li><a href="topics.html" class="nav-link"><span class="indicator"></span>Topics</a></li>
+                <li><a href="write.html" class="nav-link active"><span class="indicator"></span>Write</a></li>
+                <li><a href="index.html#about" class="nav-link"><span class="indicator"></span>About</a></li>
+            </ul>
+        </nav>
+        <div class="header-actions">
+            <button class="theme-toggle" aria-label="Toggle dark mode">
+                <span class="material-symbols-rounded light-icon">light_mode</span>
+                <span class="material-symbols-rounded dark-icon">dark_mode</span>
+            </button>
+            <a href="signin.html" class="btn btn-secondary">Log in</a>
+            <a href="signup.html" class="btn btn-primary">Sign up</a>
+        </div>
+    </header>
+    <div class="mobile-menu-overlay"></div>
+
+    <main class="write-main">
+        <div class="write-container">
+            <div class="write-header">
+                <h1>Share Your Perspective</h1>
+                <p class="write-subtitle">Write an article that inspires, informs, or engages the community</p>
+            </div>
+            
+            <div class="write-form">
+                <div class="form-header">
+                    <div class="form-group title-group">
+                        <input type="text" id="post-title" class="post-title-input" placeholder="Enter a compelling title..." maxlength="100">
+                        <div class="character-count">0/100</div>
+                    </div>
+                    
+                    <div class="form-group topic-group">
+                        <div class="select-wrapper">
+                            <select id="post-topic" class="topic-select">
+                                <option value="" disabled selected>Select a Topic</option>
+                                <option value="philosophy">Philosophy</option>
+                                <option value="science">Science</option>
+                                <option value="literature">Literature</option>
+                                <option value="current-affairs">Current Affairs</option>
+                                <option value="religion">Religion</option>
+                                <option value="arts">Arts</option>
+                            </select>
+                            <span class="material-symbols-rounded select-icon">expand_more</span>
+                        </div>
+                        <button class="btn btn-outline new-topic-btn">
+                            <span class="material-symbols-rounded">add</span>
+                            New Topic
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="editor-toolbar">
+                        <button class="toolbar-btn" data-format="bold" title="Bold">
+                            <span class="material-symbols-rounded">format_bold</span>
+                        </button>
+                        <button class="toolbar-btn" data-format="italic" title="Italic">
+                            <span class="material-symbols-rounded">format_italic</span>
+                        </button>
+                        <button class="toolbar-btn" data-format="link" title="Link">
+                            <span class="material-symbols-rounded">link</span>
+                        </button>
+                        <button class="toolbar-btn" data-format="h2" title="Heading">
+                            <span class="material-symbols-rounded">title</span>
+                        </button>
+                        <button class="toolbar-btn" data-format="quote" title="Blockquote">
+                            <span class="material-symbols-rounded">format_quote</span>
+                        </button>
+                        <button class="toolbar-btn" data-format="list" title="List">
+                            <span class="material-symbols-rounded">format_list_bulleted</span>
+                        </button>
+                        <button class="toolbar-btn" data-format="image" title="Image">
+                            <span class="material-symbols-rounded">image</span>
+                        </button>
+                    </div>
+                    <div id="editor" class="content-editor" contenteditable="true" placeholder="Start writing your article here..."></div>
+                    <div class="word-count">0 words</div>
+                </div>
+                
+                <div class="form-group cover-image-group">
+                    <label for="cover-image">Featured Image</label>
+                    <div class="cover-image-upload" id="cover-image-container">
+                        <div class="upload-placeholder">
+                            <span class="material-symbols-rounded">add_photo_alternate</span>
+                            <p>Drag and drop, or click to upload</p>
+                        </div>
+                        <div class="image-preview" style="display: none;">
+                            <button class="remove-image">
+                                <span class="material-symbols-rounded">close</span>
+                            </button>
+                            <img src="" alt="Cover image preview" id="preview-image">
+                        </div>
+                    </div>
+                    <input type="file" id="cover-image" accept="image/*" style="display: none;">
+                </div>
+                
+                <div class="form-group author-info-group">
+                    <label>About the Author</label>
+                    <div class="author-info-input">
+                        <div class="author-avatar-container">
+                            <div class="author-avatar" style="background-image: url('https://source.unsplash.com/random/100x100/?portrait')"></div>
+                            <button class="change-avatar-btn">
+                                <span class="material-symbols-rounded">edit</span>
+                            </button>
+                        </div>
+                        <div class="author-details">
+                            <input type="text" class="author-name-input" placeholder="Your Name" value="Your Name">
+                            <input type="text" class="author-bio-input" placeholder="Short bio (e.g., Writer & Researcher)" value="Writer & Enthusiast">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button class="btn btn-outline save-draft-btn">
+                        <span class="material-symbols-rounded">save</span>
+                        Save Draft
+                    </button>
+                    <button class="btn btn-outline preview-btn">
+                        <span class="material-symbols-rounded">visibility</span>
+                        Preview
+                    </button>
+                    <button class="btn btn-primary publish-btn">
+                        <span class="material-symbols-rounded">publish</span>
+                        Publish
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal new-topic-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New Topic</h3>
+                <button class="close-modal">
+                    <span class="material-symbols-rounded">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="topic-name">Topic Name</label>
+                    <input type="text" id="topic-name" placeholder="Enter topic name" maxlength="30">
+                </div>
+                <div class="form-group">
+                    <label for="topic-description">Brief Description</label>
+                    <textarea id="topic-description" placeholder="Describe what this topic covers" maxlength="150"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="topic-icon">Select Icon</label>
+                    <div class="icon-grid">
+                        <button class="icon-option" data-icon="psychology"><span class="material-symbols-rounded">psychology</span></button>
+                        <button class="icon-option" data-icon="science"><span class="material-symbols-rounded">science</span></button>
+                        <button class="icon-option" data-icon="menu_book"><span class="material-symbols-rounded">menu_book</span></button>
+                        <button class="icon-option" data-icon="news"><span class="material-symbols-rounded">news</span></button>
+                        <button class="icon-option" data-icon="brightness_7"><span class="material-symbols-rounded">brightness_7</span></button>
+                        <button class="icon-option" data-icon="palette"><span class="material-symbols-rounded">palette</span></button>
+                        <button class="icon-option" data-icon="music_note"><span class="material-symbols-rounded">music_note</span></button>
+                        <button class="icon-option" data-icon="public"><span class="material-symbols-rounded">public</span></button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline cancel-topic">Cancel</button>
+                <button class="btn btn-primary create-topic">Create Topic</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="write.js"></script>
+</body>
+</html> 

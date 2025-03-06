@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Topics | Connections</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0..200">
+    <link rel="stylesheet" href="topics.css">
+</head>
+<body class="light-mode">
+    <div class="stars-container"></div>
+    
+    <header>
+        <button class="mobile-menu-toggle" aria-label="Toggle mobile menu">
+            <span class="material-symbols-rounded">menu</span>
+        </button>
+        <div class="logo">
+            <span class="logo-text">Connections</span>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html" class="nav-link"><span class="indicator"></span>Home</a></li>
+                <li><a href="explore.html" class="nav-link"><span class="indicator"></span>Explore</a></li>
+                <li><a href="topics.html" class="nav-link active"><span class="indicator"></span>Topics</a></li>
+                <li><a href="write.html" class="nav-link"><span class="indicator"></span>Write</a></li>
+                <li><a href="index.html#about" class="nav-link"><span class="indicator"></span>About</a></li>
+            </ul>
+        </nav>
+        <div class="header-actions">
+            <button class="theme-toggle" aria-label="Toggle dark mode">
+                <span class="material-symbols-rounded light-icon">light_mode</span>
+                <span class="material-symbols-rounded dark-icon">dark_mode</span>
+            </button>
+            <a href="signin.html" class="btn btn-secondary">Log in</a>
+            <a href="signup.html" class="btn btn-primary">Sign up</a>
+        </div>
+    </header>
+    <div class="mobile-menu-overlay"></div>
+
+    <main class="topics-main">
+        <div class="topics-container">
+            <div class="topics-header">
+                <div class="topics-title">
+                    <h1>Explore Topics</h1>
+                    <p class="topics-subtitle">Discover communities and conversations around subjects that interest you</p>
+                </div>
+                <button class="btn btn-primary create-topic-btn">
+                    <span class="material-symbols-rounded">add</span>
+                    Create Topic
+                </button>
+            </div>
+            
+            <div class="topics-search">
+                <div class="search-bar">
+                    <span class="material-symbols-rounded">search</span>
+                    <input type="text" placeholder="Search topics..." id="topic-search">
+                </div>
+                <div class="topics-sort">
+                    <label for="sort-select">Sort by:</label>
+                    <select id="sort-select">
+                        <option value="popular">Most Popular</option>
+                        <option value="newest">Newest</option>
+                        <option value="posts">Most Posts</option>
+                        <option value="alphabetical">Alphabetical</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="topics-grid">
+                <!-- Featured Topic -->
+                <div class="topic-card featured-topic">
+                    <div class="topic-card-content">
+                        <div class="topic-icon philosophy-icon large-icon">
+                            <span class="material-symbols-rounded">psychology</span>
+                        </div>
+                        <div class="topic-info">
+                            <h2>Philosophy</h2>
+                            <p>Explore fundamental questions about knowledge, existence, and ethics through thoughtful discourse and analysis.</p>
+                            <div class="topic-stats">
+                                <div class="stat">
+                                    <span class="material-symbols-rounded">description</span>
+                                    <span>487 Posts</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="material-symbols-rounded">groups</span>
+                                    <span>1.2K Followers</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="topic-card-actions">
+                        <button class="btn btn-outline follow-btn">
+                            <span class="material-symbols-rounded">add</span>
+                            Follow
+                        </button>
+                        <a href="topic-detail.html?topic=philosophy" class="btn btn-primary view-btn">
+                            <span class="material-symbols-rounded">visibility</span>
+                            View Posts
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Regular Topics Grid -->
+                <div class="topic-card">
+                    <div class="topic-icon science-icon">
+                        <span class="material-symbols-rounded">science</span>
+                    </div>
+                    <h3>Science</h3>
+                    <p>Discover the latest breakthroughs and timeless principles of scientific inquiry.</p>
+                    <div class="topic-stats">
+                        <div class="stat">
+                            <span class="material-symbols-rounded">description</span>
+                            <span>356 Posts</span>
+                        </div>
+                    </div>
+                    <div class="topic-card-actions">
+                        <button class="btn btn-outline follow-btn">Follow</button>
+                        <a href="topic-detail.html?topic=science" class="btn btn-primary view-btn">View</a>
+                    </div>
+                </div>
+                
+                <div class="topic-card">
+                    <div class="topic-icon literature-icon">
+                        <span class="material-symbols-rounded">menu_book</span>
+                    </div>
+                    <h3>Literature</h3>
+                    <p>Discuss classic and contemporary works that shape our understanding of humanity.</p>
+                    <div class="topic-stats">
+                        <div class="stat">
+                            <span class="material-symbols-rounded">description</span>
+                            <span>412 Posts</span>
+                        </div>
+                    </div>
+                    <div class="topic-card-actions">
+                        <button class="btn btn-outline follow-btn followed">Following</button>
+                        <a href="topic-detail.html?topic=literature" class="btn btn-primary view-btn">View</a>
+                    </div>
+                </div>
+                
+                <div class="topic-card">
+                    <div class="topic-icon current-affairs-icon">
+                        <span class="material-symbols-rounded">news</span>
+                    </div>
+                    <h3>Current Affairs</h3>
+                    <p>Engage with thoughtful analysis of today's most pressing issues and events.</p>
+                    <div class="topic-stats">
+                        <div class="stat">
+                            <span class="material-symbols-rounded">description</span>
+                            <span>289 Posts</span>
+                        </div>
+                    </div>
+                    <div class="topic-card-actions">
+                        <button class="btn btn-outline follow-btn">Follow</button>
+                        <a href="topic-detail.html?topic=current-affairs" class="btn btn-primary view-btn">View</a>
+                    </div>
+                </div>
+                
+                <div class="topic-card">
+                    <div class="topic-icon religion-icon">
+                        <span class="material-symbols-rounded">brightness_7</span>
+                    </div>
+                    <h3>Religion</h3>
+                    <p>Explore spiritual traditions and their influence on culture and society.</p>
+                    <div class="topic-stats">
+                        <div class="stat">
+                            <span class="material-symbols-rounded">description</span>
+                            <span>231 Posts</span>
+                        </div>
+                    </div>
+                    <div class="topic-card-actions">
+                        <button class="btn btn-outline follow-btn">Follow</button>
+                        <a href="topic-detail.html?topic=religion" class="btn btn-primary view-btn">View</a>
+                    </div>
+                </div>
+                
+                <div class="topic-card">
+                    <div class="topic-icon arts-icon">
+                        <span class="material-symbols-rounded">palette</span>
+                    </div>
+                    <h3>Arts</h3>
+                    <p>Celebrate creative expression across various mediums and traditions.</p>
+                    <div class="topic-stats">
+                        <div class="stat">
+                            <span class="material-symbols-rounded">description</span>
+                            <span>178 Posts</span>
+                        </div>
+                    </div>
+                    <div class="topic-card-actions">
+                        <button class="btn btn-outline follow-btn followed">Following</button>
+                        <a href="topic-detail.html?topic=arts" class="btn btn-primary view-btn">View</a>
+                    </div>
+                </div>
+                
+                <div class="topic-card">
+                    <div class="topic-icon music-icon">
+                        <span class="material-symbols-rounded">music_note</span>
+                    </div>
+                    <h3>Music</h3>
+                    <p>Discuss music theory, history, genres, and the impact of sound on culture.</p>
+                    <div class="topic-stats">
+                        <div class="stat">
+                            <span class="material-symbols-rounded">description</span>
+                            <span>142 Posts</span>
+                        </div>
+                    </div>
+                    <div class="topic-card-actions">
+                        <button class="btn btn-outline follow-btn">Follow</button>
+                        <a href="topic-detail.html?topic=music" class="btn btn-primary view-btn">View</a>
+                    </div>
+                </div>
+                
+                <div class="topic-card">
+                    <div class="topic-icon technology-icon">
+                        <span class="material-symbols-rounded">computer</span>
+                    </div>
+                    <h3>Technology</h3>
+                    <p>Explore innovations, digital trends, and the impact of technology on society.</p>
+                    <div class="topic-stats">
+                        <div class="stat">
+                            <span class="material-symbols-rounded">description</span>
+                            <span>324 Posts</span>
+                        </div>
+                    </div>
+                    <div class="topic-card-actions">
+                        <button class="btn btn-outline follow-btn">Follow</button>
+                        <a href="topic-detail.html?topic=technology" class="btn btn-primary view-btn">View</a>
+                    </div>
+                </div>
+                
+                <div class="topic-card">
+                    <div class="topic-icon history-icon">
+                        <span class="material-symbols-rounded">history_edu</span>
+                    </div>
+                    <h3>History</h3>
+                    <p>Examine the past to understand the present and shape the future.</p>
+                    <div class="topic-stats">
+                        <div class="stat">
+                            <span class="material-symbols-rounded">description</span>
+                            <span>201 Posts</span>
+                        </div>
+                    </div>
+                    <div class="topic-card-actions">
+                        <button class="btn btn-outline follow-btn">Follow</button>
+                        <a href="topic-detail.html?topic=history" class="btn btn-primary view-btn">View</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="topics-pagination">
+                <button class="pagination-btn prev-btn" disabled>
+                    <span class="material-symbols-rounded">arrow_back</span>
+                </button>
+                <button class="pagination-btn active">1</button>
+                <button class="pagination-btn">2</button>
+                <button class="pagination-btn">3</button>
+                <span class="pagination-ellipsis">...</span>
+                <button class="pagination-btn">8</button>
+                <button class="pagination-btn next-btn">
+                    <span class="material-symbols-rounded">arrow_forward</span>
+                </button>
+            </div>
+        </div>
+    </main>
+    
+    <div class="modal new-topic-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New Topic</h3>
+                <button class="close-modal">
+                    <span class="material-symbols-rounded">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="topic-name">Topic Name</label>
+                    <input type="text" id="topic-name" placeholder="Enter topic name" maxlength="30">
+                </div>
+                <div class="form-group">
+                    <label for="topic-description">Description</label>
+                    <textarea id="topic-description" placeholder="Describe what this topic covers" maxlength="150"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="topic-icon">Select Icon</label>
+                    <div class="icon-grid">
+                        <button class="icon-option" data-icon="psychology"><span class="material-symbols-rounded">psychology</span></button>
+                        <button class="icon-option" data-icon="science"><span class="material-symbols-rounded">science</span></button>
+                        <button class="icon-option" data-icon="menu_book"><span class="material-symbols-rounded">menu_book</span></button>
+                        <button class="icon-option" data-icon="news"><span class="material-symbols-rounded">news</span></button>
+                        <button class="icon-option" data-icon="brightness_7"><span class="material-symbols-rounded">brightness_7</span></button>
+                        <button class="icon-option" data-icon="palette"><span class="material-symbols-rounded">palette</span></button>
+                        <button class="icon-option" data-icon="music_note"><span class="material-symbols-rounded">music_note</span></button>
+                        <button class="icon-option" data-icon="public"><span class="material-symbols-rounded">public</span></button>
+                        <button class="icon-option" data-icon="computer"><span class="material-symbols-rounded">computer</span></button>
+                        <button class="icon-option" data-icon="history_edu"><span class="material-symbols-rounded">history_edu</span></button>
+                        <button class="icon-option" data-icon="eco"><span class="material-symbols-rounded">eco</span></button>
+                        <button class="icon-option" data-icon="restaurant"><span class="material-symbols-rounded">restaurant</span></button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline cancel-topic">Cancel</button>
+                <button class="btn btn-primary create-topic">Create Topic</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="topics.js"></script>
+</body>
+</html> 

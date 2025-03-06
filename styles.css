@@ -98,13 +98,9 @@
     color: var(--dark-text-primary);
 }
 
-.dark-mode .quote-mark {
-    color: var(--parchment-gold);
-}
-
 /* Fix icons in dark mode */
 .dark-mode .material-symbols-rounded {
-    color: var(--dark-text-primary);
+    color: var(--primary-white);
 }
 
 .dark-mode .feature-icon {
@@ -954,4 +950,21 @@ footer {
         -webkit-appearance: none;
         border-radius: var(--border-radius-md);
     }
+}
+
+.dark-mode nav a {
+    color: var(--dark-text-primary);
+}
+
+.dark-mode .nav-link:hover .indicator {
+    background-color: var(--parchment-gold);
+    transform: scale(1.2);
+}
+
+.dark-mode .nav-link.active .indicator {
+    background-color: var(--parchment-gold);
+}
+
+.dark-mode .nav-link:hover {
+    color: var(--parchment-gold);
 } 

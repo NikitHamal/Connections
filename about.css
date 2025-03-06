@@ -1,0 +1,309 @@
+/* About Page Styles */
+.about-main {
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-xl) var(--spacing-lg);
+    max-width: 1000px;
+    margin: 0 auto;
+    min-height: calc(100vh - 80px);
+}
+
+.about-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+    width: 100%;
+}
+
+.about-header {
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.about-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    margin-top: var(--spacing-sm);
+    font-weight: 300;
+}
+
+.about-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+}
+
+.about-section {
+    background-color: var(--surface);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.about-section:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+}
+
+.dark-mode .about-section {
+    background-color: var(--dark-surface);
+}
+
+.section-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--accent);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--spacing-md);
+}
+
+.section-icon .material-symbols-rounded {
+    font-size: 30px;
+}
+
+.mission-section, .values-section, .technology-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.section-content {
+    width: 100%;
+}
+
+.section-content h2 {
+    margin-bottom: var(--spacing-md);
+    font-size: 1.8rem;
+}
+
+.section-content p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* Values Grid */
+.values-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-md);
+}
+
+.value-item {
+    padding: var(--spacing-md);
+    background-color: rgba(0, 0, 0, 0.02);
+    border-radius: var(--border-radius-md);
+    transition: transform var(--transition-fast);
+}
+
+.dark-mode .value-item {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+.value-item:hover {
+    transform: translateY(-3px);
+}
+
+.value-item h3 {
+    margin-bottom: var(--spacing-sm);
+    font-size: 1.2rem;
+    color: var(--accent);
+}
+
+.value-item p {
+    font-size: 0.95rem;
+}
+
+/* Creator Section */
+.creator-section {
+    padding: 0;
+    overflow: hidden;
+}
+
+.creator-profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: var(--spacing-xl);
+}
+
+.creator-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-color: var(--accent);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--spacing-md);
+    box-shadow: var(--shadow-md);
+}
+
+.creator-avatar .material-symbols-rounded {
+    font-size: 60px;
+}
+
+.creator-info {
+    max-width: 600px;
+}
+
+.creator-info h2 {
+    margin-bottom: var(--spacing-xs);
+    font-size: 1.8rem;
+}
+
+.creator-info h3 {
+    font-size: 1.4rem;
+    margin-bottom: var(--spacing-xs);
+    color: var(--accent);
+}
+
+.creator-bio {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-md);
+}
+
+.creator-description {
+    line-height: 1.6;
+    margin-bottom: var(--spacing-lg);
+}
+
+.creator-links {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-md);
+}
+
+.creator-link {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    background-color: var(--surface);
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: background-color var(--transition-fast), transform var(--transition-fast);
+    box-shadow: var(--shadow-sm);
+}
+
+.dark-mode .creator-link {
+    background-color: var(--dark-surface);
+}
+
+.creator-link:hover {
+    background-color: var(--accent);
+    color: white;
+    transform: translateY(-3px);
+}
+
+/* Technology Section */
+.tech-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-md);
+}
+
+.tech-item {
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: var(--border-radius-md);
+    transition: transform var(--transition-fast), background-color var(--transition-fast);
+}
+
+.dark-mode .tech-item {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.tech-item:hover {
+    transform: translateY(-3px);
+    background-color: var(--accent);
+    color: white;
+}
+
+.tech-name {
+    font-weight: 500;
+}
+
+/* CTA Section */
+.about-cta {
+    text-align: center;
+    padding: var(--spacing-xl);
+    background-color: var(--accent);
+    color: white;
+    border-radius: var(--border-radius-lg);
+    margin-top: var(--spacing-xl);
+}
+
+.about-cta h2 {
+    margin-bottom: var(--spacing-sm);
+    color: white;
+}
+
+.about-cta p {
+    margin-bottom: var(--spacing-lg);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.about-cta .btn-primary {
+    background-color: white;
+    color: var(--accent);
+}
+
+.about-cta .btn-primary:hover {
+    background-color: var(--primary-cream);
+}
+
+/* Responsive Styles */
+@media (min-width: 768px) {
+    .mission-section, .values-section, .technology-section {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: var(--spacing-lg);
+    }
+    
+    .section-icon {
+        margin-bottom: 0;
+        flex-shrink: 0;
+    }
+    
+    .creator-profile {
+        flex-direction: row;
+        text-align: left;
+        gap: var(--spacing-xl);
+    }
+    
+    .creator-avatar {
+        margin-bottom: 0;
+    }
+    
+    .creator-links {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 767px) {
+    .about-main {
+        padding: var(--spacing-lg) var(--spacing-md);
+    }
+    
+    .values-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .tech-stack {
+        justify-content: center;
+    }
+} 

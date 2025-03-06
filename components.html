@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connections | UI Components</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="components.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0..200">
+</head>
+<body class="light-mode">
+    <div class="stars-container"></div>
+    
+    <header>
+        <button class="mobile-menu-toggle" aria-label="Toggle mobile menu">
+            <span class="material-symbols-rounded">menu</span>
+        </button>
+        <div class="logo">
+            <span class="logo-text">Connections</span>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html" class="nav-link"><span class="indicator"></span>Home</a></li>
+                <li><a href="explore.html" class="nav-link"><span class="indicator"></span>Explore</a></li>
+                <li><a href="topics.html" class="nav-link"><span class="indicator"></span>Topics</a></li>
+                <li><a href="write.html" class="nav-link"><span class="indicator"></span>Write</a></li>
+                <li><a href="about.html" class="nav-link"><span class="indicator"></span>About</a></li>
+                <li><a href="components.html" class="nav-link active"><span class="indicator"></span>Components</a></li>
+            </ul>
+        </nav>
+        <div class="header-actions">
+            <button class="theme-toggle" aria-label="Toggle dark mode">
+                <span class="material-symbols-rounded light-icon">light_mode</span>
+                <span class="material-symbols-rounded dark-icon">dark_mode</span>
+            </button>
+            <button class="btn btn-secondary">Log in</button>
+            <button class="btn btn-primary">Sign up</button>
+        </div>
+    </header>
+    <div class="mobile-menu-overlay"></div>
+
+    <main>
+        <section class="component-intro">
+            <div class="container">
+                <h1>UI Components</h1>
+                <p class="section-subtitle">A comprehensive collection of custom UI components for Connections platform</p>
+            </div>
+        </section>
+
+        <section class="component-section" id="dialogs">
+            <div class="container">
+                <h2>Dialogs</h2>
+                <p>Modal dialogs for displaying important information or gathering user input.</p>
+                
+                <div class="component-demos">
+                    <div class="component-demo">
+                        <h3>Basic Dialog</h3>
+                        <button class="btn btn-primary" id="openBasicDialog">Open Basic Dialog</button>
+                    </div>
+                    
+                    <div class="component-demo">
+                        <h3>Confirmation Dialog</h3>
+                        <button class="btn btn-primary" id="openConfirmDialog">Open Confirm Dialog</button>
+                    </div>
+                    
+                    <div class="component-demo">
+                        <h3>Form Dialog</h3>
+                        <button class="btn btn-primary" id="openFormDialog">Open Form Dialog</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="component-section" id="toasts">
+            <div class="container">
+                <h2>Toasts & Notifications</h2>
+                <p>Subtle notifications to provide feedback to the user.</p>
+                
+                <div class="component-demos">
+                    <div class="component-demo">
+                        <h3>Success Toast</h3>
+                        <button class="btn btn-primary" id="showSuccessToast">Show Success Toast</button>
+                    </div>
+                    
+                    <div class="component-demo">
+                        <h3>Error Toast</h3>
+                        <button class="btn btn-primary" id="showErrorToast">Show Error Toast</button>
+                    </div>
+                    
+                    <div class="component-demo">
+                        <h3>Info Toast</h3>
+                        <button class="btn btn-primary" id="showInfoToast">Show Info Toast</button>
+                    </div>
+                    
+                    <div class="component-demo">
+                        <h3>Warning Toast</h3>
+                        <button class="btn btn-primary" id="showWarningToast">Show Warning Toast</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="component-section" id="snackbars">
+            <div class="container">
+                <h2>Snackbars</h2>
+                <p>Brief messages that appear at the bottom of the screen with optional actions.</p>
+                
+                <div class="component-demos">
+                    <div class="component-demo">
+                        <h3>Basic Snackbar</h3>
+                        <button class="btn btn-primary" id="showBasicSnackbar">Show Basic Snackbar</button>
+                    </div>
+                    
+                    <div class="component-demo">
+                        <h3>Action Snackbar</h3>
+                        <button class="btn btn-primary" id="showActionSnackbar">Show Action Snackbar</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="component-section" id="tooltips">
+            <div class="container">
+                <h2>Tooltips</h2>
+                <p>Tooltips provide additional information when hovering over an element.</p>
+                
+                <div class="component-demos">
+                    <div class="component-demo">
+                        <h3>Basic Tooltip</h3>
+                        <div class="tooltip">
+                            <button class="btn btn-primary">Hover over me</button>
+                            <span class="tooltip-text">This is a helpful tooltip message</span>
+                        </div>
+                    </div>
+                    
+                    <div class="component-demo">
+                        <h3>Icon with Tooltip</h3>
+                        <div class="tooltip">
+                            <span class="material-symbols-rounded" style="cursor: pointer;">help</span>
+                            <span class="tooltip-text">Help information goes here</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="component-section" id="badges">
+            <div class="container">
+                <h2>Badges</h2>
+                <p>Badges are used to highlight or notify users about status or counts.</p>
+                
+                <div class="component-demos">
+                    <div class="component-demo">
+                        <h3>Color Variants</h3>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <span class="badge badge-primary">Primary</span>
+                            <span class="badge badge-secondary">Secondary</span>
+                            <span class="badge badge-tertiary">Tertiary</span>
+                            <span class="badge badge-success">Success</span>
+                            <span class="badge badge-danger">Danger</span>
+                            <span class="badge badge-warning">Warning</span>
+                            <span class="badge badge-info">Info</span>
+                        </div>
+                    </div>
+                    
+                    <div class="component-demo">
+                        <h3>Outline Badges</h3>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <span class="badge badge-outline badge-primary">Primary</span>
+                            <span class="badge badge-outline badge-secondary">Secondary</span>
+                            <span class="badge badge-outline badge-danger">Danger</span>
+                            <span class="badge badge-outline badge-success">Success</span>
+                        </div>
+                    </div>
+                    
+                    <div class="component-demo">
+                        <h3>Pill Badges</h3>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <span class="badge badge-pill badge-primary">New</span>
+                            <span class="badge badge-pill badge-success">Completed</span>
+                            <span class="badge badge-pill badge-danger">3</span>
+                            <span class="badge badge-pill badge-outline badge-info">Tag</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="component-section" id="switches">
+            <div class="container">
+                <h2>Switches & Toggles</h2>
+                <p>Toggle switches for binary choices like on/off states.</p>
+                
+                <div class="component-demos">
+                    <div class="component-demo">
+                        <h3>Basic Toggle</h3>
+                        <label class="switch">
+                            <input type="checkbox" id="basicSwitch">
+                            <span class="switch-slider"></span>
+                        </label>
+                        <p id="switchStatus" style="margin-top: 10px; font-size: 14px;">Status: Off</p>
+                    </div>
+                    
+                    <div class="component-demo">
+                        <h3>Toggle with Label</h3>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <label for="darkModeToggle" style="margin-right: auto;">Dark Mode</label>
+                            <label class="switch">
+                                <input type="checkbox" id="darkModeToggle">
+                                <span class="switch-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="component-section" id="accordions">
+            <div class="container">
+                <h2>Accordions</h2>
+                <p>Collapsible content panels for presenting information in a limited space.</p>
+                
+                <div class="component-demos" style="grid-template-columns: 1fr;">
+                    <div class="component-demo">
+                        <h3>Basic Accordion</h3>
+                        <div class="accordion">
+                            <div class="accordion-item">
+                                <div class="accordion-header" data-accordion="1">
+                                    <h3>What is Connections?</h3>
+                                    <span class="material-symbols-rounded accordion-icon">expand_more</span>
+                                </div>
+                                <div class="accordion-content" id="accordion-1">
+                                    <div class="accordion-content-inner">
+                                        <p>Connections is a platform where writers and readers come together to explore ideas, share stories, and engage in meaningful conversations.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <div class="accordion-header" data-accordion="2">
+                                    <h3>How do I create an account?</h3>
+                                    <span class="material-symbols-rounded accordion-icon">expand_more</span>
+                                </div>
+                                <div class="accordion-content" id="accordion-2">
+                                    <div class="accordion-content-inner">
+                                        <p>Creating an account is simple. Click the "Sign up" button in the top-right corner of the page and follow the instructions. You'll need to provide an email address and create a password.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <div class="accordion-header" data-accordion="3">
+                                    <h3>Is Connections free to use?</h3>
+                                    <span class="material-symbols-rounded accordion-icon">expand_more</span>
+                                </div>
+                                <div class="accordion-content" id="accordion-3">
+                                    <div class="accordion-content-inner">
+                                        <p>Yes! Connections is completely free to join and use. We believe in creating an accessible platform for everyone to share ideas and connect with others.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="component-section" id="tabs">
+            <div class="container">
+                <h2>Tabs</h2>
+                <p>Tabbed interfaces for switching between related content sections.</p>
+                
+                <div class="component-demos" style="grid-template-columns: 1fr;">
+                    <div class="component-demo">
+                        <h3>Basic Tabs</h3>
+                        <div class="tabs">
+                            <div class="tab-nav">
+                                <button class="tab-link active" data-tab="tab1">For Writers</button>
+                                <button class="tab-link" data-tab="tab2">For Readers</button>
+                                <button class="tab-link" data-tab="tab3">Getting Started</button>
+                            </div>
+                            <div id="tab1" class="tab-content active">
+                                <h4>For Writers</h4>
+                                <p>Connections provides a platform for writers to share their ideas, stories, and perspectives with a global audience. Our tools are designed to help you create, format, and publish your content easily.</p>
+                            </div>
+                            <div id="tab2" class="tab-content">
+                                <h4>For Readers</h4>
+                                <p>Discover thoughtful writing from diverse perspectives. Follow your favorite writers, bookmark content for later, and join the conversation by leaving comments and engaging with the community.</p>
+                            </div>
+                            <div id="tab3" class="tab-content">
+                                <h4>Getting Started</h4>
+                                <p>New to Connections? Here's how to get started: Create an account, customize your profile, find topics that interest you, and start connecting with other members of the community.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="component-section" id="ratings">
+            <div class="container">
+                <h2>Emoji Ratings</h2>
+                <p>Interactive emoji rating component for collecting expressive user feedback.</p>
+                
+                <div class="component-demos">
+                    <div class="component-demo">
+                        <h3>Basic Emoji Rating</h3>
+                        <div class="emoji-rating">
+                            <div class="emoji-container">
+                                <span class="emoji-option" data-rating="1" data-emoji="😞">😞</span>
+                                <span class="emoji-option" data-rating="2" data-emoji="😐">😐</span>
+                                <span class="emoji-option" data-rating="3" data-emoji="🙂">🙂</span>
+                                <span class="emoji-option" data-rating="4" data-emoji="😊">😊</span>
+                                <span class="emoji-option" data-rating="5" data-emoji="😍">😍</span>
+                            </div>
+                            <span id="emoji-rating-value" class="emoji-rating-text">Select how you feel</span>
+                        </div>
+                    </div>
+                    
+                    <div class="component-demo">
+                        <h3>Preset Rating (Read-only)</h3>
+                        <div class="emoji-rating">
+                            <div class="emoji-container read-only">
+                                <span class="emoji-option">🙂</span>
+                                <span class="emoji-option">😊</span>
+                                <span class="emoji-option active">😍</span>
+                            </div>
+                            <span class="emoji-rating-text">Love it! (5/5)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="component-demo">
+                        <h3>Themed Emoji Rating</h3>
+                        <div class="emoji-rating themed">
+                            <div class="emoji-container">
+                                <span class="emoji-option" data-rating="1" data-emoji="🌧️">🌧️</span>
+                                <span class="emoji-option" data-rating="2" data-emoji="⛅">⛅</span>
+                                <span class="emoji-option" data-rating="3" data-emoji="🌤️">🌤️</span>
+                                <span class="emoji-option" data-rating="4" data-emoji="☀️">☀️</span>
+                                <span class="emoji-option" data-rating="5" data-emoji="🌈">🌈</span>
+                            </div>
+                            <span id="themed-rating-value" class="emoji-rating-text">How was your experience?</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="component-section" id="chips">
+            <div class="container">
+                <h2>Chips & Pills</h2>
+                <p>Compact elements that represent attributes, actions, or filters.</p>
+                
+                <div class="component-demos">
+                    <div class="component-demo">
+                        <h3>Basic Chips</h3>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <span class="chip">Philosophy</span>
+                            <span class="chip">Science</span>
+                            <span class="chip">Literature</span>
+                            <span class="chip">Arts</span>
+                        </div>
+                    </div>
+                    
+                    <div class="component-demo">
+                        <h3>Interactive Chips</h3>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;" id="interactive-chips">
+                            <span class="chip">
+                                Philosophy
+                                <button class="chip-close">×</button>
+                            </span>
+                            <span class="chip">
+                                Science
+                                <button class="chip-close">×</button>
+                            </span>
+                            <span class="chip">
+                                Literature
+                                <button class="chip-close">×</button>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="component-demo">
+                        <h3>Colored Chips</h3>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <span class="chip chip-primary">Primary</span>
+                            <span class="chip chip-secondary">Secondary</span>
+                            <span class="chip chip-outline">Outline</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="component-section" id="avatars">
+            <div class="container">
+                <h2>Avatars</h2>
+                <p>User profile images or initials for personalized identity.</p>
+                
+                <div class="component-demos">
+                    <div class="component-demo">
+                        <h3>Basic Avatars</h3>
+                        <div style="display: flex; gap: 16px; align-items: center;">
+                            <div class="avatar avatar-sm">JD</div>
+                            <div class="avatar">JD</div>
+                            <div class="avatar avatar-lg">JD</div>
+                        </div>
+                    </div>
+                    
+                    <div class="component-demo">
+                        <h3>Square Avatars</h3>
+                        <div style="display: flex; gap: 16px; align-items: center;">
+                            <div class="avatar avatar-square avatar-sm">JD</div>
+                            <div class="avatar avatar-square">JD</div>
+                            <div class="avatar avatar-square avatar-lg">JD</div>
+                        </div>
+                    </div>
+                    
+                    <div class="component-demo">
+                        <h3>Avatar Group</h3>
+                        <div class="avatar-group">
+                            <div class="avatar" style="background-color: var(--success);">JD</div>
+                            <div class="avatar" style="background-color: var(--info);">AM</div>
+                            <div class="avatar" style="background-color: var(--warning);">RK</div>
+                            <div class="avatar" style="background-color: var(--accent-secondary);">SL</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="component-section" id="date-pickers">
+            <div class="container">
+                <h2>Date Picker</h2>
+                <p>Beautiful and intuitive date selection components.</p>
+                
+                <div class="component-demos">
+                    <div class="component-demo">
+                        <h3>Standard Date Picker</h3>
+                        <div class="input-group">
+                            <label for="datePicker">Select a date:</label>
+                            <input type="text" id="datePicker" class="date-picker-input" readonly placeholder="Click to select a date">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="component-section" id="time-pickers">
+            <div class="container">
+                <h2>Time Picker</h2>
+                <p>iOS-style time selection with smooth scrolling wheels.</p>
+                
+                <div class="component-demos">
+                    <div class="component-demo">
+                        <h3>Time Picker</h3>
+                        <div class="input-group">
+                            <label for="timePicker">Select a time:</label>
+                            <input type="text" id="timePicker" class="time-picker-input" readonly placeholder="Click to select a time">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="component-section" id="selectors">
+            <div class="container">
+                <h2>Selectors</h2>
+                <p>Enhanced select components for better user experience.</p>
+                
+                <div class="component-demos">
+                    <div class="component-demo">
+                        <h3>Custom Dropdown</h3>
+                        <div class="custom-select">
+                            <div class="select-selected">Select an option...</div>
+                            <div class="select-items select-hide">
+                                <div data-value="fiction">Fiction</div>
+                                <div data-value="nonfiction">Non-Fiction</div>
+                                <div data-value="poetry">Poetry</div>
+                                <div data-value="essay">Essays</div>
+                                <div data-value="memoir">Memoir</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="component-demo">
+                        <h3>Multi-select Tags</h3>
+                        <div class="tag-selector">
+                            <div class="selected-tags">
+                                <!-- Tags will be added here by JS -->
+                            </div>
+                            <input type="text" class="tag-input" placeholder="Type and press Enter to add tags">
+                            <div class="tag-suggestions">
+                                <div class="tag-option" data-value="philosophy">Philosophy</div>
+                                <div class="tag-option" data-value="science">Science</div>
+                                <div class="tag-option" data-value="literature">Literature</div>
+                                <div class="tag-option" data-value="arts">Arts</div>
+                                <div class="tag-option" data-value="history">History</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="component-section" id="loaders">
+            <div class="container">
+                <h2>Loaders & Progress</h2>
+                <p>Visual indicators for loading states and progress.</p>
+                
+                <div class="component-demos">
+                    <div class="component-demo">
+                        <h3>Spinner</h3>
+                        <div class="spinner"></div>
+                    </div>
+                    
+                    <div class="component-demo">
+                        <h3>Progress Bar</h3>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 65%;">
+                                <span class="progress-text">65%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="component-demo">
+                        <h3>Skeleton Loader</h3>
+                        <div class="skeleton-loader">
+                            <div class="skeleton-header"></div>
+                            <div class="skeleton-text"></div>
+                            <div class="skeleton-text"></div>
+                            <div class="skeleton-text short"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- The Dialog Templates (Hidden by default) -->
+    <div class="dialog-overlay" id="dialogOverlay"></div>
+    
+    <div class="dialog" id="basicDialog">
+        <div class="dialog-header">
+            <h3>Information</h3>
+            <button class="dialog-close" aria-label="Close dialog">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+        </div>
+        <div class="dialog-content">
+            <p>This is a basic information dialog to display important messages to the user.</p>
+        </div>
+        <div class="dialog-footer">
+            <button class="btn btn-primary dialog-close">Close</button>
+        </div>
+    </div>
+
+    <div class="dialog" id="confirmDialog">
+        <div class="dialog-header">
+            <h3>Confirm Action</h3>
+            <button class="dialog-close" aria-label="Close dialog">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+        </div>
+        <div class="dialog-content">
+            <p>Are you sure you want to perform this action? This cannot be undone.</p>
+        </div>
+        <div class="dialog-footer">
+            <button class="btn btn-secondary dialog-close">Cancel</button>
+            <button class="btn btn-primary" id="confirmAction">Confirm</button>
+        </div>
+    </div>
+
+    <div class="dialog" id="formDialog">
+        <div class="dialog-header">
+            <h3>Create New Connection</h3>
+            <button class="dialog-close" aria-label="Close dialog">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+        </div>
+        <div class="dialog-content">
+            <form id="dialogForm">
+                <div class="form-group">
+                    <label for="connectionTitle">Title</label>
+                    <input type="text" id="connectionTitle" placeholder="Enter a title">
+                </div>
+                <div class="form-group">
+                    <label for="connectionDescription">Description</label>
+                    <textarea id="connectionDescription" placeholder="Describe your connection..."></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="dialog-footer">
+            <button class="btn btn-secondary dialog-close">Cancel</button>
+            <button class="btn btn-primary" id="submitForm">Create</button>
+        </div>
+    </div>
+
+    <!-- Toast and Snackbar Container -->
+    <div class="toast-container"></div>
+    <div class="snackbar-container"></div>
+
+    <!-- Date Picker Template (Hidden by default) -->
+    <div class="date-picker-container">
+        <div class="date-picker">
+            <div class="date-picker-header">
+                <button class="date-nav prev-month">
+                    <span class="material-symbols-rounded">chevron_left</span>
+                </button>
+                <div class="current-month">June 2023</div>
+                <button class="date-nav next-month">
+                    <span class="material-symbols-rounded">chevron_right</span>
+                </button>
+            </div>
+            <div class="date-picker-year-selector">
+                <select id="yearSelector" class="year-selector">
+                    <!-- Years will be added by JS -->
+                </select>
+            </div>
+            <div class="weekdays">
+                <div>Su</div>
+                <div>Mo</div>
+                <div>Tu</div>
+                <div>We</div>
+                <div>Th</div>
+                <div>Fr</div>
+                <div>Sa</div>
+            </div>
+            <div class="days">
+                <!-- Days will be added by JS -->
+            </div>
+            <div class="date-picker-footer">
+                <button class="btn btn-secondary date-picker-cancel">Cancel</button>
+                <button class="btn btn-primary date-picker-apply">Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Time Picker Template (Hidden by default) -->
+    <div class="time-picker-container">
+        <div class="time-picker">
+            <div class="time-picker-header">
+                <h3>Select Time</h3>
+                <button class="time-picker-close" aria-label="Close time picker">
+                    <span class="material-symbols-rounded">close</span>
+                </button>
+            </div>
+            <div class="time-picker-wheels">
+                <div class="time-wheel hour-wheel">
+                    <div class="time-wheel-overlay"></div>
+                    <div class="time-wheel-items">
+                        <!-- Hours will be added by JS -->
+                    </div>
+                </div>
+                <div class="time-separator">:</div>
+                <div class="time-wheel minute-wheel">
+                    <div class="time-wheel-overlay"></div>
+                    <div class="time-wheel-items">
+                        <!-- Minutes will be added by JS -->
+                    </div>
+                </div>
+                <div class="time-wheel period-wheel">
+                    <div class="time-wheel-overlay"></div>
+                    <div class="time-wheel-items">
+                        <div class="time-wheel-item" data-value="AM">AM</div>
+                        <div class="time-wheel-item" data-value="PM">PM</div>
+                    </div>
+                </div>
+            </div>
+            <div class="time-picker-footer">
+                <button class="btn btn-secondary time-picker-cancel">Cancel</button>
+                <button class="btn btn-primary time-picker-apply">Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="components.js"></script>
+</body>
+</html> 

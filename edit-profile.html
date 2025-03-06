@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile | Connections</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="profile.css">
+    <link rel="stylesheet" href="edit-profile.css">
+</head>
+<body>
+    <header class="profile-header-minimal">
+        <div class="container">
+            <button class="back-button" id="back-button" aria-label="Go back">
+                <span class="material-symbols-rounded">arrow_back</span>
+            </button>
+            <div class="header-title">Edit Profile</div>
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+                    <span class="material-symbols-rounded light-icon">light_mode</span>
+                    <span class="material-symbols-rounded dark-icon">dark_mode</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="edit-profile-main">
+        <div class="container">
+            <div class="edit-profile-container">
+                <!-- Profile Picture Section -->
+                <div class="edit-section">
+                    <h2 class="edit-section-title">Profile Picture</h2>
+                    <div class="profile-picture-edit">
+                        <div class="profile-avatar-container" id="profile-avatar-container">
+                            <img src="https://via.placeholder.com/150" alt="Profile" class="profile-avatar" id="profile-avatar">
+                            <div class="avatar-edit-overlay">
+                                <span class="material-symbols-rounded">photo_camera</span>
+                            </div>
+                        </div>
+                        <div class="profile-picture-actions">
+                            <button type="button" class="btn btn-outline" id="upload-photo-btn">
+                                <span class="material-symbols-rounded">upload</span>
+                                Upload Photo
+                            </button>
+                            <button type="button" class="btn btn-outline" id="remove-photo-btn">
+                                <span class="material-symbols-rounded">delete</span>
+                                Remove
+                            </button>
+                            <input type="file" id="profile-picture-input" accept="image/*" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Basic Info Section -->
+                <form id="edit-profile-form" class="edit-form">
+                    <div class="edit-section">
+                        <h2 class="edit-section-title">Basic Information</h2>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="first-name">First Name*</label>
+                                <input type="text" id="first-name" name="first-name" required placeholder="Your first name">
+                                <div class="form-error" id="first-name-error"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="last-name">Last Name*</label>
+                                <input type="text" id="last-name" name="last-name" required placeholder="Your last name">
+                                <div class="form-error" id="last-name-error"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="display-name">Display Name*</label>
+                            <input type="text" id="display-name" name="display-name" required placeholder="How you'll appear to others">
+                            <div class="form-hint">This is how you'll appear to others on Connections</div>
+                            <div class="form-error" id="display-name-error"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="username">Username*</label>
+                            <div class="input-with-prefix">
+                                <span class="input-prefix">@</span>
+                                <input type="text" id="username" name="username" required placeholder="Choose a unique username">
+                            </div>
+                            <div class="form-hint">Your unique identifier on Connections (letters, numbers, and underscores only)</div>
+                            <div class="form-error" id="username-error"></div>
+                        </div>
+                    </div>
+
+                    <!-- Bio Section -->
+                    <div class="edit-section">
+                        <h2 class="edit-section-title">Bio</h2>
+                        <div class="form-group">
+                            <label for="bio">Bio</label>
+                            <textarea id="bio" name="bio" placeholder="Tell us a bit about yourself" maxlength="160"></textarea>
+                            <div class="character-count"><span id="bio-count">0</span>/160</div>
+                        </div>
+                    </div>
+
+                    <!-- Location Section -->
+                    <div class="edit-section">
+                        <h2 class="edit-section-title">Location</h2>
+                        <div class="form-group">
+                            <label for="location">Location</label>
+                            <input type="text" id="location" name="location" placeholder="City, Country">
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" id="cancel-btn">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="save-btn">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Full-screen Image Viewer -->
+    <div class="fullscreen-image-viewer" id="image-viewer">
+        <div class="image-viewer-overlay"></div>
+        <div class="image-viewer-content">
+            <button class="image-viewer-close" id="image-viewer-close">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+            <img src="" alt="Full-size profile image" id="fullscreen-image">
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Saving changes...</div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="script.js"></script>
+    <script src="firebase-init.js"></script>
+    <script src="edit-profile.js"></script>
+</body>
+</html> 

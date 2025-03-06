@@ -1,0 +1,306 @@
+/* Edit Profile Page Styles */
+.edit-profile-main {
+    padding: var(--spacing-md) 0;
+    min-height: calc(100vh - 60px);
+    background-color: var(--background);
+    font-family: 'Poppins', sans-serif;
+}
+
+.edit-profile-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--spacing-md);
+}
+
+/* Edit Sections */
+.edit-section {
+    background-color: var(--surface);
+    border-radius: var(--card-border-radius);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+}
+
+.edit-section:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.edit-section-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+/* Profile Picture Edit */
+.profile-picture-edit {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+}
+
+.profile-avatar-container {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+}
+
+.profile-avatar-container:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-lg);
+}
+
+.profile-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-edit-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity var(--transition-speed) ease;
+}
+
+.profile-avatar-container:hover .avatar-edit-overlay {
+    opacity: 1;
+}
+
+.avatar-edit-overlay .material-symbols-rounded {
+    color: white;
+    font-size: 24px;
+}
+
+.profile-picture-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.profile-picture-actions .btn {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: 8px 16px;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Form Styles */
+.edit-form {
+    width: 100%;
+}
+
+.form-row {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+.form-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: var(--spacing-xs);
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.form-hint {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+.input-with-prefix {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-prefix {
+    position: absolute;
+    left: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.input-with-prefix input {
+    padding-left: 30px;
+}
+
+input, 
+textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius-md);
+    background-color: var(--surface);
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+}
+
+input:focus,
+textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.2);
+    outline: none;
+}
+
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.character-count {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-align: right;
+    margin-top: 4px;
+}
+
+.form-error {
+    color: var(--error);
+    font-size: 0.85rem;
+    margin-top: 4px;
+    min-height: 1.2em;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+}
+
+.form-actions .btn {
+    padding: 10px 20px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--transition-speed) ease, visibility var(--transition-speed) ease;
+}
+
+.loading-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.loading-text {
+    color: white;
+    margin-top: var(--spacing-md);
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+/* Dark Mode */
+.dark-mode .edit-section {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border);
+}
+
+.dark-mode .edit-section-title {
+    color: var(--text-primary-dark);
+}
+
+.dark-mode input,
+.dark-mode textarea {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border);
+    color: var(--text-primary-dark);
+}
+
+.dark-mode input:focus,
+.dark-mode textarea:focus {
+    border-color: var(--accent-light);
+    box-shadow: 0 0 0 2px rgba(var(--accent-light-rgb), 0.2);
+}
+
+.dark-mode .form-group label {
+    color: var(--text-primary-dark);
+}
+
+.dark-mode .form-hint,
+.dark-mode .character-count {
+    color: var(--text-secondary-dark);
+}
+
+.dark-mode .input-prefix {
+    color: var(--text-secondary-dark);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .profile-picture-edit {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .profile-picture-actions {
+        flex-direction: row;
+        margin-top: var(--spacing-md);
+    }
+    
+    .edit-section {
+        padding: var(--spacing-md);
+    }
+}
+
+@media (max-width: 576px) {
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .form-actions .btn {
+        width: 100%;
+    }
+} 
