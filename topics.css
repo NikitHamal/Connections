@@ -1,9 +1,32 @@
 /* Topics Page Styles */
 :root {
-    --music-icon-color: #8e44ad;
-    --technology-icon-color: #3498db;
-    --history-icon-color: #795548;
+    --philosophy-icon-color: #8e44ad;  /* Purple */
+    --science-icon-color: #3498db;     /* Blue */
+    --literature-icon-color: #e67e22;  /* Orange */
+    --current-affairs-icon-color: #e74c3c; /* Red */
+    --religion-icon-color: #f1c40f;    /* Yellow */
+    --arts-icon-color: #1abc9c;        /* Turquoise */
+    --music-icon-color: #8e44ad;       /* Purple */
+    --technology-icon-color: #3498db;  /* Blue */
+    --history-icon-color: #795548;     /* Brown */
+    --psychology-icon-color: #9b59b6;  /* Light Purple */
+    --politics-icon-color: #c0392b;    /* Dark Red */
+    --environment-icon-color: #27ae60; /* Green */
 }
+
+/* Icon Background Colors */
+.philosophy-icon { background-color: var(--philosophy-icon-color); }
+.science-icon { background-color: var(--science-icon-color); }
+.literature-icon { background-color: var(--literature-icon-color); }
+.current-affairs-icon { background-color: var(--current-affairs-icon-color); }
+.religion-icon { background-color: var(--religion-icon-color); }
+.arts-icon { background-color: var(--arts-icon-color); }
+.music-icon { background-color: var(--music-icon-color); }
+.technology-icon { background-color: var(--technology-icon-color); }
+.history-icon { background-color: var(--history-icon-color); }
+.psychology-icon { background-color: var(--psychology-icon-color); }
+.politics-icon { background-color: var(--politics-icon-color); }
+.environment-icon { background-color: var(--environment-icon-color); }
 
 .topics-main {
     padding: var(--spacing-xl) 0;
@@ -203,8 +226,9 @@
 .topic-stats {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--spacing-md);
     align-items: center;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-sm);
 }
 
 .stat {
@@ -213,6 +237,11 @@
     gap: var(--spacing-xs);
     color: var(--text-secondary);
     font-size: 0.9rem;
+}
+
+.created-date {
+    font-style: italic;
+    opacity: 0.8;
 }
 
 .topic-action {

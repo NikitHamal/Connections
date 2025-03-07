@@ -594,4 +594,119 @@
     .form-actions .btn {
         width: 100%;
     }
+}
+
+/* Star animation for background */
+.stars-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background-color: var(--accent);
+    border-radius: 50%;
+    opacity: 0;
+    animation: twinkle 4s infinite;
+}
+
+@keyframes twinkle {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    50% {
+        opacity: 0.5;
+        transform: scale(1.2);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+}
+
+/* Step indicators for multi-step form */
+.step.completed .step-number::after {
+    content: '✓';
+    position: absolute;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.step.completed .step-connector {
+    background-color: var(--accent);
+}
+
+/* Verification code container */
+.verification-code-container {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    margin: var(--spacing-lg) 0;
+}
+
+.verification-message {
+    text-align: center;
+    margin: var(--spacing-md) 0;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+/* Resend timer */
+#resend-timer {
+    color: var(--text-secondary);
+}
+
+#resend-code[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Prevent flash of unstyled content during step transitions */
+.step-form {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+}
+
+.step-form.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+}
+
+/* Dark mode adjustments for new elements */
+.dark-mode .star {
+    background-color: var(--accent-light);
+}
+
+.dark-mode #resend-code[disabled] {
+    color: var(--text-tertiary);
+}
+
+/* Responsive styles for smaller screens */
+@media (max-width: 600px) {
+    .verification-code-container {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .verification-message {
+        font-size: 0.85rem;
+    }
+}
+
+/* State classes for the step connector in multi-step form */
+.step.active + .step-connector,
+.step.completed + .step-connector {
+    background-color: var(--accent);
 } 

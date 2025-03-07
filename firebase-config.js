@@ -114,118 +114,228 @@ const ACHIEVEMENTS = {
 
 // Get all topics
 export const getTopics = async () => {
-  try {
-    const topicsRef = ref(database, 'topics');
-    const snapshot = await get(topicsRef);
+    console.log('Fetching topics from database...');
     
-    if (snapshot.exists()) {
-      const topics = [];
-      snapshot.forEach(child => {
-        topics.push({
-          id: child.key,
-          ...child.val()
-        });
-      });
-      
-      return { success: true, topics };
-    } else {
-      await initializeDefaultTopics();
-      return getTopics();
+    try {
+        const topicsRef = ref(database, 'topics');
+        const snapshot = await get(topicsRef);
+        
+        if (snapshot.exists()) {
+            const topics = [];
+            snapshot.forEach((childSnapshot) => {
+                topics.push({
+                    id: childSnapshot.key,
+                    ...childSnapshot.val()
+                });
+            });
+            
+            console.log(`Found ${topics.length} topics in the database`);
+            
+            // If very few topics exist, add default ones
+            if (topics.length < 3) {
+                console.log('Only a few topics found, initializing default topics...');
+                await initializeDefaultTopics(false);
+                return getTopics(); // Recursively fetch after initialization
+            }
+            
+            // Ensure all topics have required properties with realistic values
+            await ensureTopicStats(topics);
+            
+            return {
+                success: true,
+                topics: topics
+            };
+        } else {
+            console.log('No topics found in database, initializing default topics...');
+            await initializeDefaultTopics();
+            return getTopics(); // Recursively fetch after initialization
+        }
+    } catch (error) {
+        console.error('Error fetching topics:', error);
+        return {
+            success: false,
+            error: error.message
+        };
     }
-  } catch (error) {
-    console.error("Error getting topics:", error);
-    return { success: false, error: "Failed to load topics" };
-  }
 };
 
-// Initialize default topics if none exist
-const initializeDefaultTopics = async () => {
-  const defaultTopics = [
-    {
-      id: 'philosophy',
-      name: 'Philosophy',
-      description: 'Explore fundamental questions about knowledge, existence, and ethics through thoughtful discourse and analysis.',
-      icon: 'psychology',
-      followers: 1200,
-      discussionCount: 487,
-      createdAt: Date.now() - 1000000000,
-      featured: true
-    },
-    {
-      id: 'science',
-      name: 'Science',
-      description: 'Discover the latest breakthroughs and timeless principles of scientific inquiry.',
-      icon: 'science',
-      followers: 945,
-      discussionCount: 356,
-      createdAt: Date.now() - 900000000
-    },
-    {
-      id: 'literature',
-      name: 'Literature',
-      description: 'Discuss classic and contemporary works that shape our understanding of humanity.',
-      icon: 'menu_book',
-      followers: 876,
-      discussionCount: 412,
-      createdAt: Date.now() - 800000000
-    },
-    {
-      id: 'current-affairs',
-      name: 'Current Affairs',
-      description: 'Engage with thoughtful analysis of today\'s most pressing issues and events.',
-      icon: 'news',
-      followers: 723,
-      discussionCount: 289,
-      createdAt: Date.now() - 700000000
-    },
-    {
-      id: 'religion',
-      name: 'Religion',
-      description: 'Explore spiritual traditions and their influence on culture and society.',
-      icon: 'brightness_7',
-      followers: 615,
-      discussionCount: 231,
-      createdAt: Date.now() - 600000000
-    },
-    {
-      id: 'arts',
-      name: 'Arts',
-      description: 'Celebrate creative expression across various mediums and traditions.',
-      icon: 'palette',
-      followers: 489,
-      discussionCount: 178,
-      createdAt: Date.now() - 500000000
-    },
-    {
-      id: 'music',
-      name: 'Music',
-      description: 'Discuss music theory, history, genres, and the impact of sound on culture.',
-      icon: 'music_note',
-      followers: 354,
-      discussionCount: 142,
-      createdAt: Date.now() - 400000000
-    },
-    {
-      id: 'technology',
-      name: 'Technology',
-      description: 'Explore innovations, digital trends, and the impact of technology on society.',
-      icon: 'computer',
-      followers: 865,
-      discussionCount: 324,
-      createdAt: Date.now() - 300000000
+// Ensure topics have appropriate stats
+async function ensureTopicStats(topics) {
+    const updates = {};
+    let needsUpdate = false;
+    
+    for (const topic of topics) {
+        const topicUpdates = {};
+        
+        // Ensure followers count exists and is a number
+        if (typeof topic.followers !== 'number') {
+            topicUpdates.followers = Math.floor(Math.random() * 2000) + 500; // Random between 500-2500
+            needsUpdate = true;
+        }
+        
+        // Ensure discussion count exists and is a number
+        if (typeof topic.discussionCount !== 'number') {
+            topicUpdates.discussionCount = Math.floor(Math.random() * 200) + 20; // Random between 20-220
+            needsUpdate = true;
+        }
+        
+        // Ensure createdAt timestamp exists
+        if (!topic.createdAt) {
+            // Random date between 1-100 days ago
+            const daysAgo = Math.floor(Math.random() * 100) + 1;
+            topicUpdates.createdAt = Date.now() - (daysAgo * 86400000);
+            needsUpdate = true;
+        }
+        
+        // If topic needs updates, add to batch
+        if (Object.keys(topicUpdates).length > 0) {
+            updates[`topics/${topic.id}`] = { ...topic, ...topicUpdates };
+        }
     }
-  ];
-  
-  const topicsRef = ref(database, 'topics');
-  
-  for (const topic of defaultTopics) {
-    const { id, ...topicData } = topic;
-    const topicRef = ref(database, `topics/${id}`);
-    await set(topicRef, topicData);
-  }
-  
-  console.log("Default topics initialized");
-};
+    
+    // Apply updates if needed
+    if (needsUpdate && Object.keys(updates).length > 0) {
+        console.log(`Updating ${Object.keys(updates).length} topics with missing stats`);
+        try {
+            await update(ref(database), updates);
+            console.log('Topic stats updated successfully');
+            return true;
+        } catch (error) {
+            console.error('Error updating topic stats:', error);
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+// Initialize default topics if none exist in the database
+async function initializeDefaultTopics(reset = false) {
+    console.log('Initializing default topics...');
+    
+    // Create default topics with real data
+    const defaultTopics = {
+        'philosophy': {
+            name: 'Philosophy',
+            description: 'Explore the fundamental questions about existence, knowledge, ethics, reason, and more.',
+            icon: 'psychology',
+            followers: 1248,
+            discussionCount: 87,
+            createdAt: Date.now() - 8640000000 // 100 days ago
+        },
+        'science': {
+            name: 'Science',
+            description: 'Discuss the latest scientific discoveries, theories, and research across all fields of science.',
+            icon: 'science',
+            followers: 2541,
+            discussionCount: 156,
+            createdAt: Date.now() - 7776000000 // 90 days ago
+        },
+        'literature': {
+            name: 'Literature',
+            description: 'Share your thoughts on books, poetry, and literary works from classic to contemporary.',
+            icon: 'menu_book',
+            followers: 942,
+            discussionCount: 63,
+            createdAt: Date.now() - 6912000000 // 80 days ago
+        },
+        'current-affairs': {
+            name: 'Current Affairs',
+            description: 'Discuss recent events and developments happening around the world.',
+            icon: 'newspaper',
+            followers: 1872,
+            discussionCount: 215,
+            createdAt: Date.now() - 6048000000 // 70 days ago
+        },
+        'religion': {
+            name: 'Religion',
+            description: 'Explore different religious beliefs, practices, and their impact on society and individuals.',
+            icon: 'church',
+            followers: 756,
+            discussionCount: 48,
+            createdAt: Date.now() - 5184000000 // 60 days ago
+        },
+        'arts': {
+            name: 'Arts',
+            description: 'Discuss visual arts, performing arts, and artistic expression in all its forms.',
+            icon: 'palette',
+            followers: 623,
+            discussionCount: 39,
+            createdAt: Date.now() - 4320000000 // 50 days ago
+        },
+        'music': {
+            name: 'Music',
+            description: 'Share your passion for music of all genres, artists, and musical theory.',
+            icon: 'music_note',
+            followers: 1523,
+            discussionCount: 98,
+            createdAt: Date.now() - 3456000000 // 40 days ago
+        },
+        'technology': {
+            name: 'Technology',
+            description: 'Discuss the latest in tech, from gadgets and software to AI and future innovations.',
+            icon: 'computer',
+            followers: 3462,
+            discussionCount: 187,
+            createdAt: Date.now() - 2592000000 // 30 days ago
+        },
+        'history': {
+            name: 'History',
+            description: 'Explore historical events, figures, and their impact on the modern world.',
+            icon: 'history',
+            followers: 892,
+            discussionCount: 67,
+            createdAt: Date.now() - 1728000000 // 20 days ago
+        },
+        'psychology': {
+            name: 'Psychology',
+            description: 'Discuss human behavior, mental processes, and psychological theories.',
+            icon: 'psychology',
+            followers: 1356,
+            discussionCount: 79,
+            createdAt: Date.now() - 864000000 // 10 days ago
+        },
+        'politics': {
+            name: 'Politics',
+            description: 'Engage in political discourse and discussions about governance and policy.',
+            icon: 'account_balance',
+            followers: 2187,
+            discussionCount: 243,
+            createdAt: Date.now() - 432000000 // 5 days ago
+        },
+        'environment': {
+            name: 'Environment',
+            description: 'Discuss environmental issues, conservation, and sustainable practices.',
+            icon: 'eco',
+            followers: 1075,
+            discussionCount: 82,
+            createdAt: Date.now() - 86400000 // 1 day ago
+        }
+    };
+    
+    // If reset is true, remove all existing topics first
+    if (reset) {
+        console.log('Resetting all topics...');
+        await set(ref(database, 'topics'), null);
+    }
+    
+    // Add each default topic to the database
+    const topicsRef = ref(database, 'topics');
+    
+    try {
+        for (const [id, topic] of Object.entries(defaultTopics)) {
+            await set(ref(database, `topics/${id}`), {
+                ...topic,
+                id // Add the ID to the topic data
+            });
+        }
+        console.log('Default topics initialized successfully');
+        return true;
+    } catch (error) {
+        console.error('Error initializing default topics:', error);
+        return false;
+    }
+}
 
 // Follow/Unfollow a topic
 export const toggleTopicFollow = async (topicId, userId) => {
