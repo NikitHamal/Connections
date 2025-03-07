@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat Interface</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body>
+    <div class="chat-container">
+        <!-- Left Sidebar -->
+        <aside class="chat-sidebar">
+            <div class="sidebar-header">
+                <button class="btn btn-primary new-chat-btn">
+                    <span class="material-symbols-rounded">add</span>
+                    New Chat
+                </button>
+            </div>
+            <div class="conversations-list">
+                <!-- Conversations will be dynamically added here -->
+            </div>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <span class="material-symbols-rounded user-icon">account_circle</span>
+                    <div class="user-details">
+                        <span class="user-name">Free Account</span>
+                        <span class="remaining-calls">50 calls remaining</span>
+                    </div>
+                </div>
+                <button class="theme-toggle">
+                    <span class="material-symbols-rounded light-icon">light_mode</span>
+                    <span class="material-symbols-rounded dark-icon">dark_mode</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="chat-main">
+            <div class="chat-header">
+                <button class="mobile-sidebar-toggle">
+                    <span class="material-symbols-rounded">menu</span>
+                </button>
+                <h1>AI Chat</h1>
+            </div>
+            
+            <div class="messages-container">
+                <!-- Messages will be dynamically added here -->
+            </div>
+
+            <div class="chat-input-container">
+                <div class="input-wrapper">
+                    <textarea 
+                        class="chat-input" 
+                        placeholder="Type your message here..."
+                        rows="1"
+                    ></textarea>
+                    <button class="send-button">
+                        <span class="material-symbols-rounded">send</span>
+                    </button>
+                </div>
+                <div class="input-features">
+                    <button class="feature-button">
+                        <span class="material-symbols-rounded">attach_file</span>
+                    </button>
+                    <button class="feature-button">
+                        <span class="material-symbols-rounded">mic</span>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="chat.js"></script>
+</body>
+</html> 

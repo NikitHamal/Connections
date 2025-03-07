@@ -25,6 +25,9 @@
     --dark-border: #3A3E45;
     --dark-text-primary: #E8E4D9;
     --dark-text-secondary: #B3AEA2;
+    --dark-accent: var(--oxford-blue);  
+    --dark-accent-secondary: #5BB98C; 
+    --dark-accent-tertiary: #F0C14B; 
     
     /* Current Theme Colors */
     --background: var(--primary-cream);
@@ -74,6 +77,9 @@
     --text-primary: var(--dark-text-primary);
     --text-secondary: var(--dark-text-secondary);
     --border: var(--dark-border);
+    --accent: var(--dark-accent);
+    --accent-secondary: var(--dark-accent-secondary);
+    --accent-tertiary: var(--dark-accent-tertiary);
 }
 
 .dark-mode .floating-card {
@@ -90,7 +96,13 @@
 
 .dark-mode .btn-primary {
     background-color: var(--oxford-blue);
+    color: white;
     box-shadow: 0 0 15px rgba(0, 33, 71, 0.5);
+}
+
+.dark-mode .btn-primary:hover {
+    background-color: #00326B;  /* Slightly darker oxford blue on hover */
+    box-shadow: 0 0 20px rgba(0, 33, 71, 0.6);
 }
 
 .dark-mode .btn-outline {
@@ -98,13 +110,17 @@
     color: var(--dark-text-primary);
 }
 
+.dark-mode .btn-outline:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
 /* Fix icons in dark mode */
 .dark-mode .material-symbols-rounded {
-    color: var(--primary-white);
+    color: var(--dark-text-primary);
 }
 
 .dark-mode .feature-icon {
-    color: var(--parchment-gold);
+    color: var(--dark-accent-tertiary);
 }
 
 .dark-mode .theme-toggle {
@@ -118,6 +134,10 @@
 
 .dark-mode .topic-icon {
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .topic-icon .material-symbols-rounded {
+    color: var(--dark-text-primary);
 }
 
 .dark-mode .mobile-menu-toggle {
@@ -957,14 +977,93 @@ footer {
 }
 
 .dark-mode .nav-link:hover .indicator {
-    background-color: var(--parchment-gold);
+    background-color: var(--dark-accent-tertiary);
     transform: scale(1.2);
 }
 
 .dark-mode .nav-link.active .indicator {
-    background-color: var(--parchment-gold);
+    background-color: var(--dark-accent-tertiary);
 }
 
 .dark-mode .nav-link:hover {
-    color: var(--parchment-gold);
+    color: var(--dark-accent-tertiary);
+}
+
+.dark-mode .quote-mark {
+    color: var(--dark-accent-tertiary);
+}
+
+.dark-mode .footer-column a {
+    color: var(--dark-text-secondary);
+}
+
+.dark-mode .footer-column a:hover {
+    color: var(--dark-accent-tertiary);
+}
+
+.dark-mode .cta {
+    background-color: var(--oxford-blue);
+}
+
+.dark-mode .cta .btn-primary {
+    background-color: var(--dark-text-primary);
+    color: var(--oxford-blue);
+}
+
+.dark-mode .cta .btn-primary:hover {
+    background-color: white;
+}
+
+.dark-mode a {
+    color: #6A9BD8;  /* Lighter blue for better visibility on dark backgrounds */
+}
+
+.dark-mode a:hover {
+    color: var(--dark-accent-secondary);
+}
+
+.dark-mode .topic-tag {
+    background-color: var(--oxford-blue);
+    color: white;
+}
+
+.dark-mode .mobile-menu-overlay {
+    background-color: rgba(18, 24, 32, 0.95);
+}
+
+.dark-mode .btn-secondary {
+    color: var(--dark-text-primary);
+}
+
+.dark-mode .btn-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .footer-bottom {
+    border-top: 1px solid var(--dark-border);
+}
+
+/* Fix for dark mode topic icons to ensure text is visible */
+.dark-mode .philosophy-icon {
+    background-color: #2A5CA8;
+}
+
+.dark-mode .science-icon {
+    background-color: #4A8DAC;
+}
+
+.dark-mode .literature-icon {
+    background-color: #8C6048;
+}
+
+.dark-mode .current-affairs-icon {
+    background-color: #E08A3C;
+}
+
+.dark-mode .religion-icon {
+    background-color: var(--dark-accent-tertiary);
+}
+
+.dark-mode .arts-icon {
+    background-color: #4A9A6A;
 } 

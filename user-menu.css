@@ -1,0 +1,291 @@
+/* User Menu Component Styles */
+.user-menu-container {
+    position: relative;
+    display: none; /* Hidden by default, shown when logged in */
+}
+
+.user-menu-trigger {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: rgba(var(--accent-rgb), 0.1);
+    border-radius: 24px;
+    padding: 6px 16px 6px 6px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s ease;
+    color: var(--text-primary);
+    font-family: 'Poppins', sans-serif;
+}
+
+.user-menu-trigger:hover {
+    background-color: rgba(var(--accent-rgb), 0.15);
+    transform: translateY(-2px);
+}
+
+.user-avatar-small {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid var(--accent);
+}
+
+.user-avatar-small img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.user-name-small {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.user-menu-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 240px;
+    background-color: var(--surface);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+}
+
+.user-menu-container.active .user-menu-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.user-menu-header {
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.user-menu-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid var(--accent);
+}
+
+.user-menu-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.user-menu-info {
+    flex: 1;
+}
+
+.user-menu-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.user-menu-email {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.user-menu-items {
+    list-style: none;
+    padding: var(--spacing-sm) 0;
+}
+
+.user-menu-item {
+    padding: 0;
+}
+
+.user-menu-link {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+.user-menu-link:hover {
+    background-color: rgba(var(--accent-rgb), 0.05);
+}
+
+.user-menu-link.active {
+    background-color: rgba(var(--accent-rgb), 0.1);
+    font-weight: 500;
+}
+
+.user-menu-link .material-symbols-rounded {
+    font-size: 20px;
+    color: var(--text-secondary);
+}
+
+.user-menu-divider {
+    height: 1px;
+    background-color: var(--border);
+    margin: var(--spacing-xs) 0;
+}
+
+.logout-link {
+    color: var(--error) !important;
+}
+
+.logout-link .material-symbols-rounded {
+    color: var(--error) !important;
+}
+
+/* Dark Mode Styles */
+.dark-mode .user-menu-trigger {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary-dark);
+}
+
+.dark-mode .user-menu-trigger:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.dark-mode .user-avatar-small {
+    border-color: var(--accent-light);
+}
+
+.dark-mode .user-menu-dropdown {
+    background-color: var(--dark-surface);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .user-menu-header {
+    border-color: var(--dark-border);
+}
+
+.dark-mode .user-menu-avatar {
+    border-color: var(--accent-light);
+}
+
+.dark-mode .user-menu-name {
+    color: var(--text-primary-dark);
+}
+
+.dark-mode .user-menu-email {
+    color: var(--text-secondary-dark);
+}
+
+.dark-mode .user-menu-link {
+    color: var(--text-primary-dark);
+}
+
+.dark-mode .user-menu-link:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .user-menu-link.active {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .user-menu-link .material-symbols-rounded {
+    color: var(--text-secondary-dark);
+}
+
+.dark-mode .user-menu-divider {
+    background-color: var(--dark-border);
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    .user-menu-trigger {
+        padding: 6px;
+    }
+    
+    .user-name-small {
+        display: none;
+    }
+    
+    .user-menu-dropdown {
+        width: 280px;
+        right: -10px;
+    }
+}
+
+/* Write Button Styles */
+.write-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 24px;
+    padding: 8px 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+}
+
+.write-button:hover {
+    background-color: var(--accent-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.write-button .material-symbols-rounded {
+    font-size: 20px;
+}
+
+.dark-mode .write-button {
+    background-color: var(--accent-light);
+    color: var(--dark-background);
+}
+
+.dark-mode .write-button:hover {
+    background-color: var(--accent-light);
+    opacity: 0.9;
+}
+
+/* Fix for theme toggle in dark mode */
+.theme-toggle {
+    position: relative;
+    overflow: hidden;
+}
+
+.theme-toggle .light-icon,
+.theme-toggle .dark-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.light-mode .light-icon {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(0);
+}
+
+.light-mode .dark-icon {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.dark-mode .light-icon {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(-90deg);
+}
+
+.dark-mode .dark-icon {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(0);
+} 

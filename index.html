@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connections | A Community for Writers & Readers</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="user-menu.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -34,8 +35,60 @@
                 <span class="material-symbols-rounded light-icon">light_mode</span>
                 <span class="material-symbols-rounded dark-icon">dark_mode</span>
             </button>
-            <a href="signin.html" class="btn btn-secondary">Log in</a>
-            <a href="signup.html" class="btn btn-primary">Sign up</a>
+            
+            <!-- Auth Buttons (shown when logged out) -->
+            <div class="auth-buttons">
+                <a href="signin.html" class="btn btn-secondary">Log in</a>
+                <a href="signup.html" class="btn btn-primary">Sign up</a>
+            </div>
+            
+            <!-- User Menu (shown when logged in) -->
+            <div class="user-menu-container">
+                <button class="user-menu-trigger">
+                    <div class="user-avatar-small">
+                        <img src="https://via.placeholder.com/150" alt="User avatar">
+                    </div>
+                    <span class="user-name-small">User</span>
+                </button>
+                <div class="user-menu-dropdown">
+                    <div class="user-menu-header">
+                        <div class="user-menu-avatar">
+                            <img src="https://via.placeholder.com/150" alt="User avatar">
+                        </div>
+                        <div class="user-menu-info">
+                            <div class="user-menu-name">User</div>
+                            <div class="user-menu-email">user@example.com</div>
+                        </div>
+                    </div>
+                    <ul class="user-menu-items">
+                        <li class="user-menu-item">
+                            <a href="profile.html" class="user-menu-link">
+                                <span class="material-symbols-rounded">person</span>
+                                Profile
+                            </a>
+                        </li>
+                        <li class="user-menu-item">
+                            <a href="write.html" class="user-menu-link">
+                                <span class="material-symbols-rounded">edit</span>
+                                Write
+                            </a>
+                        </li>
+                        <li class="user-menu-item">
+                            <a href="settings.html" class="user-menu-link">
+                                <span class="material-symbols-rounded">settings</span>
+                                Settings
+                            </a>
+                        </li>
+                        <li class="user-menu-divider"></li>
+                        <li class="user-menu-item">
+                            <a href="#" class="user-menu-link logout-link">
+                                <span class="material-symbols-rounded">logout</span>
+                                Log out
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </header>
     <div class="mobile-menu-overlay"></div>
@@ -46,8 +99,8 @@
                 <h1>Connect with minds that inspire</h1>
                 <p class="hero-subtitle">A community where writers and readers come together to explore ideas, share stories, and engage in meaningful conversations.</p>
                 <div class="hero-actions">
-                    <button class="btn btn-primary btn-large">Join Connections</button>
-                    <button class="btn btn-outline btn-large">Explore Topics</button>
+                    <a href="signup.html" class="btn btn-primary btn-large">Join Connections</a>
+                    <a href="topics.html" class="btn btn-outline btn-large">Explore Topics</a>
                 </div>
             </div>
             <div class="hero-visual">
@@ -194,6 +247,11 @@
         </div>
     </footer>
 
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <script src="script.js"></script>
+    <script src="firebase-init.js"></script>
+    <script src="user-menu.js"></script>
 </body>
 </html> 

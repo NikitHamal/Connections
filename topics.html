@@ -24,10 +24,10 @@
         <nav>
             <ul>
                 <li><a href="index.html" class="nav-link"><span class="indicator"></span>Home</a></li>
-                <li><a href="explore.html" class="nav-link"><span class="indicator"></span>Explore</a></li>
+                <li><a href="explore.html" class="nav-link"><span class="indicator"></span>Discussions</a></li>
                 <li><a href="topics.html" class="nav-link active"><span class="indicator"></span>Topics</a></li>
-                <li><a href="write.html" class="nav-link"><span class="indicator"></span>Write</a></li>
-                <li><a href="index.html#about" class="nav-link"><span class="indicator"></span>About</a></li>
+                <li><a href="write.html" class="nav-link"><span class="indicator"></span>New Post</a></li>
+                <li><a href="about.html" class="nav-link"><span class="indicator"></span>About</a></li>
             </ul>
         </nav>
         <div class="header-actions">
@@ -35,6 +35,10 @@
                 <span class="material-symbols-rounded light-icon">light_mode</span>
                 <span class="material-symbols-rounded dark-icon">dark_mode</span>
             </button>
+            <a href="notifications.html" class="btn btn-icon notifications-btn">
+                <span class="material-symbols-rounded">notifications</span>
+                <span class="notification-badge">0</span>
+            </a>
             <a href="signin.html" class="btn btn-secondary">Log in</a>
             <a href="signup.html" class="btn btn-primary">Sign up</a>
         </div>
@@ -45,12 +49,12 @@
         <div class="topics-container">
             <div class="topics-header">
                 <div class="topics-title">
-                    <h1>Explore Topics</h1>
-                    <p class="topics-subtitle">Discover communities and conversations around subjects that interest you</p>
+                    <h1>Discussion Topics</h1>
+                    <p class="topics-subtitle">Join conversations around subjects that interest you</p>
                 </div>
-                <button class="btn btn-primary create-topic-btn">
+                <button class="btn btn-primary suggest-topic-btn">
                     <span class="material-symbols-rounded">add</span>
-                    Create Topic
+                    Suggest Topic
                 </button>
             </div>
             
@@ -64,212 +68,285 @@
                     <select id="sort-select">
                         <option value="popular">Most Popular</option>
                         <option value="newest">Newest</option>
-                        <option value="posts">Most Posts</option>
+                        <option value="posts">Most Discussions</option>
                         <option value="alphabetical">Alphabetical</option>
                     </select>
                 </div>
             </div>
             
-            <div class="topics-grid">
+            <div class="topics-list">
                 <!-- Featured Topic -->
-                <div class="topic-card featured-topic">
-                    <div class="topic-card-content">
-                        <div class="topic-icon philosophy-icon large-icon">
-                            <span class="material-symbols-rounded">psychology</span>
-                        </div>
-                        <div class="topic-info">
+                <div class="topic-item featured-topic">
+                    <div class="topic-icon philosophy-icon">
+                        <span class="material-symbols-rounded">psychology</span>
+                    </div>
+                    <div class="topic-details">
+                        <div class="topic-header">
                             <h2>Philosophy</h2>
-                            <p>Explore fundamental questions about knowledge, existence, and ethics through thoughtful discourse and analysis.</p>
-                            <div class="topic-stats">
-                                <div class="stat">
-                                    <span class="material-symbols-rounded">description</span>
-                                    <span>487 Posts</span>
-                                </div>
-                                <div class="stat">
-                                    <span class="material-symbols-rounded">groups</span>
-                                    <span>1.2K Followers</span>
-                                </div>
+                            <button class="btn btn-outline follow-btn">
+                                <span class="material-symbols-rounded">add</span>
+                                Follow
+                            </button>
+                        </div>
+                        <p class="topic-description">Explore fundamental questions about knowledge, existence, and ethics through thoughtful discourse and analysis.</p>
+                        <div class="topic-stats">
+                            <div class="stat">
+                                <span class="material-symbols-rounded">forum</span>
+                                <span>487 Discussions</span>
+                            </div>
+                            <div class="stat">
+                                <span class="material-symbols-rounded">groups</span>
+                                <span>1.2K Followers</span>
+                            </div>
+                            <div class="topic-action">
+                                <a href="explore.html?topic=philosophy" class="btn btn-primary view-discussions-btn">
+                                    View Discussions
+                                </a>
                             </div>
                         </div>
                     </div>
-                    <div class="topic-card-actions">
-                        <button class="btn btn-outline follow-btn">
-                            <span class="material-symbols-rounded">add</span>
-                            Follow
-                        </button>
-                        <a href="topic-detail.html?topic=philosophy" class="btn btn-primary view-btn">
-                            <span class="material-symbols-rounded">visibility</span>
-                            View Posts
-                        </a>
-                    </div>
                 </div>
                 
-                <!-- Regular Topics Grid -->
-                <div class="topic-card">
+                <!-- Regular Topics -->
+                <div class="topic-item">
                     <div class="topic-icon science-icon">
                         <span class="material-symbols-rounded">science</span>
                     </div>
-                    <h3>Science</h3>
-                    <p>Discover the latest breakthroughs and timeless principles of scientific inquiry.</p>
-                    <div class="topic-stats">
-                        <div class="stat">
-                            <span class="material-symbols-rounded">description</span>
-                            <span>356 Posts</span>
+                    <div class="topic-details">
+                        <div class="topic-header">
+                            <h3>Science</h3>
+                            <button class="btn btn-outline follow-btn">
+                                <span class="material-symbols-rounded">add</span>
+                                Follow
+                            </button>
                         </div>
-                    </div>
-                    <div class="topic-card-actions">
-                        <button class="btn btn-outline follow-btn">Follow</button>
-                        <a href="topic-detail.html?topic=science" class="btn btn-primary view-btn">View</a>
+                        <p class="topic-description">Discover the latest breakthroughs and timeless principles of scientific inquiry.</p>
+                        <div class="topic-stats">
+                            <div class="stat">
+                                <span class="material-symbols-rounded">forum</span>
+                                <span>356 Discussions</span>
+                            </div>
+                            <div class="stat">
+                                <span class="material-symbols-rounded">groups</span>
+                                <span>945 Followers</span>
+                            </div>
+                            <div class="topic-action">
+                                <a href="explore.html?topic=science" class="btn btn-primary view-discussions-btn">
+                                    View Discussions
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="topic-card">
+                <div class="topic-item">
                     <div class="topic-icon literature-icon">
                         <span class="material-symbols-rounded">menu_book</span>
                     </div>
-                    <h3>Literature</h3>
-                    <p>Discuss classic and contemporary works that shape our understanding of humanity.</p>
-                    <div class="topic-stats">
-                        <div class="stat">
-                            <span class="material-symbols-rounded">description</span>
-                            <span>412 Posts</span>
+                    <div class="topic-details">
+                        <div class="topic-header">
+                            <h3>Literature</h3>
+                            <button class="btn btn-outline follow-btn followed">
+                                <span class="material-symbols-rounded">check</span>
+                                Following
+                            </button>
                         </div>
-                    </div>
-                    <div class="topic-card-actions">
-                        <button class="btn btn-outline follow-btn followed">Following</button>
-                        <a href="topic-detail.html?topic=literature" class="btn btn-primary view-btn">View</a>
+                        <p class="topic-description">Discuss classic and contemporary works that shape our understanding of humanity.</p>
+                        <div class="topic-stats">
+                            <div class="stat">
+                                <span class="material-symbols-rounded">forum</span>
+                                <span>412 Discussions</span>
+                            </div>
+                            <div class="stat">
+                                <span class="material-symbols-rounded">groups</span>
+                                <span>876 Followers</span>
+                            </div>
+                            <div class="topic-action">
+                                <a href="explore.html?topic=literature" class="btn btn-primary view-discussions-btn">
+                                    View Discussions
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="topic-card">
+                <div class="topic-item">
                     <div class="topic-icon current-affairs-icon">
                         <span class="material-symbols-rounded">news</span>
                     </div>
-                    <h3>Current Affairs</h3>
-                    <p>Engage with thoughtful analysis of today's most pressing issues and events.</p>
-                    <div class="topic-stats">
-                        <div class="stat">
-                            <span class="material-symbols-rounded">description</span>
-                            <span>289 Posts</span>
+                    <div class="topic-details">
+                        <div class="topic-header">
+                            <h3>Current Affairs</h3>
+                            <button class="btn btn-outline follow-btn">
+                                <span class="material-symbols-rounded">add</span>
+                                Follow
+                            </button>
                         </div>
-                    </div>
-                    <div class="topic-card-actions">
-                        <button class="btn btn-outline follow-btn">Follow</button>
-                        <a href="topic-detail.html?topic=current-affairs" class="btn btn-primary view-btn">View</a>
+                        <p class="topic-description">Engage with thoughtful analysis of today's most pressing issues and events.</p>
+                        <div class="topic-stats">
+                            <div class="stat">
+                                <span class="material-symbols-rounded">forum</span>
+                                <span>289 Discussions</span>
+                            </div>
+                            <div class="stat">
+                                <span class="material-symbols-rounded">groups</span>
+                                <span>723 Followers</span>
+                            </div>
+                            <div class="topic-action">
+                                <a href="explore.html?topic=current-affairs" class="btn btn-primary view-discussions-btn">
+                                    View Discussions
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="topic-card">
+                <div class="topic-item">
                     <div class="topic-icon religion-icon">
                         <span class="material-symbols-rounded">brightness_7</span>
                     </div>
-                    <h3>Religion</h3>
-                    <p>Explore spiritual traditions and their influence on culture and society.</p>
-                    <div class="topic-stats">
-                        <div class="stat">
-                            <span class="material-symbols-rounded">description</span>
-                            <span>231 Posts</span>
+                    <div class="topic-details">
+                        <div class="topic-header">
+                            <h3>Religion</h3>
+                            <button class="btn btn-outline follow-btn">
+                                <span class="material-symbols-rounded">add</span>
+                                Follow
+                            </button>
                         </div>
-                    </div>
-                    <div class="topic-card-actions">
-                        <button class="btn btn-outline follow-btn">Follow</button>
-                        <a href="topic-detail.html?topic=religion" class="btn btn-primary view-btn">View</a>
+                        <p class="topic-description">Explore spiritual traditions and their influence on culture and society.</p>
+                        <div class="topic-stats">
+                            <div class="stat">
+                                <span class="material-symbols-rounded">forum</span>
+                                <span>231 Discussions</span>
+                            </div>
+                            <div class="stat">
+                                <span class="material-symbols-rounded">groups</span>
+                                <span>615 Followers</span>
+                            </div>
+                            <div class="topic-action">
+                                <a href="explore.html?topic=religion" class="btn btn-primary view-discussions-btn">
+                                    View Discussions
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="topic-card">
+                <div class="topic-item">
                     <div class="topic-icon arts-icon">
                         <span class="material-symbols-rounded">palette</span>
                     </div>
-                    <h3>Arts</h3>
-                    <p>Celebrate creative expression across various mediums and traditions.</p>
-                    <div class="topic-stats">
-                        <div class="stat">
-                            <span class="material-symbols-rounded">description</span>
-                            <span>178 Posts</span>
+                    <div class="topic-details">
+                        <div class="topic-header">
+                            <h3>Arts</h3>
+                            <button class="btn btn-outline follow-btn followed">
+                                <span class="material-symbols-rounded">check</span>
+                                Following
+                            </button>
                         </div>
-                    </div>
-                    <div class="topic-card-actions">
-                        <button class="btn btn-outline follow-btn followed">Following</button>
-                        <a href="topic-detail.html?topic=arts" class="btn btn-primary view-btn">View</a>
+                        <p class="topic-description">Celebrate creative expression across various mediums and traditions.</p>
+                        <div class="topic-stats">
+                            <div class="stat">
+                                <span class="material-symbols-rounded">forum</span>
+                                <span>178 Discussions</span>
+                            </div>
+                            <div class="stat">
+                                <span class="material-symbols-rounded">groups</span>
+                                <span>489 Followers</span>
+                            </div>
+                            <div class="topic-action">
+                                <a href="explore.html?topic=arts" class="btn btn-primary view-discussions-btn">
+                                    View Discussions
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="topic-card">
+                <div class="topic-item">
                     <div class="topic-icon music-icon">
                         <span class="material-symbols-rounded">music_note</span>
                     </div>
-                    <h3>Music</h3>
-                    <p>Discuss music theory, history, genres, and the impact of sound on culture.</p>
-                    <div class="topic-stats">
-                        <div class="stat">
-                            <span class="material-symbols-rounded">description</span>
-                            <span>142 Posts</span>
+                    <div class="topic-details">
+                        <div class="topic-header">
+                            <h3>Music</h3>
+                            <button class="btn btn-outline follow-btn">
+                                <span class="material-symbols-rounded">add</span>
+                                Follow
+                            </button>
                         </div>
-                    </div>
-                    <div class="topic-card-actions">
-                        <button class="btn btn-outline follow-btn">Follow</button>
-                        <a href="topic-detail.html?topic=music" class="btn btn-primary view-btn">View</a>
+                        <p class="topic-description">Discuss music theory, history, genres, and the impact of sound on culture.</p>
+                        <div class="topic-stats">
+                            <div class="stat">
+                                <span class="material-symbols-rounded">forum</span>
+                                <span>142 Discussions</span>
+                            </div>
+                            <div class="stat">
+                                <span class="material-symbols-rounded">groups</span>
+                                <span>354 Followers</span>
+                            </div>
+                            <div class="topic-action">
+                                <a href="explore.html?topic=music" class="btn btn-primary view-discussions-btn">
+                                    View Discussions
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="topic-card">
+                <div class="topic-item">
                     <div class="topic-icon technology-icon">
                         <span class="material-symbols-rounded">computer</span>
                     </div>
-                    <h3>Technology</h3>
-                    <p>Explore innovations, digital trends, and the impact of technology on society.</p>
-                    <div class="topic-stats">
-                        <div class="stat">
-                            <span class="material-symbols-rounded">description</span>
-                            <span>324 Posts</span>
+                    <div class="topic-details">
+                        <div class="topic-header">
+                            <h3>Technology</h3>
+                            <button class="btn btn-outline follow-btn">
+                                <span class="material-symbols-rounded">add</span>
+                                Follow
+                            </button>
                         </div>
-                    </div>
-                    <div class="topic-card-actions">
-                        <button class="btn btn-outline follow-btn">Follow</button>
-                        <a href="topic-detail.html?topic=technology" class="btn btn-primary view-btn">View</a>
-                    </div>
-                </div>
-                
-                <div class="topic-card">
-                    <div class="topic-icon history-icon">
-                        <span class="material-symbols-rounded">history_edu</span>
-                    </div>
-                    <h3>History</h3>
-                    <p>Examine the past to understand the present and shape the future.</p>
-                    <div class="topic-stats">
-                        <div class="stat">
-                            <span class="material-symbols-rounded">description</span>
-                            <span>201 Posts</span>
+                        <p class="topic-description">Explore innovations, digital trends, and the impact of technology on society.</p>
+                        <div class="topic-stats">
+                            <div class="stat">
+                                <span class="material-symbols-rounded">forum</span>
+                                <span>324 Discussions</span>
+                            </div>
+                            <div class="stat">
+                                <span class="material-symbols-rounded">groups</span>
+                                <span>865 Followers</span>
+                            </div>
+                            <div class="topic-action">
+                                <a href="explore.html?topic=technology" class="btn btn-primary view-discussions-btn">
+                                    View Discussions
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                    <div class="topic-card-actions">
-                        <button class="btn btn-outline follow-btn">Follow</button>
-                        <a href="topic-detail.html?topic=history" class="btn btn-primary view-btn">View</a>
                     </div>
                 </div>
             </div>
             
             <div class="topics-pagination">
-                <button class="pagination-btn prev-btn" disabled>
-                    <span class="material-symbols-rounded">arrow_back</span>
+                <button class="pagination-btn" disabled>
+                    <span class="material-symbols-rounded">chevron_left</span>
                 </button>
                 <button class="pagination-btn active">1</button>
                 <button class="pagination-btn">2</button>
                 <button class="pagination-btn">3</button>
                 <span class="pagination-ellipsis">...</span>
-                <button class="pagination-btn">8</button>
-                <button class="pagination-btn next-btn">
-                    <span class="material-symbols-rounded">arrow_forward</span>
+                <button class="pagination-btn">10</button>
+                <button class="pagination-btn">
+                    <span class="material-symbols-rounded">chevron_right</span>
                 </button>
             </div>
         </div>
     </main>
-    
-    <div class="modal new-topic-modal">
+
+    <!-- Suggest Topic Modal -->
+    <div class="modal" id="suggest-topic-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Create New Topic</h3>
+                <h3>Suggest a New Topic</h3>
                 <button class="close-modal">
                     <span class="material-symbols-rounded">close</span>
                 </button>
@@ -280,7 +357,7 @@
                     <input type="text" id="topic-name" placeholder="Enter topic name" maxlength="30">
                 </div>
                 <div class="form-group">
-                    <label for="topic-description">Description</label>
+                    <label for="topic-description">Brief Description</label>
                     <textarea id="topic-description" placeholder="Describe what this topic covers" maxlength="150"></textarea>
                 </div>
                 <div class="form-group">
@@ -294,16 +371,12 @@
                         <button class="icon-option" data-icon="palette"><span class="material-symbols-rounded">palette</span></button>
                         <button class="icon-option" data-icon="music_note"><span class="material-symbols-rounded">music_note</span></button>
                         <button class="icon-option" data-icon="public"><span class="material-symbols-rounded">public</span></button>
-                        <button class="icon-option" data-icon="computer"><span class="material-symbols-rounded">computer</span></button>
-                        <button class="icon-option" data-icon="history_edu"><span class="material-symbols-rounded">history_edu</span></button>
-                        <button class="icon-option" data-icon="eco"><span class="material-symbols-rounded">eco</span></button>
-                        <button class="icon-option" data-icon="restaurant"><span class="material-symbols-rounded">restaurant</span></button>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-outline cancel-topic">Cancel</button>
-                <button class="btn btn-primary create-topic">Create Topic</button>
+                <button class="btn btn-primary suggest-topic">Submit Suggestion</button>
             </div>
         </div>
     </div>

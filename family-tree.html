@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Family Tree Creator | Connections</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="family-tree.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="firebase-init.js"></script>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <main class="container">
+        <section class="family-tree-header">
+            <h1>Family Tree Creator</h1>
+            <p class="section-subtitle">Create, visualize, and share your family history</p>
+            
+            <div class="tree-actions">
+                <button id="new-tree-btn" class="btn btn-primary">
+                    <span class="material-symbols-rounded">add</span>
+                    New Tree
+                </button>
+                <button id="load-tree-btn" class="btn btn-outline">
+                    <span class="material-symbols-rounded">folder_open</span>
+                    Load Tree
+                </button>
+                <button id="save-tree-btn" class="btn btn-outline">
+                    <span class="material-symbols-rounded">save</span>
+                    Save Tree
+                </button>
+                <button id="share-tree-btn" class="btn btn-outline">
+                    <span class="material-symbols-rounded">share</span>
+                    Share
+                </button>
+                <button id="export-tree-btn" class="btn btn-outline">
+                    <span class="material-symbols-rounded">download</span>
+                    Export
+                </button>
+            </div>
+        </section>
+
+        <section class="family-tree-workspace">
+            <div class="workspace-sidebar">
+                <div class="sidebar-section">
+                    <h3>Tree Settings</h3>
+                    <div class="form-group">
+                        <label for="tree-name">Tree Name</label>
+                        <div class="custom-input">
+                            <input type="text" id="tree-name" placeholder="My Family Tree">
+                            <span class="input-icon material-symbols-rounded">edit</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="tree-description">Description</label>
+                        <div class="custom-textarea">
+                            <textarea id="tree-description" placeholder="A brief description of your family tree"></textarea>
+                            <span class="textarea-icon material-symbols-rounded">description</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="tree-privacy">Privacy</label>
+                        <div class="custom-select">
+                            <select id="tree-privacy">
+                                <option value="private">Private</option>
+                                <option value="shared">Shared with specific people</option>
+                                <option value="public">Public</option>
+                            </select>
+                            <span class="select-icon material-symbols-rounded">expand_more</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>Add Person</h3>
+                    <button id="add-person-btn" class="btn btn-secondary full-width">
+                        <span class="material-symbols-rounded">person_add</span>
+                        Add Person
+                    </button>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>Display Options</h3>
+                    <div class="form-group">
+                        <label for="layout-type">Layout</label>
+                        <div class="custom-select">
+                            <select id="layout-type">
+                                <option value="vertical">Vertical</option>
+                                <option value="horizontal">Horizontal</option>
+                                <option value="radial">Radial</option>
+                            </select>
+                            <span class="select-icon material-symbols-rounded">expand_more</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="theme-select">Theme</label>
+                        <div class="custom-select">
+                            <select id="theme-select">
+                                <option value="classic">Classic</option>
+                                <option value="modern">Modern</option>
+                                <option value="vintage">Vintage</option>
+                                <option value="minimal">Minimal</option>
+                            </select>
+                            <span class="select-icon material-symbols-rounded">expand_more</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>Tools</h3>
+                    <div class="tools-group">
+                        <div class="tools-row">
+                            <button class="tool-btn" id="select-btn" title="Select Tool">
+                                <span class="material-symbols-rounded">touch_app</span>
+                            </button>
+                            <button class="tool-btn" id="pan-btn" title="Pan Tool">
+                                <span class="material-symbols-rounded">pan_tool</span>
+                            </button>
+                            <div class="zoom-controls">
+                                <button class="tool-btn" id="zoom-in-btn" title="Zoom In">
+                                    <span class="material-symbols-rounded">zoom_in</span>
+                                </button>
+                                <div class="zoom-level">100%</div>
+                                <button class="tool-btn" id="zoom-out-btn" title="Zoom Out">
+                                    <span class="material-symbols-rounded">zoom_out</span>
+                                </button>
+                            </div>
+                            <button class="tool-btn" id="fit-screen-btn" title="Fit to Screen">
+                                <span class="material-symbols-rounded">fit_screen</span>
+                            </button>
+                        </div>
+                        <div class="tools-row">
+                            <div class="tool-group">
+                                <label>Layout</label>
+                                <div class="button-group">
+                                    <button class="tool-btn active" data-layout="vertical" title="Vertical Layout">
+                                        <span class="material-symbols-rounded">align_vertical_top</span>
+                                    </button>
+                                    <button class="tool-btn" data-layout="horizontal" title="Horizontal Layout">
+                                        <span class="material-symbols-rounded">align_horizontal_left</span>
+                                    </button>
+                                    <button class="tool-btn" data-layout="radial" title="Radial Layout">
+                                        <span class="material-symbols-rounded">radar</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tools-row">
+                            <div class="tool-group">
+                                <label>Display Options</label>
+                                <div class="checkbox-group">
+                                    <div class="custom-switch">
+                                        <input type="checkbox" id="show-photos" checked>
+                                        <label for="show-photos">
+                                            <span class="switch-track"></span>
+                                            <span class="switch-thumb"></span>
+                                            <span class="switch-text">Photos</span>
+                                        </label>
+                                    </div>
+                                    <div class="custom-switch">
+                                        <input type="checkbox" id="show-dates" checked>
+                                        <label for="show-dates">
+                                            <span class="switch-track"></span>
+                                            <span class="switch-thumb"></span>
+                                            <span class="switch-text">Dates</span>
+                                        </label>
+                                    </div>
+                                    <div class="custom-switch">
+                                        <input type="checkbox" id="show-locations" checked>
+                                        <label for="show-locations">
+                                            <span class="switch-track"></span>
+                                            <span class="switch-thumb"></span>
+                                            <span class="switch-text">Locations</span>
+                                        </label>
+                                    </div>
+                                    <div class="custom-switch">
+                                        <input type="checkbox" id="show-relationships" checked>
+                                        <label for="show-relationships">
+                                            <span class="switch-track"></span>
+                                            <span class="switch-thumb"></span>
+                                            <span class="switch-text">Relationships</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="workspace-main">
+                <div class="tree-canvas-container">
+                    <div id="tree-canvas" class="tree-canvas">
+                        <!-- Tree will be rendered here -->
+                        <div class="empty-state">
+                            <span class="material-symbols-rounded">family_history</span>
+                            <h3>Your family tree will appear here</h3>
+                            <p>Start by adding a person or loading an existing tree</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="workspace-details" id="person-details-panel">
+                <div class="panel-header">
+                    <h3>Person Details</h3>
+                    <button class="close-panel-btn">
+                        <span class="material-symbols-rounded">close</span>
+                    </button>
+                </div>
+                <div class="panel-content">
+                    <div class="empty-state">
+                        <span class="material-symbols-rounded">person</span>
+                        <p>Select a person to view or edit their details</p>
+                    </div>
+                    <!-- Person details form will be loaded here when a person is selected -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modals -->
+    <div class="modal" id="add-person-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Person</h3>
+                <button class="close-modal-btn">
+                    <span class="material-symbols-rounded">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="add-person-form">
+                    <div class="form-group">
+                        <label for="person-first-name">First Name*</label>
+                        <div class="custom-input">
+                            <input type="text" id="person-first-name" required>
+                            <span class="input-icon material-symbols-rounded">person</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="person-middle-name">Middle Name</label>
+                        <div class="custom-input">
+                            <input type="text" id="person-middle-name">
+                            <span class="input-icon material-symbols-rounded">person</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="person-last-name">Last Name*</label>
+                        <div class="custom-input">
+                            <input type="text" id="person-last-name" required>
+                            <span class="input-icon material-symbols-rounded">person</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="person-maiden-name">Maiden Name</label>
+                        <div class="custom-input">
+                            <input type="text" id="person-maiden-name">
+                            <span class="input-icon material-symbols-rounded">person</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="person-gender">Gender</label>
+                        <div class="custom-select">
+                            <select id="person-gender">
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                                <option value="unknown">Unknown</option>
+                            </select>
+                            <span class="select-icon material-symbols-rounded">expand_more</span>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="person-birth-date">Birth Date</label>
+                            <div class="custom-input">
+                                <input type="date" id="person-birth-date">
+                                <span class="input-icon material-symbols-rounded">calendar_today</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="person-birth-location">Birth Location</label>
+                            <div class="custom-input">
+                                <input type="text" id="person-birth-location">
+                                <span class="input-icon material-symbols-rounded">location_on</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="person-death-date">Death Date</label>
+                            <div class="custom-input">
+                                <input type="date" id="person-death-date">
+                                <span class="input-icon material-symbols-rounded">calendar_today</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="person-death-location">Death Location</label>
+                            <div class="custom-input">
+                                <input type="text" id="person-death-location">
+                                <span class="input-icon material-symbols-rounded">location_on</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="person-photo">Photo</label>
+                        <div class="custom-file-input">
+                            <input type="file" id="person-photo" accept="image/*">
+                            <label for="person-photo" class="file-input-label">
+                                <span class="material-symbols-rounded">upload_file</span>
+                                <span class="file-input-text">Choose a file</span>
+                            </label>
+                        </div>
+                        <div class="photo-preview" id="photo-preview"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="person-notes">Notes</label>
+                        <div class="custom-textarea">
+                            <textarea id="person-notes"></textarea>
+                            <span class="textarea-icon material-symbols-rounded">notes</span>
+                        </div>
+                    </div>
+                    <div class="form-group relationships-section">
+                        <h4>Relationships</h4>
+                        <div class="relationship-options">
+                            <button type="button" class="btn btn-outline btn-sm" id="add-parent-btn">
+                                <span class="material-symbols-rounded">family_restroom</span>
+                                Add Parent
+                            </button>
+                            <button type="button" class="btn btn-outline btn-sm" id="add-spouse-btn">
+                                <span class="material-symbols-rounded">favorite</span>
+                                Add Spouse
+                            </button>
+                            <button type="button" class="btn btn-outline btn-sm" id="add-child-btn">
+                                <span class="material-symbols-rounded">child_care</span>
+                                Add Child
+                            </button>
+                        </div>
+                        <div id="relationships-container">
+                            <!-- Relationship fields will be added here -->
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancel-add-person">Cancel</button>
+                <button class="btn btn-primary" id="save-person">Save Person</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="load-tree-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Load Family Tree</h3>
+                <button class="close-modal-btn">
+                    <span class="material-symbols-rounded">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="search-container">
+                    <input type="text" id="search-trees" placeholder="Search your trees...">
+                    <button class="search-btn">
+                        <span class="material-symbols-rounded">search</span>
+                    </button>
+                </div>
+                <div class="trees-list" id="trees-list">
+                    <!-- Trees will be listed here -->
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading your trees...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="export-tree-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Export Family Tree</h3>
+                <button class="close-modal-btn">
+                    <span class="material-symbols-rounded">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="export-format">Export Format</label>
+                    <select id="export-format">
+                        <option value="pdf">PDF Document</option>
+                        <option value="png">PNG Image</option>
+                        <option value="svg">SVG Image</option>
+                        <option value="gedcom">GEDCOM File</option>
+                        <option value="json">JSON Data</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="export-quality">Quality</label>
+                    <select id="export-quality">
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Options</label>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" id="export-include-photos" checked> Include Photos</label>
+                        <label><input type="checkbox" id="export-include-details" checked> Include Details</label>
+                        <label><input type="checkbox" id="export-include-notes" checked> Include Notes</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancel-export">Cancel</button>
+                <button class="btn btn-primary" id="confirm-export">Export</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="share-tree-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Share Family Tree</h3>
+                <button class="close-modal-btn">
+                    <span class="material-symbols-rounded">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="share-privacy">Privacy Setting</label>
+                    <select id="share-privacy">
+                        <option value="private">Private (Only you)</option>
+                        <option value="shared">Shared with specific people</option>
+                        <option value="public">Public (Anyone with the link)</option>
+                    </select>
+                </div>
+                <div class="form-group" id="share-with-users-group">
+                    <label for="share-with-users">Share with</label>
+                    <div class="share-users-input">
+                        <input type="email" id="share-with-users" placeholder="Enter email address">
+                        <button class="btn btn-sm btn-secondary" id="add-share-user">
+                            <span class="material-symbols-rounded">add</span>
+                        </button>
+                    </div>
+                    <div class="shared-users-list" id="shared-users-list">
+                        <!-- Shared users will be listed here -->
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="share-link">Share Link</label>
+                    <div class="share-link-container">
+                        <input type="text" id="share-link" readonly>
+                        <button class="btn btn-sm btn-secondary" id="copy-link-btn">
+                            <span class="material-symbols-rounded">content_copy</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="share-options">
+                    <h4>Share Options</h4>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" id="allow-comments" checked> Allow Comments</label>
+                        <label><input type="checkbox" id="allow-suggestions"> Allow Suggestions</label>
+                        <label><input type="checkbox" id="allow-downloads"> Allow Downloads</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancel-share">Cancel</button>
+                <button class="btn btn-primary" id="confirm-share">Share</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="user-menu.js"></script>
+    <script src="family-tree.js"></script>
+</body>
+</html> 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Explore | Connections</title>
+    <title>Discussions | Connections</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,9 +24,9 @@
         <nav>
             <ul>
                 <li><a href="index.html" class="nav-link"><span class="indicator"></span>Home</a></li>
-                <li><a href="explore.html" class="nav-link active"><span class="indicator"></span>Explore</a></li>
+                <li><a href="explore.html" class="nav-link active"><span class="indicator"></span>Discussions</a></li>
                 <li><a href="topics.html" class="nav-link"><span class="indicator"></span>Topics</a></li>
-                <li><a href="write.html" class="nav-link"><span class="indicator"></span>Write</a></li>
+                <li><a href="write.html" class="nav-link"><span class="indicator"></span>New Post</a></li>
                 <li><a href="about.html" class="nav-link"><span class="indicator"></span>About</a></li>
             </ul>
         </nav>
@@ -35,6 +35,10 @@
                 <span class="material-symbols-rounded light-icon">light_mode</span>
                 <span class="material-symbols-rounded dark-icon">dark_mode</span>
             </button>
+            <a href="notifications.html" class="btn btn-icon notifications-btn">
+                <span class="material-symbols-rounded">notifications</span>
+                <span class="notification-badge">0</span>
+            </a>
             <a href="signin.html" class="btn btn-secondary">Log in</a>
             <a href="signup.html" class="btn btn-primary">Sign up</a>
         </div>
@@ -45,12 +49,12 @@
         <div class="explore-container">
             <div class="explore-sidebar">
                 <div class="sidebar-section">
-                    <h3>Discover</h3>
+                    <h3>Browse</h3>
                     <ul class="sidebar-menu">
-                        <li class="active"><a href="#"><span class="material-symbols-rounded">home</span> For You</a></li>
-                        <li><a href="#"><span class="material-symbols-rounded">trending_up</span> Trending</a></li>
-                        <li><a href="#"><span class="material-symbols-rounded">new_releases</span> Latest</a></li>
-                        <li><a href="#"><span class="material-symbols-rounded">bookmark</span> Saved</a></li>
+                        <li class="active"><a href="#"><span class="material-symbols-rounded">home</span> All Discussions</a></li>
+                        <li><a href="#"><span class="material-symbols-rounded">trending_up</span> Popular</a></li>
+                        <li><a href="#"><span class="material-symbols-rounded">new_releases</span> Recent</a></li>
+                        <li><a href="#"><span class="material-symbols-rounded">bookmark</span> Bookmarked</a></li>
                     </ul>
                 </div>
                 <div class="sidebar-section">
@@ -68,142 +72,78 @@
             
             <div class="explore-content">
                 <div class="explore-header">
-                    <h1>Explore</h1>
+                    <h1>Discussions</h1>
                     <div class="explore-filters">
                         <div class="search-bar">
                             <span class="material-symbols-rounded">search</span>
-                            <input type="text" placeholder="Search posts...">
+                            <input type="text" placeholder="Search discussions...">
                         </div>
                         <button class="filter-button">
                             <span class="material-symbols-rounded">filter_list</span>
                             <span>Filter</span>
                         </button>
+                        <a href="write.html" class="btn btn-primary new-discussion-btn">
+                            <span class="material-symbols-rounded">add</span>
+                            New Discussion
+                        </a>
                     </div>
                 </div>
                 
-                <div class="posts-container">
-                    <!-- Featured Post -->
-                    <article class="post featured-post">
-                        <a href="read.html" class="post-link">
-                            <div class="post-image" style="background-image: url('https://source.unsplash.com/random/800x400/?library')"></div>
-                            <div class="post-content">
-                                <div class="post-meta">
-                                    <span class="post-topic">Literature</span>
-                                    <span class="post-date">May 15, 2023</span>
-                                </div>
-                                <h2 class="post-title">The Enduring Legacy of Classic Literature in Modern Society</h2>
-                                <p class="post-excerpt">Exploring how the themes and narratives of classic literature continue to resonate with contemporary readers and influence modern storytelling across various media.</p>
-                                <div class="post-footer">
-                                    <div class="post-author">
-                                        <div class="author-avatar" style="background-image: url('https://source.unsplash.com/random/100x100/?portrait')"></div>
-                                        <span class="author-name">Eleanor Richards</span>
-                                    </div>
-                                    <div class="post-stats">
-                                        <span><span class="material-symbols-rounded">favorite</span> 243</span>
-                                        <span><span class="material-symbols-rounded">comment</span> 42</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </article>
+                <div class="forum-container">
+                    <div class="forum-header">
+                        <div class="topic-column">Topic</div>
+                        <div class="stats-column">Stats</div>
+                        <div class="last-post-column">Last Post</div>
+                    </div>
                     
-                    <!-- Regular Posts -->
-                    <div class="regular-posts">
-                        <article class="post">
-                            <a href="read.html" class="post-link">
-                                <div class="post-image" style="background-image: url('https://source.unsplash.com/random/400x300/?philosophy')"></div>
-                                <div class="post-content">
-                                    <div class="post-meta">
-                                        <span class="post-topic">Philosophy</span>
-                                        <span class="post-date">May 12, 2023</span>
-                                    </div>
-                                    <h2 class="post-title">Existentialism in the Digital Age</h2>
-                                    <p class="post-excerpt">How modern technology is reshaping our understanding of existence, identity, and meaning in the 21st century.</p>
-                                    <div class="post-footer">
-                                        <div class="post-author">
-                                            <div class="author-avatar" style="background-image: url('https://source.unsplash.com/random/100x100/?man')"></div>
-                                            <span class="author-name">Marcus Chen</span>
-                                        </div>
-                                        <div class="post-stats">
-                                            <span><span class="material-symbols-rounded">favorite</span> 187</span>
-                                            <span><span class="material-symbols-rounded">comment</span> 34</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        </article>
-                        
-                        <article class="post">
-                            <a href="read.html" class="post-link">
-                                <div class="post-image" style="background-image: url('https://source.unsplash.com/random/400x300/?science')"></div>
-                                <div class="post-content">
-                                    <div class="post-meta">
-                                        <span class="post-topic">Science</span>
-                                        <span class="post-date">May 10, 2023</span>
-                                    </div>
-                                    <h2 class="post-title">The Future of Quantum Computing</h2>
-                                    <p class="post-excerpt">Exploring the revolutionary potential of quantum computing and its implications for science, cryptography, and artificial intelligence.</p>
-                                    <div class="post-footer">
-                                        <div class="post-author">
-                                            <div class="author-avatar" style="background-image: url('https://source.unsplash.com/random/100x100/?woman')"></div>
-                                            <span class="author-name">Dr. Sophia Kim</span>
-                                        </div>
-                                        <div class="post-stats">
-                                            <span><span class="material-symbols-rounded">favorite</span> 215</span>
-                                            <span><span class="material-symbols-rounded">comment</span> 28</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        </article>
-                        
-                        <article class="post">
-                            <div class="post-image" style="background-image: url('https://source.unsplash.com/random/400x300/?religion')"></div>
-                            <div class="post-content">
-                                <div class="post-meta">
-                                    <span class="post-topic">Religion</span>
-                                    <span class="post-date">May 8, 2023</span>
-                                </div>
-                                <h2 class="post-title">Spirituality in a Secular World</h2>
-                                <p class="post-excerpt">Examining how spiritual practices are evolving and finding new expressions in increasingly secular societies around the globe.</p>
-                                <div class="post-footer">
-                                    <div class="post-author">
-                                        <div class="author-avatar" style="background-image: url('https://source.unsplash.com/random/100x100/?person')"></div>
-                                        <span class="author-name">Amir Hassan</span>
-                                    </div>
-                                    <div class="post-stats">
-                                        <span><span class="material-symbols-rounded">favorite</span> 163</span>
-                                        <span><span class="material-symbols-rounded">comment</span> 47</span>
-                                    </div>
-                                </div>
+                    <!-- Discussion threads will be dynamically populated -->
+                    <div class="discussion-threads">
+                        <!-- Loading state for threads -->
+                        <div class="discussion-thread loading">
+                            <div class="thread-main">
+                                <div class="loading-topic"></div>
+                                <div class="loading-title"></div>
+                                <div class="loading-meta"></div>
                             </div>
-                        </article>
-                        
-                        <article class="post">
-                            <div class="post-image" style="background-image: url('https://source.unsplash.com/random/400x300/?news')"></div>
-                            <div class="post-content">
-                                <div class="post-meta">
-                                    <span class="post-topic">Current Affairs</span>
-                                    <span class="post-date">May 5, 2023</span>
-                                </div>
-                                <h2 class="post-title">The Evolution of Journalism in the Social Media Era</h2>
-                                <p class="post-excerpt">How traditional journalism is adapting to the challenges and opportunities presented by social media and citizen reporting.</p>
-                                <div class="post-footer">
-                                    <div class="post-author">
-                                        <div class="author-avatar" style="background-image: url('https://source.unsplash.com/random/100x100/?journalist')"></div>
-                                        <span class="author-name">James Wilson</span>
-                                    </div>
-                                    <div class="post-stats">
-                                        <span><span class="material-symbols-rounded">favorite</span> 198</span>
-                                        <span><span class="material-symbols-rounded">comment</span> 53</span>
-                                    </div>
-                                </div>
+                            <div class="thread-stats">
+                                <div class="loading-stats"></div>
                             </div>
-                        </article>
+                            <div class="thread-last-post">
+                                <div class="loading-last-post"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="discussion-thread loading">
+                            <div class="thread-main">
+                                <div class="loading-topic"></div>
+                                <div class="loading-title"></div>
+                                <div class="loading-meta"></div>
+                            </div>
+                            <div class="thread-stats">
+                                <div class="loading-stats"></div>
+                            </div>
+                            <div class="thread-last-post">
+                                <div class="loading-last-post"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="discussion-thread loading">
+                            <div class="thread-main">
+                                <div class="loading-topic"></div>
+                                <div class="loading-title"></div>
+                                <div class="loading-meta"></div>
+                            </div>
+                            <div class="thread-stats">
+                                <div class="loading-stats"></div>
+                            </div>
+                            <div class="thread-last-post">
+                                <div class="loading-last-post"></div>
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="load-more">
-                        <button class="btn btn-outline">Load More</button>
+                        <button class="btn btn-outline" disabled>Load More</button>
                     </div>
                 </div>
             </div>
@@ -211,5 +151,6 @@
     </main>
 
     <script src="script.js"></script>
+    <script type="module" src="explore.js"></script>
 </body>
 </html> 

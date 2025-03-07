@@ -1,752 +1,1011 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // Elements
-    const readContainer = document.querySelector('.read-container');
-    const discussionSidebar = document.querySelector('.discussion-sidebar');
-    const threadContainer = document.getElementById('thread-container');
-    const replyButtons = document.querySelectorAll('.comment-action.reply');
+import { getThread, getReplies, addReply, voteOnThread, voteOnReply, getCurrentUserId, getUserProfile, onAuthStateChange, database, ref, get, query, orderByChild, equalTo, limitToLast } from './firebase-config.js';
+
+document.addEventListener('DOMContentLoaded', async function() {
+    // Parse thread ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const threadId = urlParams.get('id');
     
-    // Modify sidebar header to include fullscreen toggle
-    const sidebarHeader = document.querySelector('.sidebar-header');
-    
-    // Create sidebar actions container
-    const sidebarActions = document.createElement('div');
-    sidebarActions.classList.add('sidebar-actions');
-    
-    // Create fullscreen toggle button
-    const fullscreenToggle = document.createElement('button');
-    fullscreenToggle.classList.add('fullscreen-toggle');
-    fullscreenToggle.innerHTML = '<span class="material-symbols-rounded">fullscreen</span>';
-    fullscreenToggle.setAttribute('aria-label', 'Toggle fullscreen');
-    
-    // Get close sidebar button - FIX: Just create a new button instead of trying to move the existing one
-    const closeSidebarButton = document.createElement('button');
-    closeSidebarButton.classList.add('close-sidebar');
-    closeSidebarButton.innerHTML = '<span class="material-symbols-rounded">close</span>';
-    closeSidebarButton.setAttribute('aria-label', 'Close thread');
-    
-    // Add buttons to sidebar actions
-    sidebarActions.appendChild(fullscreenToggle);
-    sidebarActions.appendChild(closeSidebarButton);
-    
-    // Clear and update the sidebar header
-    while (sidebarHeader.children.length > 1) {
-        sidebarHeader.removeChild(sidebarHeader.lastChild);
-    }
-    sidebarHeader.appendChild(sidebarActions);
-    
-    // Add Show Thread Button for mobile
-    const showThreadButton = document.createElement('button');
-    showThreadButton.classList.add('show-thread-button');
-    showThreadButton.innerHTML = '<span class="material-symbols-rounded">chat</span>';
-    showThreadButton.setAttribute('aria-label', 'Show discussion threads');
-    document.body.appendChild(showThreadButton);
-    
-    // Create overlay for mobile sidebar
-    const sidebarOverlay = document.createElement('div');
-    sidebarOverlay.classList.add('sidebar-overlay');
-    sidebarOverlay.style.position = 'fixed';
-    sidebarOverlay.style.top = '0';
-    sidebarOverlay.style.left = '0';
-    sidebarOverlay.style.width = '100%';
-    sidebarOverlay.style.height = '100%';
-    sidebarOverlay.style.backgroundColor = 'rgba(0,0,0,0.5)';
-    sidebarOverlay.style.zIndex = '999';
-    sidebarOverlay.style.opacity = '0';
-    sidebarOverlay.style.visibility = 'hidden';
-    sidebarOverlay.style.transition = 'opacity 0.3s ease, visibility 0.3s ease';
-    document.body.appendChild(sidebarOverlay);
-    
-    // Sample threads data - with improved thread structure
-    const threads = {
-        'comment-1': `
-            <div class="thread-original-comment">
-                <div class="comment-avatar" style="background-image: url('https://source.unsplash.com/random/100x100/?portrait1')"></div>
-                <div class="comment-content">
-                    <div class="comment-header">
-                        <div class="comment-author">Michael Chen</div>
-                        <div class="comment-meta">2 hours ago</div>
-                    </div>
-                    <div class="comment-body">
-                        <p>This article perfectly articulates why we need to continue studying classic literature. I've found that each time I revisit works like "To Kill a Mockingbird" or "1984," I discover new layers of meaning that I missed before. These books truly grow with you throughout your life.</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="thread-replies">
-                <div class="thread-reply">
-                    <div class="comment-avatar" style="background-image: url('https://source.unsplash.com/random/100x100/?portrait4')"></div>
-                    <div class="comment-content">
-                        <div class="comment-header">
-                            <div class="comment-author">Aisha Patel</div>
-                            <div class="comment-meta">1 hour ago</div>
-                        </div>
-                        <div class="comment-body">
-                            <p>I completely agree, Michael! I actually teach high school literature, and it's amazing to see how students connect with these texts once they get past the initial resistance to the language or historical context.</p>
-                        </div>
-                        <div class="comment-footer">
-                            <button class="comment-action upvote">
-                                <span class="material-symbols-rounded">thumb_up</span>
-                                <span class="count">12</span>
-                            </button>
-                            <button class="comment-action reply-to-thread" data-author="Aisha Patel">
-                                <span class="material-symbols-rounded">reply</span>
-                                Reply
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="thread-reply">
-                    <div class="comment-avatar" style="background-image: url('https://source.unsplash.com/random/100x100/?portrait5')"></div>
-                    <div class="comment-content">
-                        <div class="comment-header">
-                            <div class="comment-author">Thomas Reynolds</div>
-                            <div class="comment-meta">45 minutes ago</div>
-                        </div>
-                        <div class="comment-body">
-                            <p>Have you tried pairing classics with their modern adaptations? I've found that approach works really well—read a few chapters of Pride and Prejudice, then watch scenes from the 2005 film or even Bridget Jones's Diary.</p>
-                        </div>
-                        <div class="comment-footer">
-                            <button class="comment-action upvote">
-                                <span class="material-symbols-rounded">thumb_up</span>
-                                <span class="count">8</span>
-                            </button>
-                            <button class="comment-action reply-to-thread" data-author="Thomas Reynolds">
-                                <span class="material-symbols-rounded">reply</span>
-                                Reply
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="thread-reply nested-reply">
-                    <div class="comment-avatar" style="background-image: url('https://source.unsplash.com/random/100x100/?portrait4')"></div>
-                    <div class="comment-content">
-                        <div class="comment-header">
-                            <div class="comment-author">Aisha Patel</div>
-                            <div class="comment-meta">30 minutes ago</div>
-                        </div>
-                        <div class="comment-body">
-                            <p>@Thomas Yes! That's exactly what I do. The modern adaptations help them see how the themes are still relevant, and then they're more willing to engage with the original text.</p>
-                        </div>
-                        <div class="comment-footer">
-                            <button class="comment-action upvote">
-                                <span class="material-symbols-rounded">thumb_up</span>
-                                <span class="count">5</span>
-                            </button>
-                            <button class="comment-action reply-to-thread" data-author="Aisha Patel">
-                                <span class="material-symbols-rounded">reply</span>
-                                Reply
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="thread-reply-form">
-                <div class="user-avatar">
-                    <span class="material-symbols-rounded">person_outline</span>
-                </div>
-                <div class="reply-input-container">
-                    <textarea class="reply-input" placeholder="Add to this discussion..."></textarea>
-                    <button class="btn btn-primary reply-submit">Reply</button>
-                </div>
-            </div>
-        `,
-        'comment-2': `
-            <div class="thread-original-comment">
-                <div class="comment-avatar" style="background-image: url('https://source.unsplash.com/random/100x100/?portrait2')"></div>
-                <div class="comment-content">
-                    <div class="comment-header">
-                        <div class="comment-author">Sarah Johnson</div>
-                        <div class="comment-meta">5 hours ago</div>
-                    </div>
-                    <div class="comment-body">
-                        <p>I appreciate the point about expanding the canon to include more diverse voices. So many brilliant works have been overlooked simply because they didn't come from traditional Western sources. I've been exploring literature from various African traditions recently, and the depth and wisdom in these stories is remarkable.</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="thread-replies">
-                <div class="empty-thread">
-                    <span class="material-symbols-rounded">forum</span>
-                    <p>No replies yet. Be the first to reply!</p>
-                </div>
-            </div>
-            
-            <div class="thread-reply-form">
-                <div class="user-avatar">
-                    <span class="material-symbols-rounded">person_outline</span>
-                </div>
-                <div class="reply-input-container">
-                    <textarea class="reply-input" placeholder="Add to this discussion..."></textarea>
-                    <button class="btn btn-primary reply-submit">Reply</button>
-                </div>
-            </div>
-        `,
-        'comment-3': `
-            <div class="thread-original-comment">
-                <div class="comment-avatar" style="background-image: url('https://source.unsplash.com/random/100x100/?portrait3')"></div>
-                <div class="comment-content">
-                    <div class="comment-header">
-                        <div class="comment-author">James Wilson</div>
-                        <div class="comment-meta">Yesterday</div>
-                    </div>
-                    <div class="comment-body">
-                        <p>While I agree with much of this article, I think we should be careful not to place classics on too high a pedestal. There's incredible contemporary literature being written today that addresses modern issues in ways classics simply cannot. Perhaps we need to balance our reverence for the past with an openness to new voices and forms.</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="thread-replies">
-                <div class="empty-thread">
-                    <span class="material-symbols-rounded">forum</span>
-                    <p>No replies yet. Be the first to reply!</p>
-                </div>
-            </div>
-            
-            <div class="thread-reply-form">
-                <div class="user-avatar">
-                    <span class="material-symbols-rounded">person_outline</span>
-                </div>
-                <div class="reply-input-container">
-                    <textarea class="reply-input" placeholder="Add to this discussion..."></textarea>
-                    <button class="btn btn-primary reply-submit">Reply</button>
-                </div>
-            </div>
-        `
-    };
-    
-    // Check if featured image has a real image
-    const featuredImage = document.querySelector('.article-featured-image');
-    if (featuredImage) {
-        // Get background-image url
-        const bgImg = getComputedStyle(featuredImage).backgroundImage;
-        
-        // If it's a valid image URL (not none)
-        if (bgImg && bgImg !== 'none') {
-            // Check if image loads successfully
-            const tempImg = new Image();
-            tempImg.onload = function() {
-                document.querySelector('.article-content').classList.add('has-image');
-            };
-            tempImg.onerror = function() {
-                featuredImage.style.display = 'none';
-            };
-            
-            // Extract URL and load image
-            const imgUrl = bgImg.match(/url\(['"]?(.*?)['"]?\)/);
-            if (imgUrl && imgUrl[1]) {
-                tempImg.src = imgUrl[1];
-            }
-        }
+    if (!threadId) {
+        showError('Thread ID not found in URL. Please go back to the discussions page.');
+        return;
     }
     
-    // Check for avatar images and replace with default if needed
-    const avatars = document.querySelectorAll('.author-avatar, .user-avatar, .comment-avatar');
-    avatars.forEach(avatar => {
-        const bgImg = getComputedStyle(avatar).backgroundImage;
+    // DOM elements
+    const threadContent = document.querySelector('.thread-content');
+    const breadcrumbTopic = document.querySelector('.current-topic');
+    const threadHeader = document.querySelector('.thread-header');
+    const threadBody = document.querySelector('.thread-body');
+    const threadActions = document.querySelector('.thread-actions');
+    const commentsSection = document.querySelector('.comments-section');
+    const commentsList = document.querySelector('.comments-list');
+    const commentForm = document.querySelector('.comment-form');
+    const commentInput = document.querySelector('.comment-input');
+    const commentSubmit = document.querySelector('.comment-submit');
+    const loadMoreCommentsBtn = document.querySelector('.load-more-comments button');
+    
+    // Sidebar elements
+    const repliesCount = document.querySelector('.replies-count');
+    const viewsCount = document.querySelector('.views-count');
+    const createdDate = document.querySelector('.created-date');
+    const authorAvatar = document.querySelector('.author-avatar');
+    const authorName = document.querySelector('.author-name');
+    const authorJoined = document.querySelector('.author-joined');
+    const postsCount = document.querySelector('.posts-count');
+    const commentsCount = document.querySelector('.comments-count');
+    const similarThreads = document.querySelector('.similar-threads');
+    
+    // State
+    let currentUser = null;
+    let thread = null;
+    let replies = [];
+    
+    // Set up auth listener
+    onAuthStateChange((user) => {
+        currentUser = user;
+        updateAuthUI(user);
         
-        // If it doesn't have a background image
-        if (!bgImg || bgImg === 'none') {
-            avatar.innerHTML = '<span class="material-symbols-rounded">person_outline</span>';
-            avatar.style.backgroundImage = 'none';
-        } else {
-            // Check if the image loads
-            const tempImg = new Image();
-            tempImg.onerror = function() {
-                avatar.innerHTML = '<span class="material-symbols-rounded">person_outline</span>';
-                avatar.style.backgroundImage = 'none';
-            };
-            
-            const imgUrl = bgImg.match(/url\(['"]?(.*?)['"]?\)/);
-            if (imgUrl && imgUrl[1]) {
-                tempImg.src = imgUrl[1];
-            }
+        // If user signed in, update comment form
+        if (commentForm && user) {
+            commentForm.style.display = 'flex';
+        } else if (commentForm) {
+            commentForm.innerHTML = `
+                <div class="sign-in-to-comment">
+                    <p>Please <a href="signin.html?redirect=read.html?id=${threadId}">sign in</a> to join the discussion</p>
+                </div>
+            `;
         }
     });
     
-    // Implement show more/less for article body
-    const articleBody = document.querySelector('.article-body');
-    if (articleBody && articleBody.clientHeight > 500) {
-        // Add truncated class
-        articleBody.classList.add('truncated');
-        
-        // Create show more button
-        const showMoreBtn = document.createElement('button');
-        showMoreBtn.classList.add('show-more-btn');
-        showMoreBtn.textContent = 'Show More';
-        articleBody.after(showMoreBtn);
-        
-        // Add event listener
-        showMoreBtn.addEventListener('click', function() {
-            if (articleBody.classList.contains('truncated')) {
-                articleBody.classList.remove('truncated');
-                showMoreBtn.textContent = 'Show Less';
-            } else {
-                articleBody.classList.add('truncated');
-                showMoreBtn.textContent = 'Show More';
-                
-                // Scroll back to the top of the article
-                articleBody.scrollIntoView({ behavior: 'smooth' });
-            }
-        });
+    // Load thread and comments
+    try {
+        await loadThread();
+        await loadComments();
+    } catch (error) {
+        console.error('Error loading thread:', error);
+        showError('Failed to load the discussion. Please try again later.');
     }
     
-    // Open Thread Function
-    function openThread(commentId) {
-        // Update container to show sidebar
-        readContainer.classList.add('sidebar-open');
-        
-        // Show sidebar on mobile
-        discussionSidebar.classList.add('active');
-        sidebarOverlay.style.opacity = '1';
-        sidebarOverlay.style.visibility = 'visible';
-        
-        // Set active state on reply button
-        replyButtons.forEach(button => button.classList.remove('active'));
-        const replyButton = document.querySelector(`[data-comment-id="${commentId}"]`);
-        if (replyButton) {
-            replyButton.classList.add('active');
+    // Set up event listeners
+    if (commentForm) {
+        commentForm.addEventListener('submit', handleCommentSubmit);
+    }
+    
+    if (loadMoreCommentsBtn) {
+        loadMoreCommentsBtn.addEventListener('click', loadMoreComments);
+    }
+    
+    // Load thread data
+    async function loadThread() {
+        try {
+            const result = await getThread(threadId);
+            
+            if (result.error) {
+                throw new Error(result.error);
+            }
+            
+            thread = result.thread;
+            renderThread(thread);
+            
+            // Load thread author info
+            if (thread.authorId) {
+                loadAuthorInfo(thread.authorId);
+            }
+            
+            // Load similar threads
+            loadSimilarThreads(thread.topic);
+        } catch (error) {
+            console.error('Error fetching thread:', error);
+            showError('Failed to load the discussion. Please try again.');
+        }
+    }
+    
+    // Render thread data to the page
+    function renderThread(thread) {
+        // Update breadcrumb
+        if (breadcrumbTopic) {
+            breadcrumbTopic.textContent = thread.title || 'Untitled Discussion';
         }
         
-        // Load thread content
-        if (threads[commentId]) {
-            threadContainer.innerHTML = threads[commentId];
-        } else {
-            // Get the original comment content
-            const originalComment = document.querySelector(`#${commentId}`);
-            if (originalComment) {
-                const commentContent = originalComment.querySelector('.comment-content').cloneNode(true);
-                threadContainer.innerHTML = `
-                    <div class="thread-original-comment">
-                        <div class="comment-avatar">
-                            ${originalComment.querySelector('.comment-avatar').innerHTML}
-                        </div>
-                        ${commentContent.outerHTML}
-                    </div>
-                    <div class="thread-replies">
-                        <div class="empty-thread">
-                            <span class="material-symbols-rounded">forum</span>
+        // Update thread header
+        if (threadHeader) {
+            const createdDate = formatDate(thread.createdAt);
+            
+            threadHeader.innerHTML = `
+                <div class="thread-meta">
+                    <span class="thread-topic">${thread.topic || 'General'}</span>
+                    <span class="thread-date">${createdDate}</span>
+                </div>
+                <h1 class="thread-title">${thread.title}</h1>
+                <div class="thread-author-info">
+                    <a href="profile-view.html?uid=${thread.authorId}" class="author-profile-link">
+                        <div class="thread-author-avatar" style="background-image: url('${thread.authorAvatar || 'images/default-avatar.png'}')"></div>
+                        <span class="thread-author-name">${thread.authorName || 'Anonymous'}</span>
+                    </a>
+                </div>
+            `;
+        }
+        
+        // Update thread body
+        if (threadBody) {
+            threadBody.innerHTML = thread.content || '';
+        }
+        
+        // Update thread actions
+        if (threadActions) {
+            const upvoteBtn = threadActions.querySelector('.upvote');
+            const downvoteBtn = threadActions.querySelector('.downvote');
+            const bookmarkBtn = threadActions.querySelector('.bookmark-button');
+            
+            if (upvoteBtn) {
+                const upvoteCount = upvoteBtn.querySelector('.count');
+                upvoteCount.textContent = thread.upvotes || 0;
+                
+                upvoteBtn.addEventListener('click', () => handleVote('up'));
+            }
+            
+            if (downvoteBtn) {
+                const downvoteCount = downvoteBtn.querySelector('.count');
+                downvoteCount.textContent = thread.downvotes || 0;
+                
+                downvoteBtn.addEventListener('click', () => handleVote('down'));
+            }
+            
+            if (bookmarkBtn) {
+                bookmarkBtn.addEventListener('click', handleBookmark);
+            }
+        }
+        
+        // Update sidebar information
+        if (repliesCount) repliesCount.textContent = thread.replyCount || 0;
+        if (viewsCount) viewsCount.textContent = thread.viewCount || 0;
+        if (createdDate) createdDate.textContent = formatDate(thread.createdAt);
+    }
+    
+    // Load comments/replies
+    async function loadComments() {
+        try {
+            const result = await getReplies(threadId);
+            
+            if (result.error) {
+                throw new Error(result.error);
+            }
+            
+            replies = result.replies;
+            
+            if (replies.length === 0) {
+                if (commentsList) {
+                    commentsList.innerHTML = `
+                        <div class="no-replies">
                             <p>No replies yet. Be the first to reply!</p>
-                        </div>
-                    </div>
-                    <div class="thread-reply-form">
-                        <div class="user-avatar">
-                            <span class="material-symbols-rounded">person_outline</span>
-                        </div>
-                        <div class="reply-input-container">
-                            <textarea class="reply-input" placeholder="Add to this discussion..."></textarea>
-                            <button class="btn btn-primary reply-submit">Reply</button>
-                        </div>
-                    </div>
-                `;
+                </div>
+                    `;
+                }
+                if (loadMoreCommentsBtn) {
+                    loadMoreCommentsBtn.parentElement.style.display = 'none';
+                }
+            } else {
+                // Fetch author information for each reply
+                for (const reply of replies) {
+                    if (reply.authorId) {
+                        try {
+                            const userRef = ref(database, `users/${reply.authorId}`);
+                            const userSnapshot = await get(userRef);
+                            
+                            if (userSnapshot.exists()) {
+                                const userData = userSnapshot.val();
+                                const profile = userData.profile || {};
+                                reply.authorName = profile.displayName || userData.displayName || 'Anonymous';
+                                reply.authorAvatar = profile.avatarUrl || 'images/default-avatar.png';
+                            } else {
+                                reply.authorName = 'Anonymous';
+                                reply.authorAvatar = 'images/default-avatar.png';
+                            }
+                        } catch (error) {
+                            console.error(`Error fetching author for reply ${reply.id}:`, error);
+                            reply.authorName = 'Anonymous';
+                            reply.authorAvatar = 'images/default-avatar.png';
+                        }
+                    } else {
+                        reply.authorName = 'Anonymous';
+                        reply.authorAvatar = 'images/default-avatar.png';
+                    }
+                }
                 
-                // Store the thread content
-                threads[commentId] = threadContainer.innerHTML;
+                renderComments(replies);
+                
+                if (loadMoreCommentsBtn) {
+                    loadMoreCommentsBtn.parentElement.style.display = replies.length >= 10 ? 'flex' : 'none';
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching comments:', error);
+            if (commentsList) {
+                commentsList.innerHTML = `
+                    <div class="error-message">
+                        <p>Failed to load comments. Please try again.</p>
+            </div>
+                `;
             }
         }
-        
-        // Setup reply buttons in thread
-        setupThreadReplyButtons();
-        
-        // Update fullscreen icon
-        updateFullscreenIcon();
     }
     
-    // Toggle fullscreen mode
-    fullscreenToggle.addEventListener('click', function() {
-        discussionSidebar.classList.toggle('fullscreen');
-        updateFullscreenIcon();
-    });
+    // Render comments to the page
+    function renderComments(comments) {
+        if (!commentsList) return;
+        
+        commentsList.innerHTML = '';
+        
+        comments.forEach(comment => {
+            const commentEl = createCommentElement(comment);
+            commentsList.appendChild(commentEl);
+        });
+        
+        // Add event listeners for comment actions
+        setupCommentActions();
+    }
     
-    function updateFullscreenIcon() {
-        if (discussionSidebar.classList.contains('fullscreen')) {
-            fullscreenToggle.innerHTML = '<span class="material-symbols-rounded">fullscreen_exit</span>';
-        } else {
-            fullscreenToggle.innerHTML = '<span class="material-symbols-rounded">fullscreen</span>';
+    // Create a comment element
+    function createCommentElement(comment) {
+        const commentEl = document.createElement('div');
+        commentEl.className = 'comment';
+        commentEl.dataset.id = comment.id;
+        commentEl.dataset.authorId = comment.authorId || '';
+        
+        const commentDate = formatDate(comment.createdAt);
+        
+        commentEl.innerHTML = `
+            <div class="comment-header">
+                <a href="profile-view.html?uid=${comment.authorId}" class="comment-author-link">
+                    <div class="comment-avatar" style="background-image: url('${comment.authorAvatar || 'images/default-avatar.png'}')"></div>
+                    <div class="comment-info">
+                        <div class="comment-author">${comment.authorName || 'Anonymous'}</div>
+                        <div class="comment-meta">${commentDate}</div>
+                    </div>
+                </a>
+            </div>
+            <div class="comment-body">${comment.content}</div>
+            <div class="comment-footer">
+                <div class="comment-action upvote" data-id="${comment.id}">
+                    <span class="material-symbols-rounded">thumb_up</span>
+                    <span class="count">${comment.upvotes || 0}</span>
+                </div>
+                <div class="comment-action downvote" data-id="${comment.id}">
+                    <span class="material-symbols-rounded">thumb_down</span>
+                    <span class="count">${comment.downvotes || 0}</span>
+                </div>
+                <div class="comment-action reply" data-id="${comment.id}">
+                    <span class="material-symbols-rounded">reply</span>
+                    <span>Reply</span>
+                </div>
+            </div>
+        `;
+        
+        return commentEl;
+    }
+    
+    // Set up comment actions (votes, reply)
+    function setupCommentActions() {
+        const commentUpvotes = document.querySelectorAll('.comment-action.upvote');
+        const commentDownvotes = document.querySelectorAll('.comment-action.downvote');
+        const commentReplies = document.querySelectorAll('.comment-action.reply');
+        
+        // Disable voting on own comments if user is logged in
+        if (currentUser) {
+            document.querySelectorAll('.comment').forEach(comment => {
+                const authorId = comment.dataset.authorId;
+                if (authorId === currentUser.uid) {
+                    const upvoteBtn = comment.querySelector('.upvote');
+                    const downvoteBtn = comment.querySelector('.downvote');
+                    
+                    if (upvoteBtn) {
+                        upvoteBtn.classList.add('disabled');
+                        upvoteBtn.title = 'You cannot vote on your own comment';
+                    }
+                    
+                    if (downvoteBtn) {
+                        downvoteBtn.classList.add('disabled');
+                        downvoteBtn.title = 'You cannot vote on your own comment';
+                    }
+                }
+            });
         }
-    }
-    
-    // Setup Thread Reply Buttons
-    function setupThreadReplyButtons() {
-        const threadReplyButtons = document.querySelectorAll('.comment-action.reply-to-thread');
-        threadReplyButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const replyForm = document.querySelector('.thread-reply-form');
-                replyForm.style.display = 'flex';
+        
+        commentUpvotes.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (!btn.classList.contains('disabled')) {
+                    handleCommentVote(btn.dataset.id, 'up');
+                }
+            });
+        });
+        
+        commentDownvotes.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (!btn.classList.contains('disabled')) {
+                    handleCommentVote(btn.dataset.id, 'down');
+                }
+            });
+        });
+        
+        commentReplies.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const commentId = btn.dataset.id;
+                const comment = document.querySelector(`.comment[data-id="${commentId}"]`);
                 
-                // Focus on textarea and add @ mention if replying to a specific comment
-                const replyInput = replyForm.querySelector('.reply-input');
-                replyInput.focus();
-                
-                // Get the author from data attribute
-                const authorName = this.getAttribute('data-author');
-                if (authorName) {
-                    replyInput.value = `@${authorName} `;
-                    replyInput.setSelectionRange(authorName.length + 2, authorName.length + 2);
-                } else {
-                    // Fallback to finding author in parent element
-                    const authorElement = this.closest('.thread-reply, .thread-original-comment').querySelector('.comment-author');
-                    if (authorElement) {
-                        const name = authorElement.textContent.trim();
-                        replyInput.value = `@${name} `;
-                        replyInput.setSelectionRange(name.length + 2, name.length + 2);
+                // Scroll to comment form
+                if (commentForm) {
+                    commentForm.scrollIntoView({ behavior: 'smooth' });
+                    commentInput.focus();
+                    
+                    // Add a reply to tag
+                    const existingReplyTag = document.querySelector('.replying-to');
+                    if (existingReplyTag) {
+                        existingReplyTag.remove();
+                    }
+                    
+                    const replyTag = document.createElement('div');
+                    replyTag.className = 'replying-to';
+                    replyTag.dataset.commentId = commentId;
+                    replyTag.innerHTML = `
+                        <p>Replying to <strong>${comment.querySelector('.comment-author').textContent}</strong></p>
+                        <button class="cancel-reply">
+                            <span class="material-symbols-rounded">close</span>
+                            </button>
+                    `;
+                    commentForm.insertBefore(replyTag, commentForm.firstChild);
+                    
+                    // Add event listener to cancel reply
+                    const cancelReply = replyTag.querySelector('.cancel-reply');
+                    if (cancelReply) {
+                        cancelReply.addEventListener('click', () => {
+                            replyTag.remove();
+                        });
                     }
                 }
             });
         });
     }
     
-    // Close Sidebar Function
-    function closeSidebar() {
-        // Update container to hide sidebar
-        readContainer.classList.remove('sidebar-open');
+    // Handle comment submission
+    async function handleCommentSubmit(e) {
+        e.preventDefault();
         
-        discussionSidebar.classList.remove('active');
-        discussionSidebar.classList.remove('fullscreen');
-        sidebarOverlay.style.opacity = '0';
-        sidebarOverlay.style.visibility = 'hidden';
-        replyButtons.forEach(button => button.classList.remove('active'));
+        if (!currentUser) {
+            alert('Please sign in to comment');
+            return;
+        }
         
-        // Update fullscreen icon
-        updateFullscreenIcon();
-    }
-    
-    // Vote Buttons
-    const voteButtons = document.querySelectorAll('.vote-button, .comment-action.upvote, .comment-action.downvote');
-    voteButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const isUpvote = this.classList.contains('upvote');
-            const isDownvote = this.classList.contains('downvote');
-            const voteCountElement = this.querySelector('.vote-count, .count');
+        const content = commentInput.value.trim();
+        if (!content) {
+            alert('Please enter a comment');
+            return;
+        }
+        
+        // Disable form while submitting
+        commentSubmit.disabled = true;
+        commentSubmit.innerHTML = '<span class="loading-spinner"></span> Posting...';
+        
+        try {
+            // Create reply data
+            const replyData = {
+                content,
+                authorId: currentUser.uid,
+                authorName: currentUser.displayName || 'Anonymous'
+            };
             
-            // Toggle active state
-            if (this.classList.contains('active')) {
-                this.classList.remove('active');
-                if (voteCountElement) {
-                    let count = parseInt(voteCountElement.textContent);
-                    if (isUpvote) count--;
-                    if (isDownvote) count++;
-                    voteCountElement.textContent = count;
-                }
-            } else {
-                // Remove active from sibling if it exists (for article votes)
-                const siblingSelector = isUpvote ? '.downvote' : '.upvote';
-                const sibling = this.parentElement.querySelector(siblingSelector);
-                if (sibling && sibling.classList.contains('active')) {
-                    sibling.classList.remove('active');
-                    const siblingCountElement = sibling.querySelector('.vote-count, .count');
-                    if (siblingCountElement) {
-                        let siblingCount = parseInt(siblingCountElement.textContent);
-                        if (isUpvote) siblingCount++;
-                        if (isDownvote) siblingCount--;
-                        siblingCountElement.textContent = siblingCount;
-                    }
-                }
-                
-                this.classList.add('active');
-                if (voteCountElement) {
-                    let count = parseInt(voteCountElement.textContent);
-                    if (isUpvote) count++;
-                    if (isDownvote) count--;
-                    voteCountElement.textContent = count;
+            // Check if this is a reply to another comment
+            const replyingTo = document.querySelector('.replying-to');
+            if (replyingTo) {
+                const commentId = replyingTo.dataset.commentId;
+                if (commentId) {
+                    replyData.parentId = commentId;
                 }
             }
-        });
-    });
-    
-    // Comment Form
-    const commentForm = document.querySelector('.comment-form');
-    const commentInput = document.querySelector('.comment-input');
-    const commentSubmit = document.querySelector('.comment-submit');
-    
-    commentSubmit.addEventListener('click', function() {
-        if (commentInput.value.trim() !== '') {
-            // Create new comment
-            const newComment = document.createElement('div');
-            newComment.classList.add('comment');
-            newComment.id = `comment-new-${Date.now()}`;
-            newComment.innerHTML = `
-                <div class="comment-avatar">
-                    <span class="material-symbols-rounded">person_outline</span>
-                </div>
-                <div class="comment-content">
-                    <div class="comment-header">
-                        <div class="comment-author">You</div>
-                        <div class="comment-meta">Just now</div>
-                    </div>
-                    <div class="comment-body">
-                        <p>${commentInput.value.trim()}</p>
-                    </div>
-                    <div class="comment-footer">
-                        <button class="comment-action upvote">
-                            <span class="material-symbols-rounded">thumb_up</span>
-                            <span class="count">0</span>
-                        </button>
-                        <button class="comment-action downvote">
-                            <span class="material-symbols-rounded">thumb_down</span>
-                            <span class="count">0</span>
-                        </button>
-                        <button class="comment-action reply" data-comment-id="${newComment.id}">
-                            <span class="material-symbols-rounded">reply</span>
-                            Reply
-                        </button>
-                    </div>
-                </div>
-            `;
             
-            // Add comment to the top of the list
-            const commentsList = document.querySelector('.comments-list');
-            commentsList.insertBefore(newComment, commentsList.firstChild);
+            console.log('Submitting reply:', replyData);
             
-            // Clear input
+            // Add reply to Firebase
+            const result = await addReply(threadId, replyData);
+            
+            console.log('Reply result:', result);
+            
+            if (result.error) {
+                throw new Error(result.error);
+            }
+            
+            // Clear form
             commentInput.value = '';
             
-            // Update comment count
-            const commentsTitle = document.querySelector('.comments-title');
-            const currentCount = parseInt(commentsTitle.textContent.match(/\d+/)[0]);
-            commentsTitle.textContent = commentsTitle.textContent.replace(/\d+/, currentCount + 1);
+            // Remove reply tag if exists
+            if (replyingTo) {
+                replyingTo.remove();
+            }
             
-            // Create empty thread for this comment
-            threads[newComment.id] = `
-                <div class="thread-original-comment">
-                    <div class="comment-avatar">
-                        <span class="material-symbols-rounded">person_outline</span>
+            // Reload comments
+            await loadComments();
+            
+            // Update reply count in sidebar
+            if (repliesCount) {
+                repliesCount.textContent = parseInt(repliesCount.textContent || '0') + 1;
+            }
+        } catch (error) {
+            console.error('Error adding reply:', error);
+            alert('Failed to post reply. Please try again.');
+        } finally {
+            // Re-enable form
+            commentSubmit.disabled = false;
+            commentSubmit.innerHTML = 'Reply';
+        }
+    }
+    
+    // Handle thread voting
+    async function handleVote(voteType) {
+        if (!currentUser) {
+            alert('Please sign in to vote');
+            return;
+        }
+        
+        // Prevent voting on own thread
+        if (thread.authorId === currentUser.uid) {
+            alert('You cannot vote on your own discussion');
+            return;
+        }
+        
+        try {
+            const result = await voteOnThread(threadId, voteType);
+            
+            if (result.error) {
+                throw new Error(result.error);
+            }
+            
+            // Update UI
+            const upvoteBtn = threadActions.querySelector('.upvote');
+            const downvoteBtn = threadActions.querySelector('.downvote');
+            
+            if (upvoteBtn) {
+                const upvoteCount = upvoteBtn.querySelector('.count');
+                upvoteCount.textContent = result.upvotes || 0;
+                
+                if (voteType === 'up') {
+                    upvoteBtn.classList.toggle('active');
+                    downvoteBtn.classList.remove('active');
+                }
+            }
+            
+            if (downvoteBtn) {
+                const downvoteCount = downvoteBtn.querySelector('.count');
+                downvoteCount.textContent = result.downvotes || 0;
+                
+                if (voteType === 'down') {
+                    downvoteBtn.classList.toggle('active');
+                    upvoteBtn.classList.remove('active');
+                }
+            }
+        } catch (error) {
+            console.error('Error voting on thread:', error);
+            alert('Failed to vote. Please try again.');
+        }
+    }
+    
+    // Handle comment voting
+    async function handleCommentVote(commentId, voteType) {
+        if (!currentUser) {
+            alert('Please sign in to vote');
+            return;
+        }
+        
+        // Get the comment element
+        const comment = document.querySelector(`.comment[data-id="${commentId}"]`);
+        if (!comment) return;
+        
+        // Get the comment author ID
+        const authorId = comment.getAttribute('data-author-id');
+        
+        // Prevent voting on own comment
+        if (authorId === currentUser.uid) {
+            alert('You cannot vote on your own comment');
+            return;
+        }
+        
+        try {
+            const result = await voteOnReply(threadId, commentId, voteType);
+            
+            if (result.error) {
+                throw new Error(result.error);
+            }
+            
+            // Update UI
+            const upvoteBtn = comment.querySelector('.upvote');
+            const downvoteBtn = comment.querySelector('.downvote');
+            
+            if (upvoteBtn) {
+                const upvoteCount = upvoteBtn.querySelector('.count');
+                upvoteCount.textContent = result.upvotes || 0;
+                
+                if (voteType === 'up') {
+                    upvoteBtn.classList.toggle('active');
+                    downvoteBtn.classList.remove('active');
+                }
+            }
+            
+            if (downvoteBtn) {
+                const downvoteCount = downvoteBtn.querySelector('.count');
+                downvoteCount.textContent = result.downvotes || 0;
+                
+                if (voteType === 'down') {
+                    downvoteBtn.classList.toggle('active');
+                    upvoteBtn.classList.remove('active');
+                }
+            }
+        } catch (error) {
+            console.error('Error voting on comment:', error);
+            alert('Failed to vote on comment. Please try again.');
+        }
+    }
+    
+    // Handle bookmark
+    function handleBookmark() {
+        if (!currentUser) {
+            alert('Please sign in to bookmark discussions');
+            return;
+        }
+        
+        // Toggle bookmark UI state
+        const bookmarkBtn = threadActions.querySelector('.bookmark-button');
+        bookmarkBtn.classList.toggle('active');
+        
+        // TODO: Implement bookmark functionality with Firebase
+        console.log('Bookmark functionality not yet implemented');
+    }
+    
+    // Load more comments
+    function loadMoreComments() {
+        // In this implementation we're loading all comments at once
+        // This is just a placeholder for a pagination feature
+        loadMoreCommentsBtn.parentElement.style.display = 'none';
+    }
+    
+    // Load thread author information
+    async function loadAuthorInfo(authorId) {
+        try {
+            // Get user reference
+            const userRef = ref(database, `users/${authorId}`);
+            const userSnapshot = await get(userRef);
+            
+            if (!userSnapshot.exists()) {
+                console.log('User not found');
+                return;
+            }
+            
+            const userData = userSnapshot.val();
+            const profile = userData.profile || {};
+            
+            // Get photoURL from either profile or user data
+            const photoURL = profile.avatarUrl || userData.photoURL || 'images/default-avatar.png';
+            
+            // Update author info in thread header
+            const authorAvatarEl = document.querySelector('.thread-author-avatar');
+            const authorNameEl = document.querySelector('.thread-author-name');
+            
+            if (authorAvatarEl) {
+                authorAvatarEl.style.backgroundImage = `url(${photoURL})`;
+            }
+            
+            if (authorNameEl) {
+                authorNameEl.textContent = profile.displayName || userData.displayName || 'Anonymous';
+            }
+            
+            // Update author info in sidebar
+            if (authorAvatar) {
+                authorAvatar.style.backgroundImage = `url(${photoURL})`;
+            }
+            
+                if (authorName) {
+                authorName.textContent = profile.displayName || userData.displayName || 'Anonymous';
+            }
+            
+            if (authorJoined && userData.createdAt) {
+                authorJoined.textContent = `Member since: ${formatDate(userData.createdAt, true)}`;
+            }
+            
+            // Update view count
+            if (viewsCount && thread.viewCount) {
+                viewsCount.textContent = thread.viewCount;
+            }
+            
+            if (postsCount) {
+                postsCount.textContent = userData.stats?.threadCount || 0;
+            }
+            
+            if (commentsCount) {
+                commentsCount.textContent = userData.stats?.replyCount || 0;
+            }
+            
+            // Store author data in thread object for later use
+            thread.authorData = {
+                displayName: profile.displayName || userData.displayName || 'Anonymous',
+                avatarUrl: photoURL,
+                bio: profile.bio || userData.bio || '',
+                joinDate: userData.createdAt,
+                threadCount: userData.stats?.threadCount || 0,
+                replyCount: userData.stats?.replyCount || 0
+            };
+            
+            // Add profile hover card functionality
+            addProfileHoverCard();
+        } catch (error) {
+            console.error('Error loading author info:', error);
+        }
+    }
+    
+    // Load similar threads
+    async function loadSimilarThreads(topic) {
+        if (!similarThreads || !topic) return;
+        
+        try {
+            // Clear loading state
+            similarThreads.innerHTML = '';
+            
+            // Get all threads and filter client-side
+            const threadsRef = ref(database, 'threads');
+            const allThreadsQuery = query(threadsRef, limitToLast(20));
+            
+            const snapshot = await get(allThreadsQuery);
+            
+            if (!snapshot.exists()) {
+                similarThreads.innerHTML = '<p>No similar discussions found</p>';
+                return;
+            }
+            
+            let similarThreadsData = [];
+            
+            snapshot.forEach(childSnapshot => {
+                const threadData = childSnapshot.val();
+                threadData.id = childSnapshot.key;
+                
+                // Skip current thread, draft threads, and threads with different topics
+                if (threadData.id !== threadId && 
+                    !threadData.isDraft && 
+                    threadData.topic === topic) {
+                    similarThreadsData.push(threadData);
+                }
+            });
+            
+            // Sort by creation date (newest first)
+            similarThreadsData.sort((a, b) => b.createdAt - a.createdAt);
+            
+            // Limit to 3 threads
+            similarThreadsData = similarThreadsData.slice(0, 3);
+            
+            if (similarThreadsData.length === 0) {
+                similarThreads.innerHTML = '<p>No similar discussions found</p>';
+                return;
+            }
+            
+            // Fetch author info for each thread
+            for (const threadData of similarThreadsData) {
+                if (threadData.authorId) {
+                    try {
+                        const userRef = ref(database, `users/${threadData.authorId}`);
+                        const userSnapshot = await get(userRef);
+                        
+                        if (userSnapshot.exists()) {
+                            const userData = userSnapshot.val();
+                            const profile = userData.profile || {};
+                            threadData.authorName = profile.displayName || userData.displayName || 'Anonymous';
+            } else {
+                            threadData.authorName = 'Anonymous';
+                        }
+                    } catch (error) {
+                        console.error('Error fetching author:', error);
+                        threadData.authorName = 'Anonymous';
+                    }
+                } else {
+                    threadData.authorName = 'Anonymous';
+                }
+                
+                const threadEl = document.createElement('div');
+                threadEl.className = 'similar-thread';
+                threadEl.innerHTML = `
+                    <a href="read.html?id=${threadData.id}" class="similar-thread-title">${threadData.title}</a>
+                    <div class="similar-thread-meta">
+                        <span>${threadData.authorName}</span>
+                        <span>${formatDate(threadData.createdAt)}</span>
                     </div>
-                    <div class="comment-content">
-                        <div class="comment-header">
-                            <div class="comment-author">You</div>
-                            <div class="comment-meta">Just now</div>
+                `;
+                similarThreads.appendChild(threadEl);
+            }
+        } catch (error) {
+            console.error('Error loading similar threads:', error);
+            similarThreads.innerHTML = '<p>Failed to load similar discussions</p>';
+        }
+    }
+    
+    // Update UI based on auth state
+    function updateAuthUI(user) {
+        const loginBtn = document.querySelector('.login-btn');
+        const signupBtn = document.querySelector('.signup-btn');
+        const profileBtn = document.querySelector('.profile-btn');
+        
+        if (!loginBtn || !signupBtn) return;
+        
+        currentUser = user; // Store current user for later use
+        
+        if (user) {
+            // User is signed in
+            if (loginBtn) loginBtn.style.display = 'none';
+            if (signupBtn) signupBtn.style.display = 'none';
+            if (profileBtn) {
+                profileBtn.style.display = 'flex';
+                
+                // Try to get the user's profile data
+                getUserProfile(user.uid).then(result => {
+                    if (result.success && result.profile) {
+                        const username = document.querySelector('.username');
+                        const avatar = document.querySelector('.avatar');
+                        
+                        if (username) {
+                            username.textContent = result.profile.displayName || 'User';
+                        }
+                        
+                        if (avatar && result.profile.avatarUrl) {
+                            avatar.style.backgroundImage = `url(${result.profile.avatarUrl})`;
+                }
+            }
+        });
+            }
+            
+            // Check if user is the author of the thread
+            if (thread && thread.authorId === user.uid) {
+                // Disable voting buttons if user is the author
+                const upvoteBtn = document.querySelector('.thread-votes .upvote');
+                const downvoteBtn = document.querySelector('.thread-votes .downvote');
+                
+                if (upvoteBtn) {
+                    upvoteBtn.disabled = true;
+                    upvoteBtn.title = 'You cannot vote on your own discussion';
+                    upvoteBtn.classList.add('disabled');
+                }
+                
+                if (downvoteBtn) {
+                    downvoteBtn.disabled = true;
+                    downvoteBtn.title = 'You cannot vote on your own discussion';
+                    downvoteBtn.classList.add('disabled');
+                }
+            }
+        } else {
+            // User is signed out
+            if (loginBtn) loginBtn.style.display = 'inline-flex';
+            if (signupBtn) signupBtn.style.display = 'inline-flex';
+            if (profileBtn) profileBtn.style.display = 'none';
+        }
+    }
+    
+    // Show error message
+    function showError(message) {
+        threadContent.innerHTML = `
+            <div class="error-message">
+                <span class="material-symbols-rounded">error</span>
+                <h3>Something went wrong</h3>
+                <p>${message}</p>
+                <button class="btn btn-primary" onclick="window.location.href='explore.html'">Back to Discussions</button>
+                </div>
+            `;
+    }
+    
+    // Format date helper
+    function formatDate(timestamp, fullDate = false) {
+        if (!timestamp) return '';
+        
+        const date = new Date(timestamp);
+        const now = new Date();
+        
+        if (fullDate) {
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+        
+        const diffMs = now - date;
+        const diffSec = Math.floor(diffMs / 1000);
+        const diffMin = Math.floor(diffSec / 60);
+        const diffHour = Math.floor(diffMin / 60);
+        const diffDay = Math.floor(diffHour / 24);
+        
+        if (diffDay > 30) {
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        } else if (diffDay > 1) {
+            return `${diffDay} days ago`;
+        } else if (diffDay === 1) {
+            return 'yesterday';
+        } else if (diffHour >= 1) {
+            return `${diffHour}h ago`;
+        } else if (diffMin >= 1) {
+            return `${diffMin}m ago`;
+        } else {
+            return 'just now';
+        }
+    }
+    
+    // Add profile hover card functionality
+    function addProfileHoverCard() {
+        if (!thread.authorData) return;
+        
+        // Create hover card element if it doesn't exist
+        let hoverCard = document.querySelector('.profile-hover-card');
+        if (!hoverCard) {
+            hoverCard = document.createElement('div');
+            hoverCard.className = 'profile-hover-card';
+            document.body.appendChild(hoverCard);
+        }
+        
+        // Populate hover card with author data
+        hoverCard.innerHTML = `
+            <div class="hover-card-content">
+                <div class="hover-card-header">
+                    <div class="hover-avatar" style="background-image: url('${thread.authorData.avatarUrl}')"></div>
+                    <div class="hover-user-info">
+                        <div class="hover-user-name">${thread.authorData.displayName}</div>
+                        <div class="hover-user-joined">Member since: ${formatDate(thread.authorData.joinDate, true)}</div>
+                    </div>
                         </div>
-                        <div class="comment-body">
-                            <p>${commentInput.value.trim()}</p>
+                <div class="hover-card-body">
+                    <div class="hover-user-bio">${thread.authorData.bio || 'No bio available'}</div>
+                    <div class="hover-user-stats">
+                        <div class="hover-stat">
+                            <span class="hover-stat-value">${thread.authorData.threadCount}</span>
+                            <span class="hover-stat-label">Posts</span>
                         </div>
+                        <div class="hover-stat">
+                            <span class="hover-stat-value">${thread.authorData.replyCount}</span>
+                            <span class="hover-stat-label">Comments</span>
                     </div>
                 </div>
-                <div class="thread-replies">
-                    <div class="empty-thread">
-                        <span class="material-symbols-rounded">forum</span>
-                        <p>No replies yet. Be the first to reply!</p>
                     </div>
-                </div>
-                <div class="thread-reply-form">
-                    <div class="user-avatar">
-                        <span class="material-symbols-rounded">person_outline</span>
-                    </div>
-                    <div class="reply-input-container">
-                        <textarea class="reply-input" placeholder="Add to this discussion..."></textarea>
-                        <button class="btn btn-primary reply-submit">Reply</button>
+                <div class="hover-card-footer">
+                    <a href="profile-view.html?uid=${thread.authorId}" class="hover-profile-link">View Full Profile</a>
                     </div>
                 </div>
             `;
             
-            // Setup new reply button
-            setupReplyButton(newComment.querySelector('.comment-action.reply'));
-        }
-    });
-    
-    // Reply Form in Thread
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('reply-submit')) {
-            const replyInput = e.target.parentElement.querySelector('.reply-input');
-            const replyText = replyInput.value.trim();
-            
-            if (replyText !== '') {
-                // Create new reply
-                const newReply = document.createElement('div');
-                newReply.classList.add('thread-reply');
-                
-                // Check if this is a nested reply (contains @mention)
-                const isNested = replyText.startsWith('@');
-                const mentionedUser = isNested ? replyText.split(' ')[0].substring(1) : null;
-                
-                if (isNested) {
-                    newReply.classList.add('nested-reply');
-                    
-                    // Find the parent reply
-                    const parentReply = Array.from(document.querySelectorAll('.thread-reply')).find(reply => {
-                        const author = reply.querySelector('.comment-author').textContent.trim();
-                        return author === mentionedUser;
-                    });
-                    
-                    if (parentReply) {
-                        // Find all nested replies that belong to this parent
-                        const siblingReplies = Array.from(parentReply.parentNode.children)
-                            .filter(child => {
-                                if (!child.classList.contains('nested-reply')) return false;
-                                const replyText = child.querySelector('.comment-body').textContent;
-                                return replyText.startsWith(`@${mentionedUser}`);
-                            });
-                        
-                        // Insert after the last sibling or parent
-                        const lastSibling = siblingReplies[siblingReplies.length - 1];
-                        if (lastSibling) {
-                            lastSibling.after(newReply);
-                        } else {
-                            parentReply.after(newReply);
-                        }
-                    }
-                }
-                
-                newReply.innerHTML = `
-                    <div class="comment-avatar">
-                        <span class="material-symbols-rounded">person_outline</span>
-                    </div>
-                    <div class="comment-content">
-                        <div class="comment-header">
-                            <div class="comment-author">You</div>
-                            <div class="comment-meta">Just now</div>
-                        </div>
-                        <div class="comment-body">
-                            <p>${replyText}</p>
-                        </div>
-                        <div class="comment-footer">
-                            <button class="comment-action upvote">
-                                <span class="material-symbols-rounded">thumb_up</span>
-                                <span class="count">0</span>
-                            </button>
-                            <button class="comment-action reply-to-thread" data-author="You">
-                                <span class="material-symbols-rounded">reply</span>
-                                Reply
-                            </button>
-                        </div>
-                    </div>
-                `;
-                
-                // If not nested or parent not found, add to main thread
-                if (!isNested || !newReply.parentNode) {
-                    // Find empty thread placeholder if it exists and remove it
-                    const emptyThread = document.querySelector('.thread-replies .empty-thread');
-                    if (emptyThread) {
-                        emptyThread.remove();
-                    }
-                    
-                    // Add reply to thread
-                    const threadReplies = document.querySelector('.thread-replies');
-                    threadReplies.appendChild(newReply);
-                }
-                
-                // Clear input and reset form
-                replyInput.value = '';
-                const replyForm = document.querySelector('.thread-reply-form');
-                if (replyForm) {
-                    replyForm.style.display = 'flex';
-                    replyForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                }
-                
-                // Update thread content in storage
-                const currentThread = document.querySelector('.thread-container');
-                if (currentThread) {
-                    const commentId = document.querySelector('.thread-original-comment')
-                        .querySelector('.comment-content')
-                        .getAttribute('data-comment-id');
-                    if (commentId) {
-                        threads[commentId] = currentThread.innerHTML;
-                    }
-                }
-                
-                // Setup new reply button
-                setupThreadReplyButtons();
-            }
-        }
-    });
-    
-    // Save Button
-    const saveButton = document.querySelector('.save-button');
-    saveButton.addEventListener('click', function() {
-        this.classList.toggle('active');
-        const saveIcon = this.querySelector('.material-symbols-rounded');
-        if (this.classList.contains('active')) {
-            saveIcon.textContent = 'bookmark_added';
-            this.innerHTML = `<span class="material-symbols-rounded">bookmark_added</span> Saved`;
-        } else {
-            saveIcon.textContent = 'bookmark';
-            this.innerHTML = `<span class="material-symbols-rounded">bookmark</span> Save`;
-        }
-    });
-    
-    // Share Button
-    const shareButton = document.querySelector('.share-button');
-    shareButton.addEventListener('click', function() {
-        // Check if Web Share API is available
-        if (navigator.share) {
-            navigator.share({
-                title: document.title,
-                url: window.location.href
-            }).catch(console.error);
-        } else {
-            // Fallback - copy to clipboard
-            const tempInput = document.createElement('input');
-            document.body.appendChild(tempInput);
-            tempInput.value = window.location.href;
-            tempInput.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempInput);
-            
-            // Notify user
-            const oldText = this.innerHTML;
-            this.innerHTML = '<span class="material-symbols-rounded">check</span> Copied!';
-            setTimeout(() => {
-                this.innerHTML = oldText;
-            }, 2000);
-        }
-    });
-    
-    // Setup Reply Buttons
-    function setupReplyButton(button) {
-        button.addEventListener('click', function() {
-            const commentId = this.getAttribute('data-comment-id');
-            openThread(commentId);
-        });
-    }
-    
-    // Event Listeners
-    replyButtons.forEach(setupReplyButton);
-    
-    closeSidebarButton.addEventListener('click', closeSidebar);
-    
-    showThreadButton.addEventListener('click', function() {
-        // If no thread is active, show the first one
-        if (!discussionSidebar.classList.contains('active')) {
-            const firstComment = document.querySelector('.comment');
-            if (firstComment) {
-                const commentId = firstComment.id;
-                openThread(commentId);
-            }
-        } else {
-            closeSidebar();
-        }
-    });
-    
-    sidebarOverlay.addEventListener('click', closeSidebar);
-    
-    // Keyboard shortcuts
-    document.addEventListener('keydown', function(e) {
-        // Escape to close sidebar
-        if (e.key === 'Escape' && discussionSidebar.classList.contains('active')) {
-            closeSidebar();
+        // Add hover event listeners to author elements
+        const authorLink = document.querySelector('.author-profile-link');
+        if (authorLink) {
+            authorLink.addEventListener('mouseenter', (e) => showHoverCard(e, thread.authorData, thread.authorId));
+            authorLink.addEventListener('mouseleave', hideHoverCard);
         }
         
-        // Ctrl+Enter to submit comment
-        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-            if (document.activeElement === commentInput) {
-                commentSubmit.click();
+        // Also add hover to sidebar author info
+        const sidebarAuthorInfo = document.querySelector('.author-info');
+        if (sidebarAuthorInfo) {
+            sidebarAuthorInfo.addEventListener('mouseenter', (e) => showHoverCard(e, thread.authorData, thread.authorId));
+            sidebarAuthorInfo.addEventListener('mouseleave', hideHoverCard);
+        }
+        
+        // Add hover to comment author links
+        const commentAuthorLinks = document.querySelectorAll('.comment-author-link');
+        commentAuthorLinks.forEach(link => {
+            const commentEl = link.closest('.comment');
+            if (commentEl) {
+                const authorId = commentEl.dataset.authorId;
+                if (authorId) {
+                    // Fetch author data for this comment if needed
+                    fetchCommentAuthorData(authorId, link);
+                }
+            }
+        });
+        
+        function showHoverCard(e, authorData, authorId) {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const windowWidth = window.innerWidth;
+            
+            // Update hover card content with the specific author's data
+            const hoverCardContent = hoverCard.querySelector('.hover-card-content');
+            if (hoverCardContent && authorData) {
+                hoverCardContent.innerHTML = `
+                    <div class="hover-card-header">
+                        <div class="hover-avatar" style="background-image: url('${authorData.avatarUrl}')"></div>
+                        <div class="hover-user-info">
+                            <div class="hover-user-name">${authorData.displayName}</div>
+                            <div class="hover-user-joined">Member since: ${formatDate(authorData.joinDate, true)}</div>
+                    </div>
+                        </div>
+                    <div class="hover-card-body">
+                        <div class="hover-user-bio">${authorData.bio || 'No bio available'}</div>
+                        <div class="hover-user-stats">
+                            <div class="hover-stat">
+                                <span class="hover-stat-value">${authorData.threadCount}</span>
+                                <span class="hover-stat-label">Posts</span>
+                        </div>
+                            <div class="hover-stat">
+                                <span class="hover-stat-value">${authorData.replyCount}</span>
+                                <span class="hover-stat-label">Comments</span>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="hover-card-footer">
+                        <a href="profile-view.html?uid=${authorId}" class="hover-profile-link">View Full Profile</a>
+                    </div>
+                `;
             }
             
-            const replyInput = document.querySelector('.reply-input');
-            const replySubmit = document.querySelector('.reply-submit');
-            if (document.activeElement === replyInput && replySubmit) {
-                replySubmit.click();
+            // Calculate position
+            let leftPos = rect.left + window.scrollX;
+            
+            // Adjust if would go off screen
+            if (leftPos + 300 > windowWidth) {
+                leftPos = windowWidth - 310;
+            }
+            
+            // Position the hover card
+            hoverCard.style.top = `${rect.bottom + window.scrollY + 10}px`;
+            hoverCard.style.left = `${leftPos}px`;
+            
+            // Show the hover card
+            hoverCard.classList.add('active');
+        }
+        
+        function hideHoverCard() {
+            // Hide the hover card with a small delay to allow moving to the card
+            setTimeout(() => {
+                if (!hoverCard.matches(':hover')) {
+                    hoverCard.classList.remove('active');
+                }
+            }, 300);
+        }
+        
+        // Allow hovering on the card itself
+        hoverCard.addEventListener('mouseenter', () => {
+            hoverCard.classList.add('active');
+        });
+        
+        hoverCard.addEventListener('mouseleave', () => {
+            hoverCard.classList.remove('active');
+        });
+        
+        // Fetch author data for comments
+        async function fetchCommentAuthorData(authorId, linkElement) {
+            try {
+                // Check if we already have this author's data cached
+                if (!window.authorDataCache) {
+                    window.authorDataCache = {};
+                }
+                
+                if (window.authorDataCache[authorId]) {
+                    // Use cached data
+                    linkElement.addEventListener('mouseenter', (e) => showHoverCard(e, window.authorDataCache[authorId], authorId));
+                    linkElement.addEventListener('mouseleave', hideHoverCard);
+                    return;
+                }
+                
+                // Fetch user data
+                const userRef = ref(database, `users/${authorId}`);
+                const userSnapshot = await get(userRef);
+                
+                if (userSnapshot.exists()) {
+                    const userData = userSnapshot.val();
+                    const profile = userData.profile || {};
+                    
+                    // Get photoURL from either profile or user data
+                    const photoURL = profile.avatarUrl || userData.photoURL || 'images/default-avatar.png';
+                    
+                    // Create author data object
+                    const authorData = {
+                        displayName: profile.displayName || userData.displayName || 'Anonymous',
+                        avatarUrl: photoURL,
+                        bio: profile.bio || userData.bio || '',
+                        joinDate: userData.createdAt,
+                        threadCount: userData.stats?.threadCount || 0,
+                        replyCount: userData.stats?.replyCount || 0
+                    };
+                    
+                    // Cache the data
+                    window.authorDataCache[authorId] = authorData;
+                    
+                    // Add event listeners
+                    linkElement.addEventListener('mouseenter', (e) => showHoverCard(e, authorData, authorId));
+                    linkElement.addEventListener('mouseleave', hideHoverCard);
+                }
+            } catch (error) {
+                console.error('Error fetching comment author data:', error);
             }
         }
-    });
-    
-    // Handle window resize
-    window.addEventListener('resize', function() {
-        if (window.innerWidth > 1100 && discussionSidebar.classList.contains('active')) {
-            sidebarOverlay.style.opacity = '0';
-            sidebarOverlay.style.visibility = 'hidden';
-        }
-    });
+    }
 }); 

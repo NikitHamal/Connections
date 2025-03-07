@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard | Connections</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="leaderboard.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0..200">
+</head>
+<body class="light-mode">
+    <div class="stars-container"></div>
+    
+    <header>
+        <button class="mobile-menu-toggle" aria-label="Toggle mobile menu">
+            <span class="material-symbols-rounded">menu</span>
+        </button>
+        <div class="logo">
+            <span class="logo-text">Connections</span>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html" class="nav-link"><span class="indicator"></span>Home</a></li>
+                <li><a href="explore.html" class="nav-link"><span class="indicator"></span>Discussions</a></li>
+                <li><a href="topics.html" class="nav-link"><span class="indicator"></span>Topics</a></li>
+                <li><a href="write.html" class="nav-link"><span class="indicator"></span>New Post</a></li>
+                <li><a href="leaderboard.html" class="nav-link active"><span class="indicator"></span>Leaderboard</a></li>
+                <li><a href="about.html" class="nav-link"><span class="indicator"></span>About</a></li>
+            </ul>
+        </nav>
+        <div class="header-actions">
+            <button class="theme-toggle" aria-label="Toggle dark mode">
+                <span class="material-symbols-rounded light-icon">light_mode</span>
+                <span class="material-symbols-rounded dark-icon">dark_mode</span>
+            </button>
+            <a href="notifications.html" class="btn btn-icon notifications-btn">
+                <span class="material-symbols-rounded">notifications</span>
+                <span class="notification-badge">0</span>
+            </a>
+            <a href="signin.html" class="btn btn-secondary login-btn">Log in</a>
+            <a href="signup.html" class="btn btn-primary signup-btn">Sign up</a>
+            <div class="profile-btn">
+                <div class="avatar"></div>
+                <span class="username">User</span>
+            </div>
+        </div>
+    </header>
+    <div class="mobile-menu-overlay"></div>
+
+    <main class="leaderboard-main">
+        <div class="leaderboard-container">
+            <div class="leaderboard-header">
+                <div class="leaderboard-title">
+                    <h1>Leaderboard</h1>
+                    <p class="leaderboard-subtitle">The top contributors ranked by experience</p>
+                </div>
+                <div class="tabs">
+                    <button class="tab active" data-tab="all-time">All Time</button>
+                    <button class="tab" data-tab="this-month">This Month</button>
+                    <button class="tab" data-tab="this-week">This Week</button>
+                </div>
+            </div>
+
+            <div class="leaderboard-grid">
+                <!-- Top 3 Users -->
+                <div class="top-users">
+                    <!-- 2nd place -->
+                    <div class="top-user second-place">
+                        <div class="rank-badge">2</div>
+                        <div class="top-user-avatar"></div>
+                        <div class="top-user-info">
+                            <span class="top-user-name">Loading...</span>
+                            <div class="level-badge">
+                                <span class="material-symbols-rounded">military_tech</span>
+                                <span class="level-text">Level 0</span>
+                            </div>
+                            <span class="top-user-exp">0 XP</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 1st place -->
+                    <div class="top-user first-place">
+                        <div class="rank-badge">1</div>
+                        <div class="top-user-avatar"></div>
+                        <div class="crown">
+                            <span class="material-symbols-rounded">workspace_premium</span>
+                        </div>
+                        <div class="top-user-info">
+                            <span class="top-user-name">Loading...</span>
+                            <div class="level-badge">
+                                <span class="material-symbols-rounded">military_tech</span>
+                                <span class="level-text">Level 0</span>
+                            </div>
+                            <span class="top-user-exp">0 XP</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 3rd place -->
+                    <div class="top-user third-place">
+                        <div class="rank-badge">3</div>
+                        <div class="top-user-avatar"></div>
+                        <div class="top-user-info">
+                            <span class="top-user-name">Loading...</span>
+                            <div class="level-badge">
+                                <span class="material-symbols-rounded">military_tech</span>
+                                <span class="level-text">Level 0</span>
+                            </div>
+                            <span class="top-user-exp">0 XP</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Leaderboard Table -->
+                <div class="leaderboard-table">
+                    <div class="leaderboard-table-header">
+                        <div class="table-cell rank-cell">Rank</div>
+                        <div class="table-cell user-cell">User</div>
+                        <div class="table-cell level-cell">Level</div>
+                        <div class="table-cell exp-cell">Experience</div>
+                        <div class="table-cell posts-cell">Posts</div>
+                    </div>
+                    
+                    <div class="leaderboard-table-body">
+                        <div class="loading-state">
+                            <div class="spinner"></div>
+                            <p>Loading leaderboard data...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- My Status -->
+                <div class="my-status">
+                    <div class="my-status-header">
+                        <h3>Your Ranking</h3>
+                    </div>
+                    <div class="my-status-content">
+                        <div class="my-status-info">
+                            <div class="avatar my-avatar"></div>
+                            <div class="my-details">
+                                <span class="my-name">Not signed in</span>
+                                <span class="my-rank">Sign in to see your ranking</span>
+                            </div>
+                        </div>
+                        <div class="my-stats">
+                            <div class="my-stat">
+                                <span class="stat-label">Level</span>
+                                <span class="stat-value">-</span>
+                            </div>
+                            <div class="my-stat">
+                                <span class="stat-label">EXP</span>
+                                <span class="stat-value">-</span>
+                            </div>
+                            <div class="my-stat">
+                                <span class="stat-label">Posts</span>
+                                <span class="stat-value">-</span>
+                            </div>
+                        </div>
+                        <div class="next-level">
+                            <div class="next-level-info">
+                                <span class="next-level-text">Next Level</span>
+                                <span class="exp-to-next">- XP needed</span>
+                            </div>
+                            <div class="exp-bar-container">
+                                <div class="exp-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script type="module" src="leaderboard.js"></script>
+</body>
+</html> 

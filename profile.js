@@ -1,3 +1,258 @@
+import { initializeApp } from 'firebase/app';
+import { 
+    getAuth, 
+    onAuthStateChanged,
+    updateProfile,
+    updateEmail,
+    updatePassword,
+    reauthenticateWithCredential,
+    EmailAuthProvider,
+    deleteUser
+} from 'firebase/auth';
+import { 
+    getDatabase, 
+    ref, 
+    set, 
+    get,
+    remove 
+} from 'firebase/database';
+import { 
+    getStorage, 
+    ref as storageRef, 
+    uploadBytes, 
+    getDownloadURL,
+    deleteObject 
+} from 'firebase/storage';
+import { firebaseConfig } from './firebase-config.js';
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+const storage = getStorage(app);
+
+// DOM Elements
+const profileForm = document.getElementById('profile-form');
+const displayNameInput = document.getElementById('display-name');
+const emailInput = document.getElementById('email');
+const bioInput = document.getElementById('bio');
+const avatarInput = document.getElementById('avatar-input');
+const avatarPreview = document.getElementById('avatar-preview');
+const avatarContainer = document.querySelector('.avatar-container');
+const removeAvatarBtn = document.querySelector('.remove-avatar');
+const logoutBtn = document.getElementById('logout-btn');
+const deleteAccountBtn = document.querySelector('.delete-account');
+const nameError = document.getElementById('name-error');
+
+// Character counter for bio
+bioInput.addEventListener('input', () => {
+    const count = bioInput.value.length;
+    const counter = bioInput.parentElement.querySelector('.character-count');
+    counter.textContent = `${count}/160`;
+});
+
+// Handle avatar upload
+avatarContainer.addEventListener('click', () => {
+    avatarInput.click();
+});
+
+avatarInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+        alert('Please upload an image file');
+        return;
+    }
+
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+        alert('Image size should be less than 5MB');
+        return;
+    }
+
+    try {
+        // Show loading state
+        avatarContainer.classList.add('loading');
+        
+        const user = auth.currentUser;
+        if (!user) throw new Error('No user logged in');
+
+        // Upload to Firebase Storage
+        const fileRef = storageRef(storage, `avatars/${user.uid}`);
+        await uploadBytes(fileRef, file);
+        
+        // Get download URL
+        const downloadURL = await getDownloadURL(fileRef);
+        
+        // Update auth profile
+        await updateProfile(user, {
+            photoURL: downloadURL
+        });
+
+        // Update UI
+        avatarPreview.src = downloadURL;
+        removeAvatarBtn.style.display = 'flex';
+        
+        // Update database
+        await set(ref(db, `users/${user.uid}/profile/photoURL`), downloadURL);
+    } catch (error) {
+        console.error('Error uploading avatar:', error);
+        alert('Failed to upload avatar. Please try again.');
+    } finally {
+        avatarContainer.classList.remove('loading');
+    }
+});
+
+// Handle avatar removal
+removeAvatarBtn.addEventListener('click', async () => {
+    try {
+        const user = auth.currentUser;
+        if (!user) throw new Error('No user logged in');
+
+        // Delete from storage
+        const fileRef = storageRef(storage, `avatars/${user.uid}`);
+        await deleteObject(fileRef);
+
+        // Update auth profile
+        await updateProfile(user, {
+            photoURL: null
+        });
+
+        // Update database
+        await remove(ref(db, `users/${user.uid}/profile/photoURL`));
+
+        // Update UI
+        avatarPreview.src = '';
+        removeAvatarBtn.style.display = 'none';
+    } catch (error) {
+        console.error('Error removing avatar:', error);
+        alert('Failed to remove avatar. Please try again.');
+    }
+});
+
+// Handle form submission
+profileForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const newDisplayName = displayNameInput.value.trim();
+    const newBio = bioInput.value.trim();
+
+    // Validate display name
+    if (!newDisplayName) {
+        nameError.textContent = 'Display name is required';
+        return;
+    }
+    
+    if (newDisplayName.length > 50) {
+        nameError.textContent = 'Display name must be less than 50 characters';
+        return;
+    }
+
+    try {
+        // Show loading state
+        const submitBtn = profileForm.querySelector('.save-changes');
+        submitBtn.classList.add('loading');
+        
+        // Update auth profile
+        await updateProfile(user, {
+            displayName: newDisplayName
+        });
+
+        // Update database
+        await set(ref(db, `users/${user.uid}/profile`), {
+            displayName: newDisplayName,
+            bio: newBio
+        });
+
+        alert('Profile updated successfully!');
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        alert('Failed to update profile. Please try again.');
+    } finally {
+        const submitBtn = profileForm.querySelector('.save-changes');
+        submitBtn.classList.remove('loading');
+    }
+});
+
+// Handle logout
+logoutBtn.addEventListener('click', async () => {
+    try {
+        await auth.signOut();
+        window.location.href = '/signin.html';
+    } catch (error) {
+        console.error('Error signing out:', error);
+        alert('Failed to sign out. Please try again.');
+    }
+});
+
+// Handle account deletion
+deleteAccountBtn.addEventListener('click', async () => {
+    const confirmed = confirm('Are you sure you want to delete your account? This action cannot be undone.');
+    if (!confirmed) return;
+
+    try {
+        const user = auth.currentUser;
+        if (!user) throw new Error('No user logged in');
+
+        // Delete user data from database
+        await remove(ref(db, `users/${user.uid}`));
+        
+        // Delete avatar from storage if exists
+        if (user.photoURL) {
+            const fileRef = storageRef(storage, `avatars/${user.uid}`);
+            await deleteObject(fileRef);
+        }
+
+        // Delete user account
+        await deleteUser(user);
+        
+        window.location.href = '/signin.html';
+    } catch (error) {
+        console.error('Error deleting account:', error);
+        if (error.code === 'auth/requires-recent-login') {
+            alert('For security reasons, please sign in again before deleting your account.');
+            window.location.href = '/signin.html';
+        } else {
+            alert('Failed to delete account. Please try again.');
+        }
+    }
+});
+
+// Load user data
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        // Update form with user data
+        displayNameInput.value = user.displayName || '';
+        emailInput.value = user.email || '';
+        
+        if (user.photoURL) {
+            avatarPreview.src = user.photoURL;
+            removeAvatarBtn.style.display = 'flex';
+        }
+
+        // Get additional user data from database
+        try {
+            const snapshot = await get(ref(db, `users/${user.uid}/profile`));
+            const userData = snapshot.val() || {};
+            
+            if (userData.bio) {
+                bioInput.value = userData.bio;
+                const count = userData.bio.length;
+                bioInput.parentElement.querySelector('.character-count').textContent = `${count}/160`;
+            }
+        } catch (error) {
+            console.error('Error loading user data:', error);
+        }
+    } else {
+        // Redirect to sign in if not authenticated
+        window.location.href = '/signin.html';
+    }
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     // Theme toggle functionality
     const themeToggle = document.getElementById('theme-toggle');
@@ -274,9 +529,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Update join date
         if (locationElements.length > 1) {
-            if (profileData.createdAt) {
-                const joinDate = new Date(profileData.createdAt);
-                const options = { year: 'numeric', month: 'long' };
+        if (profileData.createdAt) {
+            const joinDate = new Date(profileData.createdAt);
+            const options = { year: 'numeric', month: 'long' };
                 locationElements[1].textContent = `Joined ${joinDate.toLocaleDateString('en-US', options)}`;
             }
         }
@@ -310,14 +565,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     editBtn.remove();
                 }
                 
-                const followBtn = document.createElement('button');
+                    const followBtn = document.createElement('button');
                 followBtn.className = 'profile-edit-btn';
-                followBtn.innerHTML = '<span class="material-symbols-rounded">person_add</span><span>Follow</span>';
+                        followBtn.innerHTML = '<span class="material-symbols-rounded">person_add</span><span>Follow</span>';
                 actionsContainer.appendChild(followBtn);
-                
-                // Add event listener to the follow button
-                followBtn.addEventListener('click', async () => {
-                    const isFollowing = followBtn.classList.contains('following');
+                    
+                    // Add event listener to the follow button
+                    followBtn.addEventListener('click', async () => {
+                        const isFollowing = followBtn.classList.contains('following');
                     
                     try {
                         // Get current user
@@ -357,13 +612,13 @@ document.addEventListener('DOMContentLoaded', function() {
                             updatedAt: firebase.database.ServerValue.TIMESTAMP
                         });
                         
-                    } catch (error) {
-                        console.error('Error updating follow status:', error);
+                        } catch (error) {
+                            console.error('Error updating follow status:', error);
                         alert('Error updating follow status. Please try again.');
-                    }
-                });
+                        }
+                    });
+                }
             }
-        }
     }
 
     // Load the user's posts

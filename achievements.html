@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Achievements | Connections</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="achievements.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0..200">
+</head>
+<body class="light-mode">
+    <div class="stars-container"></div>
+    
+    <header>
+        <button class="mobile-menu-toggle" aria-label="Toggle mobile menu">
+            <span class="material-symbols-rounded">menu</span>
+        </button>
+        <div class="logo">
+            <span class="logo-text">Connections</span>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html" class="nav-link"><span class="indicator"></span>Home</a></li>
+                <li><a href="explore.html" class="nav-link"><span class="indicator"></span>Discussions</a></li>
+                <li><a href="topics.html" class="nav-link"><span class="indicator"></span>Topics</a></li>
+                <li><a href="write.html" class="nav-link"><span class="indicator"></span>New Post</a></li>
+                <li><a href="leaderboard.html" class="nav-link"><span class="indicator"></span>Leaderboard</a></li>
+                <li><a href="achievements.html" class="nav-link active"><span class="indicator"></span>Achievements</a></li>
+                <li><a href="about.html" class="nav-link"><span class="indicator"></span>About</a></li>
+            </ul>
+        </nav>
+        <div class="header-actions">
+            <button class="theme-toggle" aria-label="Toggle dark mode">
+                <span class="material-symbols-rounded light-icon">light_mode</span>
+                <span class="material-symbols-rounded dark-icon">dark_mode</span>
+            </button>
+            <a href="notifications.html" class="btn btn-icon notifications-btn">
+                <span class="material-symbols-rounded">notifications</span>
+                <span class="notification-badge">0</span>
+            </a>
+            <a href="signin.html" class="btn btn-secondary login-btn">Log in</a>
+            <a href="signup.html" class="btn btn-primary signup-btn">Sign up</a>
+            <div class="profile-btn">
+                <div class="avatar"></div>
+                <span class="username">User</span>
+            </div>
+        </div>
+    </header>
+    <div class="mobile-menu-overlay"></div>
+
+    <main class="achievements-main">
+        <div class="achievements-container">
+            <div class="achievements-header">
+                <div class="achievements-title">
+                    <h1>Achievements</h1>
+                    <p class="achievements-subtitle">Track your progress and earn rewards</p>
+                </div>
+            </div>
+            
+            <!-- User progress section -->
+            <div class="user-progress">
+                <div class="user-info">
+                    <div class="avatar user-avatar"></div>
+                    <div class="user-details">
+                        <h2 class="user-name">Loading...</h2>
+                        <div class="user-level">
+                            <span class="material-symbols-rounded">military_tech</span>
+                            <span class="level-text">Level 0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="exp-progress">
+                    <div class="exp-info">
+                        <span class="total-exp">0 XP</span>
+                        <span class="next-level">0 XP to Level 2</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <div class="progress-stats">
+                    <div class="stat-item">
+                        <span class="stat-value">0</span>
+                        <span class="stat-label">Posts</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">0</span>
+                        <span class="stat-label">Comments</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">0</span>
+                        <span class="stat-label">Topics</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">0</span>
+                        <span class="stat-label">Upvotes</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Achievement categories -->
+            <div class="achievement-categories">
+                <button class="category-btn active" data-category="all">All</button>
+                <button class="category-btn" data-category="participation">Participation</button>
+                <button class="category-btn" data-category="community">Community</button>
+                <button class="category-btn" data-category="topics">Topics</button>
+                <button class="category-btn" data-category="special">Special</button>
+            </div>
+            
+            <!-- Achievements grid -->
+            <div class="achievements-grid">
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Loading achievements...</p>
+                </div>
+            </div>
+            
+            <!-- Not signed in message (shown when user is not logged in) -->
+            <div class="not-signed-in" style="display: none;">
+                <div class="message-container">
+                    <span class="material-symbols-rounded">lock</span>
+                    <h2>Sign in to track achievements</h2>
+                    <p>Create an account or sign in to track your progress and earn achievements as you participate in discussions.</p>
+                    <div class="action-buttons">
+                        <a href="signin.html?redirect=achievements.html" class="btn btn-primary">Sign In</a>
+                        <a href="signup.html?redirect=achievements.html" class="btn btn-outline">Create Account</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script type="module" src="achievements.js"></script>
+</body>
+</html> 
