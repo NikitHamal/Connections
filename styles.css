@@ -95,14 +95,16 @@
 }
 
 .dark-mode .btn-primary {
-    background-color: var(--oxford-blue);
+    background-color: var(--accent);
     color: white;
-    box-shadow: 0 0 15px rgba(0, 33, 71, 0.5);
+    box-shadow: none;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
 }
 
 .dark-mode .btn-primary:hover {
-    background-color: #00326B;  /* Slightly darker oxford blue on hover */
-    box-shadow: 0 0 20px rgba(0, 33, 71, 0.6);
+    background-color: #0089e3;  /* Slightly lighter blue on hover */
+    box-shadow: none;
+    transform: translateY(-1px);
 }
 
 .dark-mode .btn-outline {
@@ -737,6 +739,11 @@ nav a:hover {
     display: none;
 }
 
+.dark-mode .dark-icon {
+    color: #fff;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
 /* Buttons */
 .btn {
     display: inline-flex;
@@ -751,11 +758,13 @@ nav a:hover {
 .btn-primary {
     background-color: var(--accent);
     color: white;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary:hover {
     background-color: var(--oxford-blue);
     box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
 }
 
 .btn-secondary {
@@ -782,8 +791,9 @@ nav a:hover {
 }
 
 .btn-large {
-    padding: 0.75rem 1.5rem;
-    font-size: 1.125rem;
+    padding: 0.75rem 1.75rem;
+    font-size: 1.1rem;
+    border-radius: var(--border-radius-md);
 }
 
 /* Hero Section */
@@ -1383,4 +1393,72 @@ footer {
 
 .back-button .material-symbols-rounded {
     font-size: 24px;
+}
+
+/* Shimmer loading effect */
+.shimmer {
+    background: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0.05) 0%,
+        rgba(0, 0, 0, 0.1) 20%,
+        rgba(0, 0, 0, 0.05) 40%
+    );
+    background-size: 800px 100%;
+    position: relative;
+    overflow: hidden;
+    animation: shimmer 1.5s infinite linear;
+}
+
+.dark-mode .shimmer {
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0.05) 0%,
+        rgba(255, 255, 255, 0.1) 20%,
+        rgba(255, 255, 255, 0.05) 40%
+    );
+    background-size: 800px 100%;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -400px 0;
+    }
+    100% {
+        background-position: 400px 0;
+    }
+}
+
+/* Common shimmer placeholders */
+.shimmer-text {
+    height: 1rem;
+    margin-bottom: 0.75rem;
+    border-radius: 4px;
+}
+
+.shimmer-text:last-child {
+    width: 80%;
+}
+
+.shimmer-title {
+    height: 1.5rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+}
+
+.shimmer-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.shimmer-button {
+    height: 36px;
+    width: 80px;
+    border-radius: var(--border-radius-md);
+}
+
+.shimmer-card {
+    height: 200px;
+    border-radius: var(--border-radius-lg);
+    margin-bottom: 1rem;
 } 

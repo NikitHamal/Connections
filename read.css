@@ -94,9 +94,20 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background-size: cover;
-    background-position: center;
-    margin-right: 8px;
+    overflow: hidden;
+    margin-right: 10px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--accent-light);
+}
+
+.thread-author-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
 }
 
 .thread-author-name {
@@ -214,13 +225,26 @@
     margin-bottom: var(--spacing-xl);
 }
 
-.user-avatar {
-    width: 40px;
-    height: 40px;
+.comment-avatar {
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     background-size: cover;
     background-position: center;
     margin-right: 8px;
+    flex-shrink: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--background-light);
+}
+
+.comment-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
 }
 
 .comment-input-container {
@@ -259,102 +283,135 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-lg);
+    position: relative;
 }
 
 .comment {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    padding-bottom: var(--spacing-lg);
+    position: relative;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    background-color: var(--background-light);
+    transition: background-color 0.2s, border-color 0.2s;
+    border: 1px solid transparent;
 }
 
-.dark-mode .comment {
-    border-bottom-color: rgba(255, 255, 255, 0.05);
+.comment:hover {
+    border-color: var(--thread-border-light);
 }
 
-.comment-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-size: cover;
-    background-position: center;
-    margin-right: 8px;
+.dark-mode .comment:hover {
+    border-color: var(--thread-border-dark);
 }
 
-.comment-content {
-    flex: 1;
+/* Comment with replies styling */
+.comment[data-has-replies="true"] {
+    margin-bottom: 0.25rem;
 }
 
-.comment-header {
-    display: flex;
-    gap: var(--spacing-md);
-    margin-bottom: var(--spacing-sm);
+/* Enhanced border colors for threads */
+:root {
+    --thread-border-light: #2a85ff;
+    --thread-border-dark: #4a9aff;
 }
 
-.comment-author {
-    font-weight: 500;
-    color: var(--text-primary);
+/* Thread line connector */
+.comment[data-has-replies="true"]::after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    background-color: var(--thread-border-light);
+    left: 18px; /* Center of avatar */
+    top: 60px; /* Just below avatar */
+    height: calc(100% - 50px); /* Dynamic height */
+    z-index: 0;
 }
 
-.comment-meta {
-    color: var(--text-secondary);
-    font-size: 0.85rem;
+.dark-mode .comment[data-has-replies="true"]::after {
+    background-color: var(--thread-border-dark);
 }
 
-.comment-body {
-    margin-left: calc(40px + var(--spacing-md)); /* avatar width + gap */
-    margin-bottom: var(--spacing-sm);
-    color: var(--text-primary);
-    line-height: 1.6;
+/* Thread replies styling in the main view */
+.comment + .comment[data-parent-id]:not([data-parent-id=""]) {
+    margin-top: 0;
+    margin-left: 1.5rem;
+    margin-bottom: 0.5rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-left: 2px solid var(--thread-border-light);
 }
 
-.comment-footer {
-    margin-left: calc(40px + var(--spacing-md));
-    display: flex;
-    gap: var(--spacing-md);
+.dark-mode .comment + .comment[data-parent-id]:not([data-parent-id=""]) {
+    border-left-color: var(--thread-border-dark);
 }
 
-.comment-action {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    color: var(--text-secondary);
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: color 0.2s ease;
+/* Clear indicator for the original comment */
+.comment:not([data-parent-id]), 
+.comment[data-parent-id=""] {
+    border-left: none;
 }
 
-.comment-action:hover {
-    color: var(--text-primary);
+/* Thread connections in sidebar */
+.thread-replies {
+    position: relative;
+    margin-left: calc(36px / 2); /* Half avatar width */
+    border-left: 2px solid var(--thread-border-light);
+    padding-left: 1rem;
+    padding-top: 0.5rem;
 }
 
-.dark-mode .comment-action:hover {
-    color: var(--dark-text-primary);
+.dark-mode .thread-replies {
+    border-left-color: var(--thread-border-dark);
 }
 
-.comment-action.upvote.active {
-    color: #4CAF50;
+/* Enhanced nested reply styling */
+.nested-reply {
+    position: relative;
+    margin-left: 1.75rem;
 }
 
-.comment-action.downvote.active {
-    color: #F44336;
+.nested-reply::before {
+    content: '';
+    position: absolute;
+    left: -1.75rem;
+    top: 50%;
+    width: 1.25rem;
+    height: 2px;
+    background-color: var(--thread-border-light);
 }
 
-.comment-action.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    pointer-events: none;
+.dark-mode .nested-reply::before {
+    background-color: var(--thread-border-dark);
 }
 
-.comment-action.disabled:hover {
-    background-color: transparent;
+/* Highlight active comment in thread */
+.comment.active {
+    border: 2px solid var(--thread-border-light);
 }
 
-.dark-mode .comment-action.disabled:hover {
-    background-color: transparent;
+.dark-mode .comment.active {
+    border: 2px solid var(--thread-border-dark);
 }
 
-.load-more-comments {
-    text-align: center;
-    margin-top: var(--spacing-lg);
+/* Responsive thread view adjustments */
+@media (max-width: 768px) {
+    .comment[data-has-replies="true"]::after {
+        left: 16px;
+    }
+    
+    .thread-replies {
+        margin-left: 12px;
+        padding-left: 12px;
+    }
+    
+    .nested-reply {
+        margin-left: 1rem;
+    }
+    
+    .nested-reply::before {
+        left: -1rem;
+        width: 0.75rem;
+    }
 }
 
 /* Thread Sidebar */
@@ -428,12 +485,22 @@
 }
 
 .author-avatar {
-    width: 60px;
-    height: 60px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    background-size: cover;
-    background-position: center;
-    margin-right: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--background-light);
+}
+
+.author-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
 }
 
 .author-details {
@@ -850,4 +917,605 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+
+/* Fix image sizing issues */
+.user-avatar-small img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.user-menu-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.thread-body img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 1rem 0;
+}
+
+.thread-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 1rem 0;
+}
+
+.comment-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    margin: 0.5rem 0;
+}
+
+/* Ensure all images stay within their containers */
+.thread-body img,
+.thread-content img,
+.comment-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    margin: 0.75rem 0;
+}
+
+/* Fix user avatar sizing in the navbar */
+.user-avatar-small img,
+.user-menu-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* Discussion Threads Sidebar */
+.discussion-sidebar {
+    position: fixed;
+    top: 0;
+    right: -350px; /* Completely off screen */
+    width: 350px;
+    height: 100vh;
+    background-color: var(--background);
+    box-shadow: -3px 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    transition: right 0.3s ease;
+    overflow-y: auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    visibility: hidden; /* Ensure it's completely hidden */
+    opacity: 0; /* Fade effect */
+}
+
+.dark-mode .discussion-sidebar {
+    background-color: var(--background-dark);
+    box-shadow: -3px 0 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Hide the thread sidebar when discussion sidebar is open */
+.read-container.sidebar-open .thread-sidebar {
+    display: none;
+}
+
+/* Fullscreen mode adjustments */
+.discussion-sidebar.fullscreen {
+    width: 100%;
+    right: 0;
+}
+
+.discussion-sidebar.fullscreen ~ header {
+    display: none;
+}
+
+/* Show sidebar when active */
+.discussion-sidebar.active {
+    right: 0;
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Restore normal layout until sidebar is opened */
+.read-container {
+    transition: margin-right 0.3s ease;
+    margin-right: 0;
+}
+
+.read-container.sidebar-open {
+    margin-right: 350px;
+}
+
+/* Media query adjustment for sidebar */
+@media (max-width: 1100px) {
+    .read-container.sidebar-open {
+        margin-right: 0;
+    }
+}
+
+img {
+    width: 46px;
+    height: 46px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.read-container.sidebar-open {
+    margin-right: 350px;
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-light);
+    margin-bottom: 1rem;
+}
+
+.dark-mode .sidebar-header {
+    border-bottom-color: var(--border-dark);
+}
+
+.sidebar-header h3 {
+    font-size: 1.1rem;
+    margin: 0;
+    font-weight: 600;
+}
+
+.sidebar-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.fullscreen-toggle,
+.close-sidebar {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.fullscreen-toggle:hover,
+.close-sidebar:hover {
+    background-color: var(--background-light);
+    color: var(--text-primary);
+}
+
+.dark-mode .fullscreen-toggle:hover,
+.dark-mode .close-sidebar:hover {
+    background-color: var(--background-darker);
+    color: var(--text-primary-dark);
+}
+
+.thread-container {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.empty-thread {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.empty-thread .material-symbols-rounded {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.thread-original-comment {
+    position: relative;
+    border-radius: 0.75rem;
+    border: 1px solid transparent;
+    transition: border-color 0.2s;
+}
+
+.thread-original-comment:hover {
+    border-color: var(--thread-border-light);
+}
+
+.dark-mode .thread-original-comment:hover {
+    border-color: var(--thread-border-dark);
+}
+
+.thread-replies {
+    position: relative;
+    margin-left: calc(36px / 2); /* Half avatar width */
+    border-left: 2px solid var(--thread-border-light);
+    padding-left: 1rem;
+    padding-top: 0.5rem;
+}
+
+.dark-mode .thread-replies {
+    border-left-color: var(--thread-border-dark);
+}
+
+.thread-reply {
+    border: 1px solid transparent;
+    transition: border-color 0.2s;
+}
+
+.thread-reply:hover {
+    border-color: var(--thread-border-light);
+}
+
+.dark-mode .thread-reply:hover {
+    border-color: var(--thread-border-dark);
+}
+
+.nested-reply {
+    margin-left: 1.75rem;
+}
+
+.nested-reply::before {
+    content: '';
+    position: absolute;
+    left: -1.75rem;
+    top: 50%;
+    width: 1.25rem;
+    height: 2px;
+    background-color: var(--thread-border-light);
+}
+
+.dark-mode .nested-reply::before {
+    background-color: var(--thread-border-dark);
+}
+
+.thread-reply-form {
+    display: flex;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--thread-border-light);
+}
+
+.dark-mode .thread-reply-form {
+    border-top-color: var(--thread-border-dark);
+}
+
+.reply-input-container {
+    flex: 1;
+    margin-left: 0.5rem;
+}
+
+.reply-input {
+    width: 100%;
+    min-height: 80px;
+    padding: 0.75rem;
+    border: 1px solid var(--thread-border-light);
+    border-radius: 0.5rem;
+    background-color: var(--background);
+    margin-bottom: 0.5rem;
+    resize: vertical;
+    font-family: inherit;
+    color: var(--text-primary);
+}
+
+.dark-mode .reply-input {
+    background-color: var(--background-dark);
+    border-color: var(--thread-border-dark);
+    color: var(--text-primary-dark);
+}
+
+.loading-thread {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+}
+
+.loading-spinner {
+    width: 2rem;
+    height: 2rem;
+    border: 3px solid var(--background-light);
+    border-top: 3px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+.dark-mode .loading-spinner {
+    border-color: var(--background-darker);
+    border-top-color: var(--primary);
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.thread-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    color: var(--error);
+    text-align: center;
+}
+
+.thread-error .material-symbols-rounded {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.sidebar-overlay {
+    display: none;
+}
+
+/* Avatar fix for material icons */
+.comment-avatar span.material-symbols-rounded,
+.user-avatar span.material-symbols-rounded {
+    font-size: 24px;
+    color: var(--text-secondary);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 1100px) {
+    .read-container.sidebar-open {
+        margin-right: 0;
+    }
+    
+    .discussion-sidebar {
+        width: 100%;
+        z-index: 1001;
+    }
+    
+    .sidebar-overlay {
+        display: block;
+    }
+}
+
+@media (max-width: 768px) {
+    .discussion-sidebar {
+        padding: 0.75rem;
+    }
+    
+    .thread-original-comment,
+    .thread-reply {
+        padding: 0.5rem;
+    }
+    
+    .thread-replies {
+        margin-left: 0.5rem;
+        padding-left: 0.5rem;
+    }
+    
+    .nested-reply {
+        margin-left: 0.75rem;
+    }
+    
+    .nested-reply:before {
+        left: -0.75rem;
+        width: 0.5rem;
+    }
+}
+
+/* Ensure consistent avatar size in thread view */
+.thread-original-comment .comment-avatar,
+.thread-reply .comment-avatar {
+    width: 32px;
+    height: 32px;
+}
+
+/* Consistent avatar sizing in all contexts */
+.user-avatar,
+.author-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--background-light);
+}
+
+.comment-avatar img,
+.user-avatar img,
+.author-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.comment-author {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.comment-meta {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.comment-body {
+    margin-top: 0.5rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+.comment-footer {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: center;
+}
+
+.comment-action {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.comment-action:hover {
+    color: var(--text-primary);
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.dark-mode .comment-action:hover {
+    color: var(--text-primary-dark);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.comment-action.upvote.active {
+    color: #4CAF50;
+}
+
+.comment-action.downvote.active {
+    color: #F44336;
+}
+
+.comment-action.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.comment-action.disabled:hover {
+    background-color: transparent;
+}
+
+.dark-mode .comment-action.disabled:hover {
+    background-color: transparent;
+}
+
+.load-more-comments {
+    text-align: center;
+    margin-top: var(--spacing-lg);
+}
+
+/* Hide scrollbars but maintain scrolling functionality */
+* {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;     /* Firefox */
+}
+
+/* For Webkit browsers like Chrome/Safari */
+*::-webkit-scrollbar {
+    display: none;
+}
+
+/* Maintain scrolling functionality */
+.thread-container, 
+.discussion-sidebar, 
+.comments-section,
+.thread-body {
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+.dark-mode .comment {
+    background-color: var(--background-darker);
+}
+
+.thread-original-comment {
+    display: flex;
+    padding: 1rem;
+    background-color: var(--background-light);
+    margin-bottom: 1rem;
+}
+
+.dark-mode .thread-original-comment {
+    background-color: var(--background-darker);
+}
+
+.thread-reply {
+    display: flex;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    background-color: var(--background-light);
+}
+
+.dark-mode .thread-reply {
+    background-color: var(--background-darker);
+}
+
+/* Replying to indicator styling */
+.replying-to-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--background-light);
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    border-left: 3px solid var(--thread-border-light);
+}
+
+.dark-mode .replying-to-indicator {
+    background-color: var(--background-darker);
+    border-left-color: var(--thread-border-dark);
+}
+
+.replying-to-text {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.replying-to-text span {
+    font-size: 18px;
+}
+
+.cancel-reply-to {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 50%;
+}
+
+.cancel-reply-to:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: var(--text-primary);
+}
+
+.dark-mode .cancel-reply-to:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary-dark);
+}
+
+/* Highlight for thread reply being replied to */
+.thread-reply.is-replying-to {
+    border: 1px solid var(--thread-border-light);
+    background-color: rgba(42, 133, 255, 0.05);
+}
+
+.dark-mode .thread-reply.is-replying-to {
+    border: 1px solid var(--thread-border-dark);
+    background-color: rgba(74, 154, 255, 0.05);
 } 

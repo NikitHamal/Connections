@@ -1,259 +1,202 @@
-// User Menu Functionality
-document.addEventListener('DOMContentLoaded', function() {
-    // Firebase References
-    const auth = firebase.auth();
-    const database = firebase.database();
+/**
+ * User Menu functionality
+ * Handles user menu dropdown and user info display
+ */
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize user menu
+    initUserMenu();
     
-    // Check Authentication State
-    auth.onAuthStateChanged(function(user) {
+    // Setup logout functionality
+    setupLogoutFunctionality();
+    
+    // Set up authentication state change listener
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+        firebase.auth().onAuthStateChanged(handleAuthStateChanged);
+    } else {
+        console.log('Firebase auth not available, using local storage fallback');
+        // If Firebase is not available, try to use localStorage
+        const user = getCurrentUser();
         if (user) {
-            // User is signed in
-            handleSignedInUser(user);
+            updateUIForAuthState(user);
         } else {
-            // User is signed out
-            handleSignedOutUser();
-        }
-    });
-    
-    // Handle Signed In User
-    async function handleSignedInUser(user) {
-        try {
-            // Get user profile data
-            const userProfile = await getUserProfile(user.uid);
-            
-            // Update UI for signed in user
-            updateUIForSignedInUser(user, userProfile);
-            
-            // Setup user menu functionality
-            setupUserMenu();
-            
-            // Replace "Join Connections" buttons with "Start Writing" buttons
-            replaceJoinButtons();
-            
-            // Initialize notifications
-            initializeNotifications(user.uid);
-            
-        } catch (error) {
-            console.error('Error handling signed in user:', error);
-        }
-    }
-    
-    // Initialize Notifications
-    async function initializeNotifications(userId) {
-        try {
-            // Listen for notification updates in real-time
-            database.ref(`users/${userId}/notifications`).on('value', (snapshot) => {
-                updateNotificationBadges(snapshot.val());
-            });
-        } catch (error) {
-            console.error('Error initializing notifications:', error);
-        }
-    }
-    
-    // Update Notification Badges
-    function updateNotificationBadges(notifications) {
-        // Calculate unread count
-        let unreadCount = 0;
-        
-        if (notifications) {
-            // Convert to array if it's an object
-            const notificationsArray = Array.isArray(notifications) 
-                ? notifications 
-                : Object.values(notifications);
-            
-            // Count unread notifications
-            unreadCount = notificationsArray.filter(notification => !notification.read).length;
-        }
-        
-        // Update header notification badge
-        const headerBadges = document.querySelectorAll('.notification-badge:not(.menu-notification-badge)');
-        headerBadges.forEach(badge => {
-            badge.textContent = unreadCount;
-            badge.style.display = unreadCount > 0 ? 'flex' : 'none';
-        });
-        
-        // Update menu notification badge
-        const menuBadges = document.querySelectorAll('.menu-notification-badge');
-        menuBadges.forEach(badge => {
-            badge.textContent = unreadCount;
-            badge.style.display = unreadCount > 0 ? 'flex' : 'none';
-        });
-        
-        // Store count in localStorage for other pages to access
-        localStorage.setItem('unreadNotifications', unreadCount);
-    }
-    
-    // Handle Signed Out User
-    function handleSignedOutUser() {
-        // Show login/signup buttons
-        const authButtons = document.querySelectorAll('.auth-buttons');
-        authButtons.forEach(container => {
-            container.style.display = 'flex';
-        });
-        
-        // Hide user menu
-        const userMenuContainers = document.querySelectorAll('.user-menu-container');
-        userMenuContainers.forEach(container => {
-            container.style.display = 'none';
-        });
-        
-        // Reset notification badges
-        updateNotificationBadges(null);
-    }
-    
-    // Update UI for Signed In User
-    function updateUIForSignedInUser(user, userProfile) {
-        // Hide login/signup buttons
-        const authButtons = document.querySelectorAll('.auth-buttons');
-        authButtons.forEach(container => {
-            container.style.display = 'none';
-        });
-        
-        // Show user menu
-        const userMenuContainers = document.querySelectorAll('.user-menu-container');
-        userMenuContainers.forEach(container => {
-            container.style.display = 'block';
-            
-            // Update user avatar
-            const avatarImgs = container.querySelectorAll('.user-avatar-small img, .user-menu-avatar img');
-            avatarImgs.forEach(img => {
-                img.src = user.photoURL || userProfile?.photoURL || 'https://via.placeholder.com/150';
-            });
-            
-            // Update user name
-            const userNameElements = container.querySelectorAll('.user-name-small, .user-menu-name');
-            userNameElements.forEach(element => {
-                element.textContent = user.displayName || userProfile?.displayName || 'User';
-            });
-            
-            // Update user email
-            const userEmailElements = container.querySelectorAll('.user-menu-email');
-            userEmailElements.forEach(element => {
-                element.textContent = user.email || userProfile?.email || '';
-            });
-        });
-    }
-    
-    // Setup User Menu Functionality
-    function setupUserMenu() {
-        const userMenuTriggers = document.querySelectorAll('.user-menu-trigger');
-        
-        userMenuTriggers.forEach(trigger => {
-            trigger.addEventListener('click', function(e) {
-                e.stopPropagation();
-                
-                const container = this.closest('.user-menu-container');
-                container.classList.toggle('active');
-                
-                // Close other menus
-                document.querySelectorAll('.user-menu-container').forEach(otherContainer => {
-                    if (otherContainer !== container) {
-                        otherContainer.classList.remove('active');
-                    }
-                });
-            });
-        });
-        
-        // Close menu when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.user-menu-container')) {
-                document.querySelectorAll('.user-menu-container').forEach(container => {
-                    container.classList.remove('active');
-                });
-            }
-        });
-        
-        // Setup logout functionality
-        const logoutLinks = document.querySelectorAll('.logout-link');
-        logoutLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                // Sign out from Firebase
-                auth.signOut().then(() => {
-                    console.log('User signed out');
-                    // Redirect to home page
-                    window.location.href = 'index.html';
-                }).catch((error) => {
-                    console.error('Error signing out:', error);
-                });
-            });
-        });
-    }
-    
-    // Replace Join Buttons with Write Buttons
-    function replaceJoinButtons() {
-        const joinButtons = document.querySelectorAll('.btn-primary:not(.write-button)');
-        
-        joinButtons.forEach(button => {
-            if (button.textContent.includes('Join Connections')) {
-                // Replace with write button
-                button.innerHTML = '<span class="material-symbols-rounded">edit</span> Start Writing';
-                button.classList.add('write-button');
-                
-                // Update href or click handler
-                if (button.tagName === 'A') {
-                    button.href = 'write.html';
-                } else {
-                    button.addEventListener('click', function() {
-                        window.location.href = 'write.html';
-                    });
-                }
-            }
-        });
-    }
-    
-    // Get User Profile
-    async function getUserProfile(uid) {
-        try {
-            const snapshot = await database.ref(`users/${uid}`).once('value');
-            return snapshot.val();
-        } catch (error) {
-            console.error('Error getting user profile:', error);
-            throw error;
+            updateUIForAuthState(null);
         }
     }
 });
 
 /**
- * User Profile Menu Functionality
- * Handles displaying user info and dropdown menu
+ * Handle authentication state changes
  */
-document.addEventListener('DOMContentLoaded', () => {
-    initUserMenu();
-});
+function handleAuthStateChanged(user) {
+    if (user) {
+        // User is signed in
+        console.log('User is signed in:', user.uid);
+        
+        // Store user data in localStorage for persistence
+        storeUserData(user);
+            
+            // Update UI for signed in user
+        updateUIForAuthState(user);
+        
+        // Fetch additional user profile data if needed
+        fetchUserProfile(user.uid);
+    } else {
+        // User is signed out
+        console.log('User is signed out');
+        localStorage.removeItem('userData');
+        updateUIForAuthState(null);
+    }
+}
 
+/**
+ * Store user data in localStorage
+ */
+function storeUserData(user) {
+    const userData = {
+        uid: user.uid,
+        displayName: user.displayName || 'User',
+        email: user.email,
+        photoURL: user.photoURL
+    };
+    
+    localStorage.setItem('userData', JSON.stringify(userData));
+}
+
+/**
+ * Fetch additional user profile data from database
+ */
+function fetchUserProfile(uid) {
+    if (typeof firebase !== 'undefined' && firebase.database) {
+        firebase.database().ref(`users/${uid}`).once('value')
+            .then(snapshot => {
+                const userData = snapshot.val();
+                if (userData) {
+                    // Update localStorage with additional profile data
+                    const currentData = getCurrentUser();
+                    const updatedData = { ...currentData, ...userData };
+                    localStorage.setItem('userData', JSON.stringify(updatedData));
+                    
+                    // Update UI with the complete user data
+                    updateUIForAuthState(updatedData);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching user profile:', error);
+            });
+    }
+}
+
+/**
+ * Initialize user menu functionality
+ */
 function initUserMenu() {
-    const userMenuTrigger = document.querySelector('.user-menu-trigger');
-    const userMenuDropdown = document.querySelector('.user-menu-dropdown');
-    const userNameElements = document.querySelectorAll('.user-name-small, .user-menu-name');
-    const userEmailElement = document.querySelector('.user-menu-email');
-    const userAvatarElements = document.querySelectorAll('.user-avatar-small img, .user-menu-avatar img');
+    setupUserMenuToggle();
     
     // Get user data from localStorage or fetch from server
     const currentUser = getCurrentUser();
     
     // Update UI based on authentication state
     updateUIForAuthState(currentUser);
+}
+
+/**
+ * Setup user menu toggle functionality
+ */
+function setupUserMenuToggle() {
+    // Find all user menu triggers
+    const userMenuTriggers = document.querySelectorAll('.user-menu-trigger');
+    const userMenuContainers = document.querySelectorAll('.user-menu-container');
     
-    // Toggle dropdown menu
-    if (userMenuTrigger && userMenuDropdown) {
-        userMenuTrigger.addEventListener('click', (e) => {
+    userMenuTriggers.forEach((trigger) => {
+        if (!trigger) return;
+        
+        trigger.addEventListener('click', (e) => {
+            e.preventDefault();
             e.stopPropagation();
-            userMenuDropdown.classList.toggle('active');
+            
+            // Get the parent container
+            const container = trigger.closest('.user-menu-container');
+            if (!container) return;
+            
+            // Close any open menus first
+            userMenuContainers.forEach(otherContainer => {
+                if (otherContainer !== container) {
+                    otherContainer.classList.remove('active');
+                }
+            });
+            
+            // Toggle the dropdown
+            container.classList.toggle('active');
+            
+            // Force dropdown to be visible if it's not
+            const dropdown = container.querySelector('.user-menu-dropdown');
+            if (dropdown) {
+                dropdown.style.display = container.classList.contains('active') ? 'block' : 'none';
+                dropdown.style.opacity = container.classList.contains('active') ? '1' : '0';
+                dropdown.style.visibility = container.classList.contains('active') ? 'visible' : 'hidden';
+            }
             
             // Add click event listener to document to close menu when clicking outside
             document.addEventListener('click', closeMenuOnClickOutside);
         });
-    }
+    });
+}
+
+/**
+ * Close menu when clicking outside
+ */
+function closeMenuOnClickOutside(e) {
+    const userMenuContainers = document.querySelectorAll('.user-menu-container');
     
-    // Close menu when clicking outside
-    function closeMenuOnClickOutside(e) {
-        if (!userMenuDropdown.contains(e.target) && e.target !== userMenuTrigger) {
-            userMenuDropdown.classList.remove('active');
-            document.removeEventListener('click', closeMenuOnClickOutside);
+    userMenuContainers.forEach(container => {
+        // Check if the click is outside the menu container
+        if (!container.contains(e.target)) {
+            container.classList.remove('active');
+            
+            // Force dropdown to be hidden
+            const dropdown = container.querySelector('.user-menu-dropdown');
+            if (dropdown) {
+                dropdown.style.display = 'none';
+                dropdown.style.opacity = '0';
+                dropdown.style.visibility = 'hidden';
+            }
         }
-    }
+    });
+    
+    // Remove the click event listener after checking
+    document.removeEventListener('click', closeMenuOnClickOutside);
+}
+
+/**
+ * Setup logout functionality
+ */
+function setupLogoutFunctionality() {
+    const logoutLinks = document.querySelectorAll('.logout-link');
+    
+    logoutLinks.forEach(link => {
+        if (!link) return;
+        
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            if (typeof firebase !== 'undefined' && firebase.auth) {
+                firebase.auth().signOut()
+                    .then(() => {
+                        console.log('User signed out successfully');
+                        localStorage.removeItem('userData');
+                        window.location.href = 'index.html';
+                    })
+                    .catch(error => {
+                        console.error('Error signing out:', error);
+                    });
+            } else {
+                // Fallback if Firebase is not available
+                localStorage.removeItem('userData');
+                window.location.href = 'index.html';
+            }
+        });
+    });
 }
 
 /**
@@ -275,49 +218,145 @@ function getCurrentUser() {
  * Updates all UI elements based on authentication state
  */
 function updateUIForAuthState(user) {
-    const authButtons = document.querySelector('.auth-buttons');
-    const userMenuContainer = document.querySelector('.user-menu-container');
-    const profileBtn = document.querySelector('.profile-btn'); 
-    const loginBtn = document.querySelector('.login-btn');
-    const signupBtn = document.querySelector('.signup-btn');
+    const authButtons = document.querySelectorAll('.auth-buttons');
+    const userMenuContainers = document.querySelectorAll('.user-menu-container');
+    const loginBtns = document.querySelectorAll('.login-btn');
+    const signupBtns = document.querySelectorAll('.signup-btn');
+    const profileBtns = document.querySelectorAll('.profile-btn');
     const userNameElements = document.querySelectorAll('.user-name-small, .user-menu-name');
-    const userEmailElement = document.querySelector('.user-menu-email');
+    const userEmailElements = document.querySelectorAll('.user-menu-email');
     const userAvatarElements = document.querySelectorAll('.user-avatar-small img, .user-menu-avatar img');
+    const joinButtons = document.querySelectorAll('.btn-primary.btn-large:not(.write-button)');
+    
+    // Apply shimmer effect to elements while loading
+    const allUserElements = [
+        ...(Array.from(userNameElements) || []), 
+        ...(Array.from(userAvatarElements) || [])
+    ];
+    
+    allUserElements.forEach(el => {
+        if (el) el.classList.add('shimmer');
+    });
+    
+    // Set display style directly with !important flag in CSS
+    const styleEl = document.createElement('style');
+    document.head.appendChild(styleEl);
     
     if (user) {
         // User is logged in
+        console.log('Updating UI for logged in user:', user.displayName);
+        
+        // Add CSS rule for auth state
+        styleEl.textContent = `
+            .auth-buttons { display: none !important; }
+            .user-menu-container { display: block !important; }
+        `;
         
         // Hide auth buttons, show user menu
-        if (authButtons) authButtons.style.display = 'none';
-        if (userMenuContainer) userMenuContainer.style.display = 'block';
-        if (profileBtn) profileBtn.style.display = 'none';
-        if (loginBtn) loginBtn.style.display = 'none';
-        if (signupBtn) signupBtn.style.display = 'none';
+        authButtons.forEach(btn => {
+            if (btn) btn.style.display = 'none';
+        });
+        
+        userMenuContainers.forEach(container => {
+            if (container) {
+                container.style.display = 'block';
+                container.style.visibility = 'visible';
+            }
+        });
+        
+        profileBtns.forEach(btn => {
+            if (btn) btn.style.display = 'none';
+        });
+        
+        loginBtns.forEach(btn => {
+            if (btn) btn.style.display = 'none';
+        });
+        
+        signupBtns.forEach(btn => {
+            if (btn) btn.style.display = 'none';
+        });
+        
+        // Update join buttons to be "Write a Post" instead
+        joinButtons.forEach(btn => {
+            if (btn && (btn.textContent.includes('Join') || btn.textContent.includes('Get Started'))) {
+                btn.href = 'write.html';
+                btn.textContent = 'Start Writing';
+            }
+        });
         
         // Update user info in UI
         userNameElements.forEach(el => {
-            if (el) el.textContent = user.displayName || 'User';
+            if (el) {
+                el.textContent = user.displayName || 'User';
+                el.classList.remove('shimmer');
+            }
         });
         
-        if (userEmailElement) {
-            userEmailElement.textContent = user.email || '';
-        }
+        userEmailElements.forEach(el => {
+            if (el) {
+                el.textContent = user.email || '';
+                el.classList.remove('shimmer');
+            }
+        });
         
         // Update avatar in UI
-        const avatarUrl = user.photoURL || 'https://via.placeholder.com/150';
+        const avatarUrl = user.photoURL || user.profile?.avatarUrl || 'images/default-avatar.png';
         userAvatarElements.forEach(el => {
-            if (el) el.src = avatarUrl;
+            if (el) {
+                el.src = avatarUrl;
+                el.classList.remove('shimmer');
+                el.alt = user.displayName || 'User';
+                
+                // Handle image load error
+                el.onerror = function() {
+                    this.src = 'images/default-avatar.png';
+                };
+                
+                // Make sure parent container has proper styling
+                const avatarContainer = el.parentElement;
+                if (avatarContainer) {
+                    avatarContainer.style.display = 'flex';
+                    avatarContainer.style.alignItems = 'center';
+                    avatarContainer.style.justifyContent = 'center';
+                }
+            }
         });
         
     } else {
         // User is logged out
+        console.log('Updating UI for logged out user');
+        
+        // Add CSS rule for auth state
+        styleEl.textContent = `
+            .auth-buttons { display: flex !important; }
+            .user-menu-container { display: none !important; }
+        `;
         
         // Show auth buttons, hide user menu
-        if (authButtons) authButtons.style.display = 'flex';
-        if (userMenuContainer) userMenuContainer.style.display = 'none';
-        if (profileBtn) profileBtn.style.display = 'none';
-        if (loginBtn) loginBtn.style.display = 'inline-flex';
-        if (signupBtn) signupBtn.style.display = 'inline-flex';
+        authButtons.forEach(btn => {
+            if (btn) btn.style.display = 'flex';
+        });
+        
+        userMenuContainers.forEach(container => {
+            if (container) container.style.display = 'none';
+        });
+        
+        profileBtns.forEach(btn => {
+            if (btn) btn.style.display = 'none';
+        });
+        
+        loginBtns.forEach(btn => {
+            if (btn) btn.style.display = 'inline-flex';
+        });
+        
+        signupBtns.forEach(btn => {
+            if (btn) btn.style.display = 'inline-flex';
+        });
+        
+        // Remove shimmer from elements
+        allUserElements.forEach(el => {
+            if (el) el.classList.remove('shimmer');
+        });
     }
 }
 
@@ -326,6 +365,7 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         initUserMenu,
         getCurrentUser,
-        updateUIForAuthState
+        updateUIForAuthState,
+        handleAuthStateChanged
     };
 } 
