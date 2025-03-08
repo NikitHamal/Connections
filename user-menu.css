@@ -288,4 +288,41 @@
 .dark-mode .dark-icon {
     opacity: 1;
     transform: translate(-50%, -50%) rotate(0);
+}
+
+/* Notification badge in user menu */
+.notification-menu-item {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.menu-notification-badge {
+    position: relative;
+    top: auto;
+    right: 0;
+    margin-left: auto;
+    font-size: 0.7rem;
+    font-weight: 600;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--error);
+    color: white;
+    border-radius: 50%;
+    transform: none;
+}
+
+.dark-mode .menu-notification-badge {
+    background-color: var(--error);
+    color: white;
+}
+
+/* Hide when no notifications */
+.menu-notification-badge:empty,
+.menu-notification-badge[data-count="0"] {
+    display: none;
 } 

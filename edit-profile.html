@@ -12,21 +12,36 @@
     <link rel="stylesheet" href="profile.css">
     <link rel="stylesheet" href="edit-profile.css">
 </head>
-<body>
-    <header class="profile-header-minimal">
-        <div class="container">
-            <button class="back-button" id="back-button" aria-label="Go back">
-                <span class="material-symbols-rounded">arrow_back</span>
+<body class="light-mode">
+    <div class="stars-container"></div>
+    
+    <header>
+        <a href="javascript:history.back()" class="back-button">
+            <span class="material-symbols-rounded">arrow_back</span>
+        </a>
+        <div class="logo">
+            <span class="logo-text">Connections</span>
+        </div>
+        <div class="header-actions">
+            <button class="theme-toggle" aria-label="Toggle dark mode">
+                <span class="material-symbols-rounded light-icon">light_mode</span>
+                <span class="material-symbols-rounded dark-icon">dark_mode</span>
             </button>
-            <div class="header-title">Edit Profile</div>
-            <div class="header-actions">
-                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
-                    <span class="material-symbols-rounded light-icon">light_mode</span>
-                    <span class="material-symbols-rounded dark-icon">dark_mode</span>
+            <a href="notifications.html" class="btn btn-icon notifications-btn">
+                <span class="material-symbols-rounded">notifications</span>
+                <span class="notification-badge">0</span>
+            </a>
+            <div class="user-menu-container">
+                <button class="user-menu-trigger">
+                    <div class="user-avatar-small">
+                        <img src="https://via.placeholder.com/150" alt="User avatar">
+                    </div>
+                    <span class="user-name-small">Nikit Hamal</span>
                 </button>
             </div>
         </div>
     </header>
+    <div class="mobile-menu-overlay"></div>
 
     <main class="edit-profile-main">
         <div class="container">
@@ -143,6 +158,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <script src="script.js"></script>
     <script src="firebase-init.js"></script>
+    <script src="user-menu.js"></script>
     <script src="edit-profile.js"></script>
 </body>
 </html> 

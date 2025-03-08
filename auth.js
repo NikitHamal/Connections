@@ -480,7 +480,7 @@ function initAuthStateListener() {
                 email: user.email || '',
                 photoURL: user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName || 'User'}&background=random`
             }));
-        } else {
+                } else {
             sessionStorage.removeItem('currentUser');
         }
     });

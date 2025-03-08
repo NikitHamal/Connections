@@ -15,22 +15,12 @@
     <div class="stars-container"></div>
     
     <header>
-        <button class="mobile-menu-toggle" aria-label="Toggle mobile menu">
-            <span class="material-symbols-rounded">menu</span>
-        </button>
+        <a href="javascript:history.back()" class="back-button">
+            <span class="material-symbols-rounded">arrow_back</span>
+        </a>
         <div class="logo">
             <span class="logo-text">Connections</span>
         </div>
-        <nav>
-            <ul>
-                <li><a href="index.html" class="nav-link"><span class="indicator"></span>Home</a></li>
-                <li><a href="explore.html" class="nav-link"><span class="indicator"></span>Discussions</a></li>
-                <li><a href="topics.html" class="nav-link"><span class="indicator"></span>Topics</a></li>
-                <li><a href="write.html" class="nav-link"><span class="indicator"></span>New Post</a></li>
-                <li><a href="leaderboard.html" class="nav-link active"><span class="indicator"></span>Leaderboard</a></li>
-                <li><a href="about.html" class="nav-link"><span class="indicator"></span>About</a></li>
-            </ul>
-        </nav>
         <div class="header-actions">
             <button class="theme-toggle" aria-label="Toggle dark mode">
                 <span class="material-symbols-rounded light-icon">light_mode</span>
@@ -40,11 +30,13 @@
                 <span class="material-symbols-rounded">notifications</span>
                 <span class="notification-badge">0</span>
             </a>
-            <a href="signin.html" class="btn btn-secondary login-btn">Log in</a>
-            <a href="signup.html" class="btn btn-primary signup-btn">Sign up</a>
-            <div class="profile-btn">
-                <div class="avatar"></div>
-                <span class="username">User</span>
+            <div class="user-menu-container">
+                <button class="user-menu-trigger">
+                    <div class="user-avatar-small">
+                        <img src="https://via.placeholder.com/150" alt="User avatar">
+                    </div>
+                    <span class="user-name-small">Nikit Hamal</span>
+                </button>
             </div>
         </div>
     </header>
@@ -174,6 +166,7 @@
     </main>
 
     <script src="script.js"></script>
+    <script src="user-menu.js"></script>
     <script type="module" src="leaderboard.js"></script>
 </body>
 </html> 
