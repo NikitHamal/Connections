@@ -69,6 +69,7 @@
     visibility: hidden;
     transform: translateY(-10px);
     transition: all 0.2s ease;
+    pointer-events: none;
 }
 
 .dark-mode .user-menu-dropdown {
@@ -80,6 +81,7 @@
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
+    pointer-events: auto;
 }
 
 .user-menu-header {

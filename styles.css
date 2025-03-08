@@ -356,25 +356,28 @@ section {
 header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: var(--spacing-md) var(--spacing-xl);
+    justify-content: flex-start;
+    padding: var(--spacing-sm) var(--spacing-lg);
     position: sticky;
     top: 0;
     background-color: var(--background);
     z-index: 100;
     box-shadow: var(--shadow-sm);
     transition: background-color var(--transition-normal);
+    height: 60px;
 }
 
 .logo {
     display: flex;
     align-items: center;
+    margin-right: auto;
 }
 
 .logo-text {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 600;
     color: var(--text-primary);
+    margin-left: var(--spacing-sm);
 }
 
 /* Center navigation for desktop - hide the connections text in center */

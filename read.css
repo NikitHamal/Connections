@@ -1,15 +1,37 @@
-/* Read Page Styles */
-.read-main {
-    padding: var(--spacing-xl) 0;
-    min-height: calc(100vh - 80px);
+:root {
+    --border-light: rgba(0, 0, 0, 0.1);
+    --border-dark: rgba(255, 255, 255, 0.15);
+    --primary-rgb: 79, 70, 229; /* RGB values for primary color */
 }
 
+.dark-mode {
+    --border-light: rgba(255, 255, 255, 0.15);
+    --border-dark: rgba(255, 255, 255, 0.25);
+    --primary-rgb: 99, 91, 255; /* Slightly brighter for dark mode */
+}
+
+.read-main {
+    display: flex;
+    min-height: calc(100vh - 70px);
+    padding: var(--spacing-xl) 0;
+}
+
+.dark-mode .read-main {
+    background-color: #121212; /* Dark background for the main container */
+}
+
+/* Read Container Styles */
 .read-container {
     display: flex;
     gap: var(--spacing-xl);
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 var(--spacing-md);
+    padding: var(--spacing-xl);
+    background-color: transparent;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+.dark-mode .read-container {
+    background-color: transparent; /* Ensure container is transparent in dark mode */
 }
 
 /* Main Thread Content */
@@ -20,11 +42,15 @@
     border-radius: 12px;
     padding: var(--spacing-xl);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-light);
+    width: 100%;
+    max-width: 100%;
+    min-width: 0; /* Prevent flex items from overflowing */
 }
 
 .dark-mode .thread-content {
     background-color: rgba(29, 35, 41, 0.8);
-    border: 1px solid rgba(58, 62, 69, 0.3);
+    border: 1px solid var(--border-dark);
 }
 
 .thread-breadcrumbs {
@@ -55,6 +81,7 @@
 
 .thread-header {
     margin-bottom: var(--spacing-lg);
+    width: 100%;
 }
 
 .thread-meta {
@@ -100,7 +127,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--accent-light);
+    background-color: var(--background-light);
 }
 
 .thread-author-avatar img {
@@ -120,6 +147,7 @@
     line-height: 1.7;
     color: var(--text-primary);
     margin-bottom: var(--spacing-lg);
+    width: 100%;
 }
 
 .thread-body p {
@@ -226,12 +254,9 @@
 }
 
 .comment-avatar {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    background-size: cover;
-    background-position: center;
-    margin-right: 8px;
     flex-shrink: 0;
     overflow: hidden;
     display: flex;
@@ -269,9 +294,22 @@
 
 .dark-mode .comment-input, 
 .dark-mode .reply-input {
-    background-color: rgba(0, 0, 0, 0.2);
-    border-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(29, 35, 41, 0.8);
+    border: 1px solid var(--dark-border);
     color: var(--dark-text-primary);
+}
+
+.dark-mode .comment-input:focus, 
+.dark-mode .reply-input:focus {
+    border-color: rgba(var(--primary-rgb), 0.7);
+    box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.2);
+    outline: none;
+}
+
+.dark-mode .comment-input::placeholder, 
+.dark-mode .reply-input::placeholder {
+    color: var(--dark-text-secondary);
+    opacity: 0.6;
 }
 
 .comment-actions {
@@ -283,119 +321,128 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-lg);
-    position: relative;
 }
 
 .comment {
     position: relative;
-    margin-bottom: 1rem;
-    padding: 1rem;
-    border-radius: 0.75rem;
+    margin-bottom: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
     background-color: var(--background-light);
-    transition: background-color 0.2s, border-color 0.2s;
-    border: 1px solid transparent;
+    transition: background-color 0.2s;
+    border: 1px solid var(--border-light);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    font-size: 0.95rem;
 }
 
-.comment:hover {
-    border-color: var(--thread-border-light);
+.dark-mode .comment {
+    background-color: var(--background-darker);
+    border: 1px solid var(--border-dark);
 }
 
-.dark-mode .comment:hover {
-    border-color: var(--thread-border-dark);
+/* Horizontal dividers between comments */
+.comment:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    bottom: -0.5rem;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: var(--border-light);
 }
 
-/* Comment with replies styling */
-.comment[data-has-replies="true"] {
-    margin-bottom: 0.25rem;
+.dark-mode .comment:not(:last-child)::after {
+    background-color: var(--border-dark);
 }
 
-/* Enhanced border colors for threads */
-:root {
-    --thread-border-light: #2a85ff;
-    --thread-border-dark: #4a9aff;
-}
-
-/* Thread line connector */
-.comment[data-has-replies="true"]::after {
+/* Thread line indicators */
+.comment[data-has-replies="true"]::before {
     content: '';
     position: absolute;
     width: 2px;
-    background-color: var(--thread-border-light);
-    left: 18px; /* Center of avatar */
-    top: 60px; /* Just below avatar */
-    height: calc(100% - 50px); /* Dynamic height */
-    z-index: 0;
+    background-color: var(--primary);
+    left: 18px; /* Half of the avatar width */
+    top: 55px; /* Below the avatar */
+    bottom: -10px;
+    z-index: 1;
 }
 
-.dark-mode .comment[data-has-replies="true"]::after {
-    background-color: var(--thread-border-dark);
+/* Thread replies in the main view */
+.comment.thread-reply {
+    margin-left: 2rem;
+    padding-left: 1rem;
+    border-left: 3px solid var(--primary);
+    background-color: var(--background);
 }
 
-/* Thread replies styling in the main view */
-.comment + .comment[data-parent-id]:not([data-parent-id=""]) {
-    margin-top: 0;
-    margin-left: 1.5rem;
-    margin-bottom: 0.5rem;
-    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
-    border-left: 2px solid var(--thread-border-light);
+.dark-mode .comment.thread-reply {
+    border-left-color: var(--primary);
+    background-color: var(--background-dark);
 }
 
-.dark-mode .comment + .comment[data-parent-id]:not([data-parent-id=""]) {
-    border-left-color: var(--thread-border-dark);
-}
-
-/* Clear indicator for the original comment */
-.comment:not([data-parent-id]), 
-.comment[data-parent-id=""] {
-    border-left: none;
-}
-
-/* Thread connections in sidebar */
+/* Thread replies in the main view */
 .thread-replies {
     position: relative;
-    margin-left: calc(36px / 2); /* Half avatar width */
-    border-left: 2px solid var(--thread-border-light);
-    padding-left: 1rem;
-    padding-top: 0.5rem;
+    margin-left: 16px; /* Half of smaller avatar width */
+    padding-left: 16px;
+    border-left: 2px solid var(--primary);
 }
 
 .dark-mode .thread-replies {
-    border-left-color: var(--thread-border-dark);
+    border-left-color: var(--primary);
 }
 
-/* Enhanced nested reply styling */
+/* Nested reply thread connector */
 .nested-reply {
     position: relative;
-    margin-left: 1.75rem;
+    margin-left: 1.5rem;
+    padding-left: 0.5rem;
+    border-left: 1px solid var(--primary);
 }
 
+/* Horizontal connector line for nested replies */
 .nested-reply::before {
     content: '';
     position: absolute;
-    left: -1.75rem;
-    top: 50%;
+    left: -1.5rem;
+    top: 1.25rem;
     width: 1.25rem;
     height: 2px;
-    background-color: var(--thread-border-light);
+    background-color: var(--primary);
 }
 
-.dark-mode .nested-reply::before {
-    background-color: var(--thread-border-dark);
+/* Secondary vertical line for nested reply to nested reply */
+.level-2:before,
+.level-3:before,
+.level-4:before,
+.level-5:before {
+    left: -2rem;
+    width: 1.75rem;
 }
 
-/* Highlight active comment in thread */
+/* Add a vertical connector for deeply nested replies */
+.level-2:after,
+.level-3:after,
+.level-4:after,
+.level-5:after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    background-color: var(--primary);
+    left: -2rem;
+    top: 0;
+    height: 1.25rem;
+    z-index: 0;
+}
+
+/* Highlight active comment in thread with primary color border */
 .comment.active {
-    border: 2px solid var(--thread-border-light);
-}
-
-.dark-mode .comment.active {
-    border: 2px solid var(--thread-border-dark);
+    border: 2px solid var(--primary) !important;
 }
 
 /* Responsive thread view adjustments */
 @media (max-width: 768px) {
-    .comment[data-has-replies="true"]::after {
+    .comment[data-has-replies="true"]::before {
         left: 16px;
     }
     
@@ -418,6 +465,7 @@
 .thread-sidebar {
     width: 300px;
     flex-shrink: 0;
+    min-width: 0; /* Prevent flex items from overflowing */
 }
 
 .sidebar-section {
@@ -427,6 +475,7 @@
     padding: var(--spacing-lg);
     margin-bottom: var(--spacing-lg);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    width: 100%;
 }
 
 .dark-mode .sidebar-section {
@@ -533,15 +582,27 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-md);
+    width: 100%;
 }
 
 .similar-thread {
     padding-bottom: var(--spacing-sm);
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    width: 100%;
 }
 
 .dark-mode .similar-thread {
     border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Similar threads loading state */
+.similar-thread.loading {
+    width: 100%;
+}
+
+.similar-thread.loading .loading-title,
+.similar-thread.loading .loading-meta {
+    width: 100%;
 }
 
 .similar-thread-title {
@@ -566,6 +627,7 @@
     background-color: rgba(0, 0, 0, 0.1);
     border-radius: 4px;
     animation: pulse 1.5s infinite;
+    max-width: 100%; /* Ensure they don't exceed container width */
 }
 
 .dark-mode .loading-meta, 
@@ -584,29 +646,31 @@
 
 .loading-meta {
     height: 1rem;
-    width: 150px;
+    width: 30%; /* Increased from 150px */
     margin-bottom: var(--spacing-sm);
 }
 
 .loading-title {
     height: 2rem;
-    width: 80%;
+    width: 100%; /* Changed from 80% to full width */
     margin-bottom: var(--spacing-md);
 }
 
 .loading-author {
     height: 1.5rem;
-    width: 200px;
+    width: 40%; /* Increased from 200px */
 }
 
 .loading-paragraph {
     height: 1rem;
+    width: 100%; /* Ensure full width */
     margin-bottom: var(--spacing-md);
 }
 
 .loading-comment {
     height: 120px;
     position: relative;
+    width: 100%; /* Ensure full width */
 }
 
 .loading-comment:before {
@@ -639,49 +703,34 @@
     background-color: rgba(255, 255, 255, 0.2);
 }
 
-/* Error Message */
-.error-message {
-    text-align: center;
-    padding: var(--spacing-xl);
-    color: var(--text-secondary);
+/* Thread content should maintain full width during loading */
+.thread-header,
+.thread-body {
+    width: 100%;
 }
 
-.error-message .material-symbols-rounded {
-    font-size: 3rem;
-    margin-bottom: var(--spacing-md);
-    opacity: 0.7;
+/* Ensure consistent width between loading and loaded states */
+.thread-content {
+    width: 100%;
+    max-width: 100%;
 }
 
-.error-message h2 {
-    margin-bottom: var(--spacing-sm);
-}
-
-.error-message p {
-    margin-bottom: var(--spacing-md);
-}
-
-.error-message .btn {
-    margin-top: var(--spacing-sm);
-}
-
-/* Responsive Styles */
 @media (max-width: 992px) {
     .read-container {
         flex-direction: column;
+        padding: var(--spacing-lg);
+        width: 100% !important;
+    }
+    
+    .thread-content {
+        order: 1;
+        width: 100%;
     }
     
     .thread-sidebar {
+        order: 2;
         width: 100%;
-        display: flex;
-        flex-wrap: wrap;
-        gap: var(--spacing-md);
-        order: -1;
-        margin-bottom: var(--spacing-md);
-    }
-    
-    .sidebar-section {
-        flex: 1;
-        min-width: 250px;
+        margin-top: 2rem;
     }
 }
 
@@ -756,6 +805,81 @@
     text-decoration: underline;
 }
 
+/* Fix thread reply form to be at the bottom unchangeably */
+.thread-reply-form {
+    position: sticky;
+    bottom: 0;
+    z-index: 50;
+    background-color: var(--bg-color);
+    padding: 1rem;
+    border-top: 1px solid var(--border-color);
+    margin-top: auto;
+}
+
+.dark-mode .thread-reply-form {
+    background-color: var(--bg-color-dark);
+    border-top-color: var(--border-dark);
+}
+
+/* Hide main scroll progress bar while maintaining scrolling functionality */
+body::-webkit-scrollbar {
+    width: 0 !important;
+    display: none !important;
+}
+
+body {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+/* Remove button animations when uploading/posting */
+.action-button,
+.reply-button,
+.comment-action,
+button[type="submit"] {
+    transform: none !important;
+    transition: none !important;
+}
+
+.action-button:hover,
+.reply-button:hover,
+.comment-action:hover,
+button[type="submit"]:hover {
+    transform: none !important;
+}
+
+/* Maintain consistent width for shimmer thread content */
+.loading-paragraph,
+.loading-title,
+.loading-meta,
+.loading-author {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* Fix user menu trigger button */
+.user-menu-trigger {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    z-index: 1000;
+}
+
+/* Remove animations */
+* {
+    animation: none !important;
+    transition: none !important;
+}
+
+/* Exception for loading spinner which needs to spin */
+.loading-spinner {
+    animation: spin 1s linear infinite !important;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 /* Profile Hover Card */
 .profile-hover-card {
     position: absolute;
@@ -798,14 +922,23 @@
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    background-size: cover;
-    background-position: center;
+    background-color: #eee;
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin-right: 12px;
-    background-color: #e0e0e0;
+}
+
+.hover-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .dark-mode .hover-avatar {
-    background-color: #2a2a3a;
+    background-color: #333;
 }
 
 .hover-user-info {
@@ -978,23 +1111,25 @@
 .discussion-sidebar {
     position: fixed;
     top: 0;
-    right: -350px; /* Completely off screen */
+    right: -350px; /* Hidden by default */
     width: 350px;
     height: 100vh;
     background-color: var(--background);
     box-shadow: -3px 0 10px rgba(0, 0, 0, 0.1);
     z-index: 1000;
-    transition: right 0.3s ease;
+    transition: all 0.3s ease;
     overflow-y: auto;
     padding: 1rem;
     display: flex;
     flex-direction: column;
-    visibility: hidden; /* Ensure it's completely hidden */
-    opacity: 0; /* Fade effect */
+    opacity: 0; /* Start invisible */
+    visibility: hidden; /* Start hidden */
 }
 
+/* Dark mode styles for discussion sidebar */
 .dark-mode .discussion-sidebar {
-    background-color: var(--background-dark);
+    background-color: rgba(18, 24, 32, 0.95);
+    border-left: 1px solid var(--dark-border);
     box-shadow: -3px 0 10px rgba(0, 0, 0, 0.3);
 }
 
@@ -1007,6 +1142,8 @@
 .discussion-sidebar.fullscreen {
     width: 100%;
     right: 0;
+    opacity: 1;
+    visibility: visible;
 }
 
 .discussion-sidebar.fullscreen ~ header {
@@ -1016,25 +1153,8 @@
 /* Show sidebar when active */
 .discussion-sidebar.active {
     right: 0;
-    visibility: visible;
     opacity: 1;
-}
-
-/* Restore normal layout until sidebar is opened */
-.read-container {
-    transition: margin-right 0.3s ease;
-    margin-right: 0;
-}
-
-.read-container.sidebar-open {
-    margin-right: 350px;
-}
-
-/* Media query adjustment for sidebar */
-@media (max-width: 1100px) {
-    .read-container.sidebar-open {
-        margin-right: 0;
-    }
+    visibility: visible;
 }
 
 img {
@@ -1102,7 +1222,6 @@ img {
 .thread-container {
     flex: 1;
     overflow-y: auto;
-    padding-right: 0.5rem;
 }
 
 .empty-thread {
@@ -1122,72 +1241,74 @@ img {
 }
 
 .thread-original-comment {
-    position: relative;
-    border-radius: 0.75rem;
-    border: 1px solid transparent;
-    transition: border-color 0.2s;
+    display: flex;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    background-color: var(--background-light);
+    margin-bottom: 0.75rem;
+    border: 1px solid var(--border-light);
+    font-size: 0.95rem;
 }
 
-.thread-original-comment:hover {
-    border-color: var(--thread-border-light);
-}
-
-.dark-mode .thread-original-comment:hover {
-    border-color: var(--thread-border-dark);
+.dark-mode .thread-original-comment {
+    background-color: var(--background-darker);
+    border: 1px solid var(--border-dark);
 }
 
 .thread-replies {
-    position: relative;
-    margin-left: calc(36px / 2); /* Half avatar width */
-    border-left: 2px solid var(--thread-border-light);
+    margin-left: 1rem;
+    border-left: 2px solid var(--border-light);
     padding-left: 1rem;
-    padding-top: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .dark-mode .thread-replies {
-    border-left-color: var(--thread-border-dark);
+    border-left-color: var(--border-dark);
 }
 
 .thread-reply {
-    border: 1px solid transparent;
-    transition: border-color 0.2s;
+    display: flex;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    background-color: var(--background-light);
+    border: 1px solid var(--border-light);
+    font-size: 0.9rem;
 }
 
-.thread-reply:hover {
-    border-color: var(--thread-border-light);
-}
-
-.dark-mode .thread-reply:hover {
-    border-color: var(--thread-border-dark);
+.dark-mode .thread-reply {
+    background-color: var(--background-darker);
+    border: 1px solid var(--border-dark);
 }
 
 .nested-reply {
-    margin-left: 1.75rem;
+    margin-left: 1.5rem;
+    position: relative;
 }
 
-.nested-reply::before {
+.nested-reply:before {
     content: '';
     position: absolute;
-    left: -1.75rem;
-    top: 50%;
-    width: 1.25rem;
+    left: -1.5rem;
+    top: 1.5rem;
+    width: 1rem;
     height: 2px;
-    background-color: var(--thread-border-light);
+    background-color: var(--border-light);
 }
 
-.dark-mode .nested-reply::before {
-    background-color: var(--thread-border-dark);
+.dark-mode .nested-reply:before {
+    background-color: var(--border-dark);
 }
 
 .thread-reply-form {
     display: flex;
     margin-top: 1rem;
     padding-top: 1rem;
-    border-top: 1px solid var(--thread-border-light);
+    border-top: 1px solid var(--border-light);
 }
 
 .dark-mode .thread-reply-form {
-    border-top-color: var(--thread-border-dark);
+    border-top-color: var(--border-dark);
 }
 
 .reply-input-container {
@@ -1199,7 +1320,7 @@ img {
     width: 100%;
     min-height: 80px;
     padding: 0.75rem;
-    border: 1px solid var(--thread-border-light);
+    border: 1px solid var(--border-light);
     border-radius: 0.5rem;
     background-color: var(--background);
     margin-bottom: 0.5rem;
@@ -1210,7 +1331,7 @@ img {
 
 .dark-mode .reply-input {
     background-color: var(--background-dark);
-    border-color: var(--thread-border-dark);
+    border-color: var(--border-dark);
     color: var(--text-primary-dark);
 }
 
@@ -1312,8 +1433,8 @@ img {
 /* Ensure consistent avatar size in thread view */
 .thread-original-comment .comment-avatar,
 .thread-reply .comment-avatar {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
 }
 
 /* Consistent avatar sizing in all contexts */
@@ -1330,7 +1451,6 @@ img {
     background-color: var(--background-light);
 }
 
-.comment-avatar img,
 .user-avatar img,
 .author-avatar img {
     width: 100%;
@@ -1342,23 +1462,24 @@ img {
 .comment-author {
     font-weight: 500;
     color: var(--text-primary);
+    font-size: 0.9rem;
 }
 
 .comment-meta {
     color: var(--text-secondary);
-    font-size: 0.85rem;
+    font-size: 0.75rem;
 }
 
 .comment-body {
-    margin-top: 0.5rem;
-    margin-bottom: 0.75rem;
+    margin-top: 0.375rem;
+    margin-bottom: 0.5rem;
     color: var(--text-primary);
-    line-height: 1.6;
+    line-height: 1.4;
 }
 
 .comment-footer {
     display: flex;
-    gap: var(--spacing-md);
+    gap: 0.75rem;
     align-items: center;
 }
 
@@ -1367,10 +1488,10 @@ img {
     align-items: center;
     gap: 4px;
     color: var(--text-secondary);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     cursor: pointer;
     transition: color 0.2s ease;
-    padding: 4px 8px;
+    padding: 3px 6px;
     border-radius: 4px;
 }
 
@@ -1411,111 +1532,263 @@ img {
     margin-top: var(--spacing-lg);
 }
 
-/* Hide scrollbars but maintain scrolling functionality */
-* {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;     /* Firefox */
-}
-
-/* For Webkit browsers like Chrome/Safari */
-*::-webkit-scrollbar {
+/* Hide scrollbars while maintaining scrolling functionality */
+.thread-container::-webkit-scrollbar,
+.thread-content::-webkit-scrollbar,
+.discussion-sidebar::-webkit-scrollbar,
+.read-container::-webkit-scrollbar,
+body::-webkit-scrollbar {
+    width: 0;
+    background: transparent;
     display: none;
 }
 
-/* Maintain scrolling functionality */
-.thread-container, 
-.discussion-sidebar, 
-.comments-section,
-.thread-body {
-    overflow-y: auto;
+/* For Firefox */
+.thread-container,
+.thread-content,
+.discussion-sidebar,
+.read-container,
+body {
     scrollbar-width: none;
 }
 
-.dark-mode .comment {
-    background-color: var(--background-darker);
+/* For IE and Edge */
+.thread-container,
+.thread-content,
+.discussion-sidebar,
+.read-container,
+body {
+    -ms-overflow-style: none;
 }
 
-.thread-original-comment {
-    display: flex;
-    padding: 1rem;
-    background-color: var(--background-light);
-    margin-bottom: 1rem;
+/* Styling for the comment being replied to */
+.thread-reply.replying-to,
+.thread-original-comment.replying-to {
+    border: 2px dashed var(--primary) !important;
+    background-color: rgba(var(--primary-rgb), 0.05);
 }
 
-.dark-mode .thread-original-comment {
-    background-color: var(--background-darker);
+.dark-mode .thread-reply.replying-to,
+.dark-mode .thread-original-comment.replying-to {
+    background-color: rgba(var(--primary-rgb), 0.1);
 }
 
-.thread-reply {
-    display: flex;
-    margin-bottom: 1rem;
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    background-color: var(--background-light);
+/* Improved styling for nested replies based on level */
+.nested-reply.level-1 {
+    margin-left: 1.5rem;
 }
 
-.dark-mode .thread-reply {
-    background-color: var(--background-darker);
+.nested-reply.level-2 {
+    margin-left: 2rem;
 }
 
-/* Replying to indicator styling */
-.replying-to-indicator {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: var(--background-light);
-    border-radius: 8px;
-    padding: 8px 12px;
-    margin-bottom: 12px;
-    border-left: 3px solid var(--thread-border-light);
+.nested-reply.level-3,
+.nested-reply.level-4,
+.nested-reply.level-5 {
+    margin-left: 2.5rem;
 }
 
-.dark-mode .replying-to-indicator {
-    background-color: var(--background-darker);
-    border-left-color: var(--thread-border-dark);
+.dark-mode .comment[data-has-replies="true"]::before {
+    background-color: var(--primary);
 }
 
-.replying-to-text {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.9rem;
-    color: var(--text-secondary);
+.dark-mode .nested-reply::before {
+    background-color: var(--primary);
 }
 
-.replying-to-text span {
-    font-size: 18px;
+.dark-mode .level-2:after,
+.dark-mode .level-3:after,
+.dark-mode .level-4:after,
+.dark-mode .level-5:after {
+    background-color: var(--primary);
 }
 
-.cancel-reply-to {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--text-secondary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 4px;
-    border-radius: 50%;
+.dark-mode .nested-reply {
+    border-left-color: var(--primary);
 }
 
-.cancel-reply-to:hover {
+/* Thread content additions for better dark mode styling */
+.dark-mode .thread-votes {
+    color: var(--dark-text-secondary);
+}
+
+.dark-mode .action-button {
+    color: var(--dark-text-secondary);
+    background-color: transparent; 
+}
+
+.dark-mode .thread-body img,
+.dark-mode .thread-content img,
+.dark-mode .comment-content img {
+    border: 1px solid var(--dark-border);
     background-color: rgba(0, 0, 0, 0.1);
-    color: var(--text-primary);
 }
 
-.dark-mode .cancel-reply-to:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: var(--text-primary-dark);
+.dark-mode .thread-meta {
+    color: var(--dark-text-secondary);
 }
 
-/* Highlight for thread reply being replied to */
-.thread-reply.is-replying-to {
-    border: 1px solid var(--thread-border-light);
-    background-color: rgba(42, 133, 255, 0.05);
+.dark-mode .thread-topic {
+    color: var(--dark-accent-secondary);
 }
 
-.dark-mode .thread-reply.is-replying-to {
-    border: 1px solid var(--thread-border-dark);
-    background-color: rgba(74, 154, 255, 0.05);
-} 
+.dark-mode .thread-date {
+    color: var(--dark-text-secondary);
+}
+
+.dark-mode .thread-title {
+    color: var(--dark-text-primary);
+}
+
+/* Reply and comments styling improvements */
+.dark-mode .comment-author {
+    color: var(--dark-text-primary);
+}
+
+.dark-mode .comment-meta {
+    color: var(--dark-text-secondary);
+}
+
+/* Improve reply form visibility in dark mode */
+.dark-mode .comment-input-container {
+    background-color: transparent;
+}
+
+.dark-mode .comment-form {
+    border-color: var(--dark-border);
+}
+
+/* Enhance thread-replies in dark mode */
+.dark-mode .thread-original-comment,
+.dark-mode .thread-reply {
+    background-color: rgba(29, 35, 41, 0.7);
+    border-color: var(--dark-border);
+}
+
+.dark-mode .comments-title {
+    color: var(--dark-text-primary);
+}
+
+/* Add focus styling for buttons and interactive elements */
+.dark-mode .action-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.3);
+}
+
+.dark-mode .reply-button,
+.dark-mode .comment-button {
+    background-color: rgba(var(--primary-rgb), 0.9);
+    color: white;
+    border: none;
+}
+
+.dark-mode .reply-button:hover,
+.dark-mode .comment-button:hover {
+    background-color: rgba(var(--primary-rgb), 1);
+}
+
+/* Enhance sidebar styling in dark mode */
+.dark-mode .discussion-sidebar {
+    background-color: rgba(18, 24, 32, 0.95);
+    border-left: 1px solid var(--dark-border);
+}
+
+.dark-mode .sidebar-section {
+    background-color: rgba(29, 35, 41, 0.5);
+    border: 1px solid var(--dark-border);
+}
+
+.dark-mode .sidebar-section h3 {
+    color: var(--dark-text-primary);
+}
+
+.dark-mode .stat-item {
+    color: var(--dark-text-secondary);
+}
+
+.dark-mode .stat-value {
+    color: var(--dark-text-primary);
+}
+
+.dark-mode .stat-label {
+    color: var(--dark-text-secondary);
+}
+
+.dark-mode .author-name {
+    color: var(--dark-text-primary);
+}
+
+.dark-mode .author-joined {
+    color: var(--dark-text-secondary);
+}
+
+.dark-mode .similar-thread-title {
+    color: var(--dark-text-primary);
+}
+
+.dark-mode .similar-thread-meta {
+    color: var(--dark-text-secondary);
+}
+
+/* Better scrollbar styling in dark mode */
+.dark-mode .thread-container::-webkit-scrollbar,
+.dark-mode .discussion-sidebar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.dark-mode .thread-container::-webkit-scrollbar-track,
+.dark-mode .discussion-sidebar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .thread-container::-webkit-scrollbar-thumb,
+.dark-mode .discussion-sidebar::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+}
+
+.dark-mode .thread-container::-webkit-scrollbar-thumb:hover,
+.dark-mode .discussion-sidebar::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+/* Ensure author info loading states have consistent width */
+.author-info .loading-title,
+.author-info .loading-meta {
+    width: 100%;
+}
+
+/* Error Message */
+.error-message {
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--text-secondary);
+}
+
+.error-message .material-symbols-rounded {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-md);
+    opacity: 0.7;
+}
+
+.error-message h2 {
+    margin-bottom: var(--spacing-sm);
+}
+
+.error-message p {
+    margin-bottom: var(--spacing-md);
+}
+
+.error-message .btn {
+    margin-top: var(--spacing-sm);
+}
+
+/* Force consistent widths when content is loading */
+@media (max-width: 992px) {
+    .read-container {
+        flex-direction: column;
+        padding: var(--spacing-lg);
+        width: 100% !important;
+    }
+}

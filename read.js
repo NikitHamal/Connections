@@ -101,34 +101,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     addProfileHoverCard();
     initDiscussionThreads(); // Ensure discussion threads are initialized even if no comments
     
-    // Check for avatar images and replace with default if needed
-    document.querySelectorAll('.comment-avatar, .user-avatar, .author-avatar').forEach(avatar => {
-        const bgImg = getComputedStyle(avatar).backgroundImage;
-        
-        // If it doesn't have a background image or failed to load
-        if (!bgImg || bgImg === 'none') {
-            avatar.innerHTML = '<span class="material-symbols-rounded">person_outline</span>';
-            avatar.style.display = 'flex';
-            avatar.style.alignItems = 'center';
-            avatar.style.justifyContent = 'center';
-        } else {
-            // Check if the image loads successfully
-            const img = new Image();
-            img.onerror = function() {
-                avatar.innerHTML = '<span class="material-symbols-rounded">person_outline</span>';
-                avatar.style.backgroundImage = 'none';
-                avatar.style.display = 'flex';
-                avatar.style.alignItems = 'center';
-                avatar.style.justifyContent = 'center';
-            };
-            
-            // Extract URL and check if it loads
-            const imgUrl = bgImg.match(/url\(['"]?(.*?)['"]?\)/);
-            if (imgUrl && imgUrl[1]) {
-                img.src = imgUrl[1];
-            }
-        }
-    });
+    // Initialize user menu
+    if (typeof setupUserMenuToggle === 'function') {
+        setupUserMenuToggle();
+    } else {
+        console.error('User menu setup function not found');
+    }
 });
 
 // Load thread and comments
@@ -174,10 +152,10 @@ function renderThread(thread) {
             </div>
             <h1 class="thread-title">${thread.title}</h1>
             <div class="thread-author-info">
-                <a href="profile-view.html?uid=${thread.authorId}" class="author-profile-link">
-                <div class="thread-author-avatar">
-                    <img src="${thread.authorAvatar || 'images/default-avatar.png'}" alt="${thread.authorName || 'Anonymous'}" />
-                </div>
+                <a href="profile-view.html?uid=${thread.authorId}" class="author-profile-link" data-author-id="${thread.authorId}">
+                    <div class="thread-author-avatar">
+                        <img src="${thread.authorAvatar || 'images/default-avatar.png'}" alt="${thread.authorName || 'Anonymous'}" onerror="this.onerror=null; this.src='images/default-avatar.png';" />
+                    </div>
                     <span class="thread-author-name">${thread.authorName || 'Anonymous'}</span>
                 </a>
             </div>
@@ -229,64 +207,64 @@ async function loadComments() {
             throw new Error(result.error);
         }
         
-    replies = result.replies || [];
-    
-    // Process replies to add author information where missing
-            for (const reply of replies) {
-        if (reply.authorId && (!reply.authorAvatar || !reply.authorName)) {
-                    try {
-                // Get user profile
-                        const userRef = ref(database, `users/${reply.authorId}`);
-                        const userSnapshot = await get(userRef);
-                        
-                        if (userSnapshot.exists()) {
-                            const userData = userSnapshot.val();
-                            const profile = userData.profile || {};
+        replies = result.replies || [];
+        
+        // Process replies to add author information where missing
+        for (const reply of replies) {
+            if (reply.authorId && (!reply.authorAvatar || !reply.authorName)) {
+                try {
+                    // Get user profile
+                    const userRef = ref(database, `users/${reply.authorId}`);
+                    const userSnapshot = await get(userRef);
                     
+                    if (userSnapshot.exists()) {
+                        const userData = userSnapshot.val();
+                        const profile = userData.profile || {};
+                        
                         // Set author details if missing
                         if (!reply.authorName) {
-                                reply.authorName = profile.displayName || userData.displayName || 'Anonymous';
+                            reply.authorName = profile.displayName || userData.displayName || 'Anonymous';
                         }
                         
                         if (!reply.authorAvatar) {
                             reply.authorAvatar = profile.photoURL || userData.photoURL || profile.avatarUrl || 'images/default-avatar.png';
                         }
-                            }
-                        } catch (error) {
-                    console.error(`Error fetching author details for reply ${reply.id}:`, error);
-                        }
                     }
+                } catch (error) {
+                    console.error(`Error fetching author details for reply ${reply.id}:`, error);
                 }
-                
-    // Update reply count in thread
-    if (repliesCount) {
-        repliesCount.textContent = replies.length || 0;
-    }
-            
-    // Show/hide load more button
-            if (loadMoreCommentsBtn) {
-        loadMoreCommentsBtn.parentElement.style.display = replies.length > 10 ? 'block' : 'none';
-    }
-    
-    // Filter top-level comments (those without parent or those with parent that doesn't exist)
-    const validParentIds = new Set(replies.map(reply => reply.id));
-    const topLevelComments = replies.filter(reply => 
-        !reply.parentId || (reply.parentId && !validParentIds.has(reply.parentId))
-    );
-    
-    // Render comments
-    renderComments(topLevelComments);
-    
-    // Initialize discussion threads
-    initDiscussionThreads();
-    
+            }
+        }
+        
+        // Update reply count in thread
+        if (repliesCount) {
+            repliesCount.textContent = replies.length || 0;
+        }
+        
+        // Show/hide load more button
+        if (loadMoreCommentsBtn) {
+            loadMoreCommentsBtn.parentElement.style.display = replies.length > 10 ? 'block' : 'none';
+        }
+        
+        // Filter top-level comments (those without parent or those with parent that doesn't exist)
+        const validParentIds = new Set(replies.map(reply => reply.id));
+        const topLevelComments = replies.filter(reply => 
+            !reply.parentId || (reply.parentId && !validParentIds.has(reply.parentId))
+        );
+        
+        // Render comments
+        renderComments(topLevelComments);
+        
+        // Initialize discussion threads
+        initDiscussionThreads();
+        
     } catch (error) {
-    console.error('Error loading comments:', error);
+        console.error('Error loading comments:', error);
         if (commentsList) {
             commentsList.innerHTML = `
                 <div class="error-message">
-                <p>Failed to load comments. Please try refreshing the page.</p>
-        </div>
+                    <p>Failed to load comments. Please try refreshing the page.</p>
+                </div>
             `;
         }
     }
@@ -298,7 +276,14 @@ function renderComments(comments) {
     
     commentsList.innerHTML = '';
     
-    comments.forEach(comment => {
+    // Sort comments by creation date - oldest first
+    const sortedComments = [...comments].sort((a, b) => {
+        const dateA = new Date(a.createdAt || 0);
+        const dateB = new Date(b.createdAt || 0);
+        return dateA - dateB; // Oldest first (ascending order)
+    });
+    
+    sortedComments.forEach(comment => {
         const commentEl = createCommentElement(comment);
         commentsList.appendChild(commentEl);
     });
@@ -309,64 +294,80 @@ function renderComments(comments) {
 
 // Create a comment element
 function createCommentElement(comment) {
-    const commentEl = document.createElement('div');
-    commentEl.className = 'comment';
-    commentEl.dataset.id = comment.id;
-    commentEl.dataset.authorId = comment.authorId || '';
-    commentEl.dataset.parentId = comment.parentId || '';
+    const commentElement = document.createElement('div');
+    commentElement.className = 'comment';
+    commentElement.dataset.commentId = comment.id;
+    commentElement.dataset.authorId = comment.authorId; // Store the author ID
+    commentElement.dataset.hasReplies = comment.replies && comment.replies.length > 0 ? 'true' : 'false';
     
-    // Check if this comment has replies
-    const hasReplies = replies.some(reply => reply.parentId === comment.id);
-    commentEl.dataset.hasReplies = hasReplies.toString();
+    const authorPhotoURL = comment.authorAvatar || 'images/default-avatar.png';
+    const createdDate = formatDate(comment.createdAt);
     
-    const replyCount = replies.filter(reply => reply.parentId === comment.id).length;
-    const commentDate = formatDate(comment.createdAt);
-    const avatarUrl = comment.authorAvatar || 'images/default-avatar.png';
-    
-    commentEl.innerHTML = `
+    commentElement.innerHTML = `
         <div class="comment-header">
-            <a href="profile-view.html?uid=${comment.authorId}" class="comment-author-link">
-                <div class="comment-avatar" style="background-image: url('${avatarUrl}')"></div>
-                <div class="comment-info">
-                    <div class="comment-author">${comment.authorName || 'Anonymous'}</div>
-                    <div class="comment-meta">${commentDate}</div>
-                </div>
-            </a>
+            <div class="comment-avatar">
+                <img src="${authorPhotoURL}" alt="${comment.authorName || 'Anonymous'}" onerror="this.onerror=null; this.src='images/default-avatar.png';">
+            </div>
+            <div class="comment-info">
+                <a href="profile.html?uid=${comment.authorId}" class="comment-author-link" data-author-id="${comment.authorId}">
+                    <span class="comment-author">${comment.authorName || 'Anonymous'}</span>
+                </a>
+                <span class="comment-meta">${createdDate}</span>
+            </div>
         </div>
         <div class="comment-body">
-            <p>${comment.content}</p>
+            ${comment.content}
         </div>
         <div class="comment-footer">
-            <div class="comment-action upvote" data-id="${comment.id}">
-                <span class="material-symbols-rounded">thumb_up</span>
-                <span class="count">${comment.upvotes || 0}</span>
-            </div>
-            <div class="comment-action downvote" data-id="${comment.id}">
-                <span class="material-symbols-rounded">thumb_down</span>
-                <span class="count">${comment.downvotes || 0}</span>
-            </div>
-            <div class="comment-action reply" data-id="${comment.id}">
-                <span class="material-symbols-rounded">forum</span>
-                <span>${hasReplies ? `Replies (${replyCount})` : 'Reply'}</span>
+            <div class="comment-actions">
+                <button class="comment-action upvote" title="Upvote" data-comment-id="${comment.id}">
+                    <span class="material-symbols-rounded">thumb_up</span>
+                    <span class="count">${comment.upvotes || 0}</span>
+                </button>
+                <button class="comment-action downvote" title="Downvote" data-comment-id="${comment.id}">
+                    <span class="material-symbols-rounded">thumb_down</span>
+                    <span class="count">${comment.downvotes || 0}</span>
+                </button>
+                <button class="comment-action reply-button" title="Reply" data-comment-id="${comment.id}">
+                    <span class="material-symbols-rounded">reply</span>
+                    <span>Reply</span>
+                </button>
             </div>
         </div>
     `;
     
-    // Add fallback for avatar image loading errors
-    const avatarElement = commentEl.querySelector('.comment-avatar');
-    if (avatarElement) {
-        const img = new Image();
-        img.onerror = function() {
-            avatarElement.innerHTML = '<span class="material-symbols-rounded">person_outline</span>';
-            avatarElement.style.backgroundImage = 'none';
-            avatarElement.style.display = 'flex';
-            avatarElement.style.alignItems = 'center';
-            avatarElement.style.justifyContent = 'center';
-        };
-        img.src = avatarUrl;
+    // Function to find and render nested replies to this comment
+    function findNestedReplies(replyId) {
+        // ... existing nested replies code
     }
     
-    return commentEl;
+    // If the comment has replies, render them
+    if (comment.replies && comment.replies.length > 0) {
+        // Create a container for replies
+        const repliesContainer = document.createElement('div');
+        repliesContainer.className = 'thread-replies';
+        
+        // Add each reply to the container
+        comment.replies.forEach(replyId => {
+            // Find the reply data from all comments
+            const replyData = replies.find(c => c.id === replyId);
+            if (replyData) {
+                // Create reply element
+                const replyElement = createCommentElement(replyData);
+                replyElement.classList.add('thread-reply');
+                
+                // Check if this reply has its own replies
+                findNestedReplies(replyId);
+                
+                repliesContainer.appendChild(replyElement);
+            }
+        });
+        
+        // Append replies container after the comment
+        commentElement.appendChild(repliesContainer);
+    }
+    
+    return commentElement;
 }
 
 // Set up comment actions (votes, reply)
@@ -435,7 +436,7 @@ function setupCommentActions() {
                     <p>Replying to <strong>${comment.querySelector('.comment-author').textContent}</strong></p>
                     <button class="cancel-reply">
                         <span class="material-symbols-rounded">close</span>
-                        </button>
+                    </button>
                 `;
                 commentForm.insertBefore(replyTag, commentForm.firstChild);
                 
@@ -475,8 +476,8 @@ async function handleCommentSubmit(e) {
         const replyData = {
             content,
             authorId: currentUser.uid,
-        authorName: currentUser.displayName || 'Anonymous',
-        authorAvatar: currentUser.photoURL || 'images/default-avatar.png'
+            authorName: currentUser.displayName || 'Anonymous',
+            authorAvatar: currentUser.photoURL || 'images/default-avatar.png'
         };
         
         // Check if this is a reply to another comment
@@ -667,28 +668,29 @@ async function loadAuthorInfo(authorId) {
         const profile = userData.profile || {};
         
         // Get photoURL from either profile or user data
-    // Check all possible locations where avatar URL could be stored
-    const photoURL = profile.photoURL || userData.photoURL || profile.avatarUrl || 'images/default-avatar.png';
-    
-    console.log('Author avatar URL:', photoURL); // Debug log
+        const photoURL = profile.photoURL || userData.photoURL || profile.avatarUrl || 'images/default-avatar.png';
+        
+        // Store author data for hover card
+        thread.authorData = {
+            displayName: profile.displayName || userData.displayName || 'Anonymous',
+            avatarUrl: photoURL,
+            bio: profile.bio || userData.bio || '',
+            joinDate: userData.createdAt,
+            threadCount: userData.stats?.threadCount || 0,
+            replyCount: userData.stats?.replyCount || 0
+        };
+        thread.authorId = authorId; // Store authorId explicitly
         
         // Update author info in thread header
-        const authorAvatarEl = document.querySelector('.thread-author-avatar');
+        const authorAvatarEl = document.querySelector('.thread-author-avatar img');
         const authorNameEl = document.querySelector('.thread-author-name');
         
         if (authorAvatarEl) {
-        authorAvatarEl.style.backgroundImage = `url('${photoURL}')`;
-        
-        // Fallback if image fails to load
-        const img = new Image();
-        img.onerror = function() {
-            authorAvatarEl.innerHTML = '<span class="material-symbols-rounded">person_outline</span>';
-            authorAvatarEl.style.backgroundImage = 'none';
-            authorAvatarEl.style.display = 'flex';
-            authorAvatarEl.style.alignItems = 'center';
-            authorAvatarEl.style.justifyContent = 'center';
-        };
-        img.src = photoURL;
+            authorAvatarEl.src = photoURL;
+            authorAvatarEl.onerror = function() {
+                this.onerror = null;
+                this.src = 'images/default-avatar.png';
+            };
         }
         
         if (authorNameEl) {
@@ -697,21 +699,19 @@ async function loadAuthorInfo(authorId) {
         
         // Update author info in sidebar
         if (authorAvatar) {
-        authorAvatar.style.backgroundImage = `url('${photoURL}')`;
-        
-        // Fallback if image fails to load
-        const img = new Image();
-        img.onerror = function() {
-            authorAvatar.innerHTML = '<span class="material-symbols-rounded">person_outline</span>';
-            authorAvatar.style.backgroundImage = 'none';
-            authorAvatar.style.display = 'flex';
-            authorAvatar.style.alignItems = 'center';
-            authorAvatar.style.justifyContent = 'center';
-        };
-        img.src = photoURL;
+            const avatarImg = authorAvatar.querySelector('img');
+            if (!avatarImg) {
+                authorAvatar.innerHTML = `<img src="${photoURL}" alt="${profile.displayName || userData.displayName || 'Anonymous'}" onerror="this.onerror=null; this.src='images/default-avatar.png';" />`;
+            } else {
+                avatarImg.src = photoURL;
+                avatarImg.onerror = function() {
+                    this.onerror = null;
+                    this.src = 'images/default-avatar.png';
+                };
+            }
         }
         
-            if (authorName) {
+        if (authorName) {
             authorName.textContent = profile.displayName || userData.displayName || 'Anonymous';
         }
         
@@ -731,6 +731,9 @@ async function loadAuthorInfo(authorId) {
         if (commentsCount) {
             commentsCount.textContent = userData.stats?.replyCount || 0;
         }
+        
+        // Initialize profile hover cards after data is loaded
+        addProfileHoverCard();
     } catch (error) {
         console.error('Error loading author info:', error);
     }
@@ -791,7 +794,7 @@ async function loadSimilarThreads(topic) {
                         const userData = userSnapshot.val();
                         const profile = userData.profile || {};
                         threadData.authorName = profile.displayName || userData.displayName || 'Anonymous';
-                } else {
+                    } else {
                         threadData.authorName = 'Anonymous';
                     }
                 } catch (error) {
@@ -837,50 +840,52 @@ function updateAuthUI(user) {
             profileBtn.style.display = 'flex';
             
             // Try to get the user's profile data
-            getUserProfile(user.uid).then(result => {
-                if (result.success && result.profile) {
+            if (user.email) {
+                getUserProfile(user.uid).then(result => {
                     const username = document.querySelector('.username');
                     const avatar = document.querySelector('.avatar');
                     
-                    if (username) {
+                    if (username && result.profile) {
                         username.textContent = result.profile.displayName || 'User';
                     }
                     
-                    if (avatar && result.profile.avatarUrl) {
+                    if (avatar && result.profile && result.profile.avatarUrl) {
                         avatar.style.backgroundImage = `url(${result.profile.avatarUrl})`;
                     }
-                }
-            });
-        }
-            
-            // Check if user is the author of the thread
-            if (thread && thread.authorId === user.uid) {
-                // Disable voting buttons if user is the author
-                const upvoteBtn = document.querySelector('.thread-votes .upvote');
-                const downvoteBtn = document.querySelector('.thread-votes .downvote');
-                
-                if (upvoteBtn) {
-                    upvoteBtn.disabled = true;
-                    upvoteBtn.title = 'You cannot vote on your own discussion';
-                    upvoteBtn.classList.add('disabled');
-                }
-                
-                if (downvoteBtn) {
-                    downvoteBtn.disabled = true;
-                    downvoteBtn.title = 'You cannot vote on your own discussion';
-                    downvoteBtn.classList.add('disabled');
-                }
+                }).catch(error => {
+                    console.error('Error getting user profile:', error);
+                });
             }
-        } else {
-            // User is signed out
-            if (loginBtn) loginBtn.style.display = 'inline-flex';
-            if (signupBtn) signupBtn.style.display = 'inline-flex';
-            if (profileBtn) profileBtn.style.display = 'none';
         }
+        
+        // Check if user is the author of the thread
+        if (thread && thread.authorId === user.uid) {
+            // Disable voting buttons if user is the author
+            const upvoteBtn = document.querySelector('.thread-votes .upvote');
+            const downvoteBtn = document.querySelector('.thread-votes .downvote');
+            
+            if (upvoteBtn) {
+                upvoteBtn.disabled = true;
+                upvoteBtn.title = 'You cannot vote on your own discussion';
+                upvoteBtn.classList.add('disabled');
+            }
+            
+            if (downvoteBtn) {
+                downvoteBtn.disabled = true;
+                downvoteBtn.title = 'You cannot vote on your own discussion';
+                downvoteBtn.classList.add('disabled');
+            }
+        }
+    } else {
+        // User is signed out
+        if (loginBtn) loginBtn.style.display = 'inline-flex';
+        if (signupBtn) signupBtn.style.display = 'inline-flex';
+        if (profileBtn) profileBtn.style.display = 'none';
     }
-    
-    // Show error message
-    function showError(message) {
+}
+
+// Show error message
+function showError(message) {
     if (threadContent) {
         threadContent.innerHTML = `
             <div class="error-message">
@@ -888,8 +893,8 @@ function updateAuthUI(user) {
                 <h3>Something went wrong</h3>
                 <p>${message}</p>
                 <button class="btn btn-primary" onclick="window.location.href='explore.html'">Back to Discussions</button>
-                </div>
-            `;
+            </div>
+        `;
     } else {
         // If thread content element doesn't exist, create an error message in the main container
         const container = document.querySelector('.read-container') || document.body;
@@ -905,223 +910,199 @@ function updateAuthUI(user) {
     }
     
     console.error(message);
+}
+
+// Format date helper
+function formatDate(timestamp, fullDate = false) {
+    if (!timestamp) return '';
+    
+    const date = new Date(timestamp);
+    const now = new Date();
+    
+    if (fullDate) {
+        return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
     }
     
-    // Format date helper
-    function formatDate(timestamp, fullDate = false) {
-        if (!timestamp) return '';
-        
-        const date = new Date(timestamp);
-        const now = new Date();
-        
-        if (fullDate) {
-            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-        }
-        
-        const diffMs = now - date;
-        const diffSec = Math.floor(diffMs / 1000);
-        const diffMin = Math.floor(diffSec / 60);
-        const diffHour = Math.floor(diffMin / 60);
-        const diffDay = Math.floor(diffHour / 24);
-        
-        if (diffDay > 30) {
-            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-        } else if (diffDay > 1) {
-            return `${diffDay} days ago`;
-        } else if (diffDay === 1) {
-            return 'yesterday';
-        } else if (diffHour >= 1) {
-            return `${diffHour}h ago`;
-        } else if (diffMin >= 1) {
-            return `${diffMin}m ago`;
-        } else {
-            return 'just now';
-        }
+    const diffMs = now - date;
+    const diffSec = Math.floor(diffMs / 1000);
+    const diffMin = Math.floor(diffSec / 60);
+    const diffHour = Math.floor(diffMin / 60);
+    const diffDay = Math.floor(diffHour / 24);
+    
+    if (diffDay > 30) {
+        return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    } else if (diffDay > 1) {
+        return `${diffDay} days ago`;
+    } else if (diffDay === 1) {
+        return 'yesterday';
+    } else if (diffHour >= 1) {
+        return `${diffHour}h ago`;
+    } else if (diffMin >= 1) {
+        return `${diffMin}m ago`;
+    } else {
+        return 'just now';
+    }
+}
+
+// Add profile hover card functionality
+function addProfileHoverCard() {
+    // Create hover card element if it doesn't exist
+    let hoverCard = document.querySelector('.profile-hover-card');
+    if (!hoverCard) {
+        hoverCard = document.createElement('div');
+        hoverCard.className = 'profile-hover-card';
+        document.body.appendChild(hoverCard);
     }
     
-    // Add profile hover card functionality
-    function addProfileHoverCard() {
-        if (!thread.authorData) return;
-        
-        // Create hover card element if it doesn't exist
-        let hoverCard = document.querySelector('.profile-hover-card');
-        if (!hoverCard) {
-            hoverCard = document.createElement('div');
-            hoverCard.className = 'profile-hover-card';
-            document.body.appendChild(hoverCard);
+    // Add hover event listeners to author elements
+    const authorLink = document.querySelector('.author-profile-link');
+    if (authorLink && thread.authorData) {
+        authorLink.addEventListener('mouseenter', (e) => showHoverCard(e, thread.authorData, thread.authorId));
+        authorLink.addEventListener('mouseleave', hideHoverCard);
+    }
+    
+    // Also add hover to sidebar author info
+    const sidebarAuthorInfo = document.querySelector('.author-info');
+    if (sidebarAuthorInfo && thread.authorData) {
+        sidebarAuthorInfo.addEventListener('mouseenter', (e) => showHoverCard(e, thread.authorData, thread.authorId));
+        sidebarAuthorInfo.addEventListener('mouseleave', hideHoverCard);
+    }
+    
+    // Add hover to comment author links
+    const commentAuthorLinks = document.querySelectorAll('.comment-author-link');
+    commentAuthorLinks.forEach(link => {
+        const commentEl = link.closest('.comment');
+        if (commentEl) {
+            const authorId = commentEl.dataset.authorId;
+            if (authorId) {
+                // Fetch author data for this comment
+                fetchCommentAuthorData(authorId, link);
+            }
         }
+    });
+    
+    function showHoverCard(e, authorData, authorId) {
+        if (!authorData || !authorId) {
+            console.log('Missing author data or ID for hover card');
+            return;
+        }
+
+        const rect = e.currentTarget.getBoundingClientRect();
+        const windowWidth = window.innerWidth;
         
         // Populate hover card with author data
         hoverCard.innerHTML = `
             <div class="hover-card-content">
                 <div class="hover-card-header">
-                    <div class="hover-avatar" style="background-image: url('${thread.authorData.avatarUrl}')"></div>
-                    <div class="hover-user-info">
-                        <div class="hover-user-name">${thread.authorData.displayName}</div>
-                        <div class="hover-user-joined">Member since: ${formatDate(thread.authorData.joinDate, true)}</div>
+                    <div class="hover-avatar">
+                        <img src="${authorData.avatarUrl || 'images/default-avatar.png'}" alt="${authorData.displayName || 'User'}" onerror="this.onerror=null; this.src='images/default-avatar.png';">
                     </div>
-                        </div>
+                    <div class="hover-user-info">
+                        <div class="hover-user-name">${authorData.displayName || 'Anonymous'}</div>
+                        <div class="hover-user-joined">Member since: ${formatDate(authorData.joinDate, true)}</div>
+                    </div>
+                </div>
                 <div class="hover-card-body">
-                    <div class="hover-user-bio">${thread.authorData.bio || 'No bio available'}</div>
+                    <div class="hover-user-bio">${authorData.bio || 'No bio available'}</div>
                     <div class="hover-user-stats">
                         <div class="hover-stat">
-                            <span class="hover-stat-value">${thread.authorData.threadCount}</span>
+                            <span class="hover-stat-value">${authorData.threadCount || 0}</span>
                             <span class="hover-stat-label">Posts</span>
                         </div>
                         <div class="hover-stat">
-                            <span class="hover-stat-value">${thread.authorData.replyCount}</span>
+                            <span class="hover-stat-value">${authorData.replyCount || 0}</span>
                             <span class="hover-stat-label">Comments</span>
+                        </div>
                     </div>
                 </div>
-                    </div>
                 <div class="hover-card-footer">
-                    <a href="profile-view.html?uid=${thread.authorId}" class="hover-profile-link">View Full Profile</a>
+                    <a href="profile.html?uid=${authorId}" class="hover-profile-link">View Full Profile</a>
                 </div>
-            `;
-            
-        // Add hover event listeners to author elements
-        const authorLink = document.querySelector('.author-profile-link');
-        if (authorLink) {
-            authorLink.addEventListener('mouseenter', (e) => showHoverCard(e, thread.authorData, thread.authorId));
-            authorLink.addEventListener('mouseleave', hideHoverCard);
+            </div>
+        `;
+        
+        // Calculate position
+        let leftPos = rect.left + window.scrollX;
+        
+        // Adjust if would go off screen
+        if (leftPos + 300 > windowWidth) {
+            leftPos = windowWidth - 310;
         }
         
-        // Also add hover to sidebar author info
-        const sidebarAuthorInfo = document.querySelector('.author-info');
-        if (sidebarAuthorInfo) {
-            sidebarAuthorInfo.addEventListener('mouseenter', (e) => showHoverCard(e, thread.authorData, thread.authorId));
-            sidebarAuthorInfo.addEventListener('mouseleave', hideHoverCard);
-        }
+        // Position the hover card
+        hoverCard.style.top = `${rect.bottom + window.scrollY + 10}px`;
+        hoverCard.style.left = `${leftPos}px`;
         
-        // Add hover to comment author links
-        const commentAuthorLinks = document.querySelectorAll('.comment-author-link');
-        commentAuthorLinks.forEach(link => {
-            const commentEl = link.closest('.comment');
-            if (commentEl) {
-                const authorId = commentEl.dataset.authorId;
-                if (authorId) {
-                    // Fetch author data for this comment if needed
-                    fetchCommentAuthorData(authorId, link);
-                }
+        // Show the hover card
+        hoverCard.classList.add('active');
+    }
+    
+    function hideHoverCard() {
+        // Hide the hover card with a small delay to allow moving to the card
+        setTimeout(() => {
+            if (!hoverCard.matches(':hover')) {
+                hoverCard.classList.remove('active');
             }
-        });
-        
-        function showHoverCard(e, authorData, authorId) {
-            const rect = e.currentTarget.getBoundingClientRect();
-            const windowWidth = window.innerWidth;
-            
-            // Update hover card content with the specific author's data
-            const hoverCardContent = hoverCard.querySelector('.hover-card-content');
-            if (hoverCardContent && authorData) {
-                hoverCardContent.innerHTML = `
-                    <div class="hover-card-header">
-                        <div class="hover-avatar" style="background-image: url('${authorData.avatarUrl}')"></div>
-                        <div class="hover-user-info">
-                            <div class="hover-user-name">${authorData.displayName}</div>
-                            <div class="hover-user-joined">Member since: ${formatDate(authorData.joinDate, true)}</div>
-                    </div>
-                        </div>
-                    <div class="hover-card-body">
-                        <div class="hover-user-bio">${authorData.bio || 'No bio available'}</div>
-                        <div class="hover-user-stats">
-                            <div class="hover-stat">
-                                <span class="hover-stat-value">${authorData.threadCount}</span>
-                                <span class="hover-stat-label">Posts</span>
-                        </div>
-                            <div class="hover-stat">
-                                <span class="hover-stat-value">${authorData.replyCount}</span>
-                                <span class="hover-stat-label">Comments</span>
-                        </div>
-                        </div>
-                    </div>
-                    <div class="hover-card-footer">
-                        <a href="profile.html?uid=${authorId}" class="hover-profile-link">View Full Profile</a>
-                    </div>
-                `;
+        }, 300);
+    }
+    
+    // Allow hovering on the card itself
+    hoverCard.addEventListener('mouseenter', () => {
+        hoverCard.classList.add('active');
+    });
+    
+    hoverCard.addEventListener('mouseleave', () => {
+        hoverCard.classList.remove('active');
+    });
+    
+    // Fetch author data for comments
+    async function fetchCommentAuthorData(authorId, linkElement) {
+        try {
+            // Check if we already have this author's data cached
+            if (!window.authorDataCache) {
+                window.authorDataCache = {};
             }
             
-            // Calculate position
-            let leftPos = rect.left + window.scrollX;
-            
-            // Adjust if would go off screen
-            if (leftPos + 300 > windowWidth) {
-                leftPos = windowWidth - 310;
+            if (window.authorDataCache[authorId]) {
+                // Use cached data
+                linkElement.addEventListener('mouseenter', (e) => showHoverCard(e, window.authorDataCache[authorId], authorId));
+                linkElement.addEventListener('mouseleave', hideHoverCard);
+                return;
             }
             
-            // Position the hover card
-            hoverCard.style.top = `${rect.bottom + window.scrollY + 10}px`;
-            hoverCard.style.left = `${leftPos}px`;
+            // Fetch user data
+            const userRef = ref(database, `users/${authorId}`);
+            const userSnapshot = await get(userRef);
             
-            // Show the hover card
-            hoverCard.classList.add('active');
-        }
-        
-        function hideHoverCard() {
-            // Hide the hover card with a small delay to allow moving to the card
-            setTimeout(() => {
-                if (!hoverCard.matches(':hover')) {
-                    hoverCard.classList.remove('active');
-                }
-            }, 300);
-        }
-        
-        // Allow hovering on the card itself
-        hoverCard.addEventListener('mouseenter', () => {
-            hoverCard.classList.add('active');
-        });
-        
-        hoverCard.addEventListener('mouseleave', () => {
-            hoverCard.classList.remove('active');
-        });
-        
-        // Fetch author data for comments
-        async function fetchCommentAuthorData(authorId, linkElement) {
-            try {
-                // Check if we already have this author's data cached
-                if (!window.authorDataCache) {
-                    window.authorDataCache = {};
-                }
+            if (userSnapshot.exists()) {
+                const userData = userSnapshot.val();
+                const profile = userData.profile || {};
                 
-                if (window.authorDataCache[authorId]) {
-                    // Use cached data
-                    linkElement.addEventListener('mouseenter', (e) => showHoverCard(e, window.authorDataCache[authorId], authorId));
-                    linkElement.addEventListener('mouseleave', hideHoverCard);
-                    return;
-                }
+                // Get photoURL from either profile or user data
+                const photoURL = profile.photoURL || userData.photoURL || profile.avatarUrl || 'images/default-avatar.png';
                 
-                // Fetch user data
-                const userRef = ref(database, `users/${authorId}`);
-                const userSnapshot = await get(userRef);
+                // Create author data object
+                const authorData = {
+                    displayName: profile.displayName || userData.displayName || 'Anonymous',
+                    avatarUrl: photoURL,
+                    bio: profile.bio || userData.bio || '',
+                    joinDate: userData.createdAt,
+                    threadCount: userData.stats?.threadCount || 0,
+                    replyCount: userData.stats?.replyCount || 0
+                };
                 
-                if (userSnapshot.exists()) {
-                    const userData = userSnapshot.val();
-                    const profile = userData.profile || {};
-                    
-                    // Get photoURL from either profile or user data
-                    const photoURL = profile.avatarUrl || userData.photoURL || 'images/default-avatar.png';
-                    
-                    // Create author data object
-                    const authorData = {
-                        displayName: profile.displayName || userData.displayName || 'Anonymous',
-                        avatarUrl: photoURL,
-                        bio: profile.bio || userData.bio || '',
-                        joinDate: userData.createdAt,
-                        threadCount: userData.stats?.threadCount || 0,
-                        replyCount: userData.stats?.replyCount || 0
-                    };
-                    
-                    // Cache the data
-                    window.authorDataCache[authorId] = authorData;
-                    
-                    // Add event listeners
-                    linkElement.addEventListener('mouseenter', (e) => showHoverCard(e, authorData, authorId));
-                    linkElement.addEventListener('mouseleave', hideHoverCard);
-                }
-            } catch (error) {
-                console.error('Error fetching comment author data:', error);
+                // Cache the data
+                window.authorDataCache[authorId] = authorData;
+                
+                // Add event listeners
+                linkElement.addEventListener('mouseenter', (e) => showHoverCard(e, authorData, authorId));
+                linkElement.addEventListener('mouseleave', hideHoverCard);
             }
+        } catch (error) {
+            console.error('Error fetching comment author data:', error);
         }
     }
+}
 
 // Initialize discussion threads sidebar functionality
 function initDiscussionThreads() {
@@ -1268,36 +1249,6 @@ function initDiscussionThreads() {
     }
 }
 
-// Process and render replies correctly, including deeply nested ones
-async function renderReplies(commentReplies, parentId, level = 0) {
-    let html = '';
-    
-    // Build a map of all replies for quick reference
-    const replyMap = new Map();
-    commentReplies.forEach(reply => {
-        replyMap.set(reply.id, reply);
-    });
-    
-    // Get direct replies to the current parent
-    const directReplies = commentReplies.filter(reply => reply.parentId === parentId);
-    
-    // Add each direct reply and recursively process its children
-    for (const reply of directReplies) {
-        // Determine if this is a nested reply
-        const isNested = level > 0;
-        
-        // Add the current reply
-        html += createThreadReplyHTML(reply, isNested);
-        
-        // Recursively get all children of this reply (up to 5 levels deep to prevent infinite recursion)
-        if (level < 5) {
-            html += await renderReplies(commentReplies, reply.id, level + 1);
-        }
-    }
-    
-    return html;
-}
-
 // Open Thread Function to show discussion thread in sidebar
 async function openThread(commentId) {
     const readContainer = document.querySelector('.read-container');
@@ -1350,55 +1301,62 @@ async function openThread(commentId) {
         const originalComment = replies.find(reply => reply.id === commentId);
         if (!originalComment) throw new Error('Comment not found');
         
-        // Get all replies related to this thread (including replies to replies)
-        const allThreadReplies = replies.filter(reply => {
-            // Direct replies to this comment
-            if (reply.parentId === commentId) return true;
-            
-            // Check if it's a nested reply by traversing up the chain
-            let currentReply = reply;
-            let parentFound = false;
-            let depth = 0;
-            const maxDepth = 10; // Prevent infinite loops
-            
-            while (currentReply.parentId && depth < maxDepth) {
-                const parent = replies.find(r => r.id === currentReply.parentId);
-                if (!parent) break;
+        // Ensure the avatar is loaded
+        let avatarUrl = originalComment.authorAvatar || 'images/default-avatar.png';
+        
+        // If we have an authorId but no avatar, try to fetch it
+        if (originalComment.authorId && !originalComment.authorAvatar) {
+            try {
+                const userRef = ref(database, `users/${originalComment.authorId}`);
+                const userSnapshot = await get(userRef);
                 
-                if (parent.id === commentId) {
-                    parentFound = true;
-                    break;
+                if (userSnapshot.exists()) {
+                    const userData = userSnapshot.val();
+                    const profile = userData.profile || {};
+                    avatarUrl = profile.photoURL || userData.photoURL || profile.avatarUrl || 'images/default-avatar.png';
+                    
+                    // Update the comment with the fetched avatar URL
+                    originalComment.authorAvatar = avatarUrl;
                 }
-                
-                currentReply = parent;
-                depth++;
+            } catch (error) {
+                console.error('Error fetching author avatar:', error);
             }
-            
-            return parentFound;
+        }
+        
+        // Build a reply hierarchy map to better organize nested replies
+        const replyMap = new Map();
+        
+        // Get direct replies to the original comment
+        const directReplies = replies.filter(reply => reply.parentId === commentId);
+        
+        // Sort direct replies chronologically (oldest first)
+        directReplies.sort((a, b) => {
+            const dateA = new Date(a.createdAt || 0);
+            const dateB = new Date(b.createdAt || 0);
+            return dateA - dateB;
         });
         
-        // Ensure all avatars are loaded
-        for (const reply of [originalComment, ...allThreadReplies]) {
-            if (reply.authorId && !reply.authorAvatar) {
-                try {
-                    const userRef = ref(database, `users/${reply.authorId}`);
-                    const userSnapshot = await get(userRef);
-                    
-                    if (userSnapshot.exists()) {
-                        const userData = userSnapshot.val();
-                        const profile = userData.profile || {};
-                        reply.authorAvatar = profile.photoURL || userData.photoURL || profile.avatarUrl || 'images/default-avatar.png';
-                    }
-                } catch (error) {
-                    console.error(`Error fetching avatar for reply ${reply.id}:`, error);
-                }
+        // Create a map of all replies keyed by their ID
+        // and track all parents to help with nesting
+        const allRepliesMap = new Map();
+        for (const reply of replies) {
+            allRepliesMap.set(reply.id, {
+                ...reply,
+                children: []
+            });
+        }
+        
+        // Add each reply to its parent's children array
+        for (const reply of replies) {
+            if (reply.parentId && allRepliesMap.has(reply.parentId)) {
+                allRepliesMap.get(reply.parentId).children.push(reply.id);
             }
         }
         
         // Create thread content
         let threadHTML = `
             <div class="thread-original-comment" data-id="${originalComment.id}">
-                <div class="comment-avatar" style="background-image: url('${originalComment.authorAvatar || 'images/default-avatar.png'}')"></div>
+                <div class="comment-avatar" style="background-image: url('${avatarUrl}')"></div>
                 <div class="comment-content">
                     <div class="comment-header">
                         <div class="comment-author">${originalComment.authorName || 'Anonymous'}</div>
@@ -1414,9 +1372,72 @@ async function openThread(commentId) {
         `;
         
         // Check if there are any replies
-        if (allThreadReplies.length > 0) {
-            // Render all replies with proper nesting
-            threadHTML += await renderReplies(allThreadReplies, commentId);
+        if (directReplies.length > 0) {
+            // Ensure all replies have avatars
+            for (const reply of directReplies) {
+                if (reply.authorId && !reply.authorAvatar) {
+                    try {
+                        const userRef = ref(database, `users/${reply.authorId}`);
+                        const userSnapshot = await get(userRef);
+                        
+                        if (userSnapshot.exists()) {
+                            const userData = userSnapshot.val();
+                            const profile = userData.profile || {};
+                            reply.authorAvatar = profile.photoURL || userData.photoURL || profile.avatarUrl || 'images/default-avatar.png';
+                        }
+                    } catch (error) {
+                        console.error(`Error fetching avatar for reply ${reply.id}:`, error);
+                    }
+                }
+            }
+            
+            // Helper function to recursively build nested replies HTML
+            function buildRepliesHTML(replyId, isNested = false, level = 0) {
+                if (!allRepliesMap.has(replyId)) return '';
+                
+                const reply = allRepliesMap.get(replyId);
+                const nestedClass = isNested ? `nested-reply level-${level}` : '';
+                
+                let html = `
+                    <div class="thread-reply ${nestedClass}" data-id="${reply.id}" data-level="${level}">
+                        <div class="comment-avatar" style="background-image: url('${reply.authorAvatar || 'images/default-avatar.png'}')"></div>
+                        <div class="comment-content">
+                            <div class="comment-header">
+                                <div class="comment-author">${reply.authorName || 'Anonymous'}</div>
+                                <div class="comment-meta">${formatDate(reply.createdAt)}</div>
+                            </div>
+                            <div class="comment-body">
+                                <p>${reply.content}</p>
+                            </div>
+                            <div class="comment-footer">
+                                <button class="comment-action upvote" data-id="${reply.id}">
+                                    <span class="material-symbols-rounded">thumb_up</span>
+                                    <span class="count">${reply.upvotes || 0}</span>
+                                </button>
+                                <button class="comment-action reply-to-thread" data-author="${reply.authorName || 'Anonymous'}" data-reply-id="${reply.id}">
+                                    <span class="material-symbols-rounded">reply</span>
+                                    Reply
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Recursively add children (nested replies)
+                if (reply.children && reply.children.length > 0) {
+                    for (const childId of reply.children) {
+                        html += buildRepliesHTML(childId, true, level + 1);
+                    }
+                }
+                
+                return html;
+            }
+            
+            // Process direct replies and their nested replies
+            for (const reply of directReplies) {
+                threadHTML += buildRepliesHTML(reply.id);
+            }
+            
         } else {
             threadHTML += `
                 <div class="empty-thread">
@@ -1447,27 +1468,9 @@ async function openThread(commentId) {
         // Load the thread content
         threadContainer.innerHTML = threadHTML;
         
-        // Make sure the initial reply is directly to the main comment (not showing "Replying to")
-        const replyInput = threadContainer.querySelector('.reply-input');
-        if (replyInput) {
-            // Clear any previous reply-to data
-            replyInput.dataset.replyToId = commentId; // Set to the main comment ID
-            
-            // Remove any existing replying-to indicator
-            const existingIndicator = threadContainer.querySelector('.replying-to-indicator');
-            if (existingIndicator) {
-                existingIndicator.remove();
-            }
-        }
-        
         // Setup thread reply functionality
         setupThreadReplyButtons();
         setupThreadReplyForm();
-        
-        // Remove any "is-replying-to" classes
-        threadContainer.querySelectorAll('.thread-reply.is-replying-to').forEach(reply => {
-            reply.classList.remove('is-replying-to');
-        });
         
         // Add fallback for avatar image loading errors
         threadContainer.querySelectorAll('.comment-avatar').forEach(avatar => {
@@ -1503,36 +1506,6 @@ async function openThread(commentId) {
     }
 }
 
-// Helper function to create thread reply HTML
-function createThreadReplyHTML(reply, isNested) {
-    const avatarUrl = reply.authorAvatar || 'images/default-avatar.png';
-    
-    return `
-        <div class="thread-reply ${isNested ? 'nested-reply' : ''}" data-id="${reply.id}">
-            <div class="comment-avatar" style="background-image: url('${avatarUrl}')"></div>
-            <div class="comment-content">
-                <div class="comment-header">
-                    <div class="comment-author">${reply.authorName || 'Anonymous'}</div>
-                    <div class="comment-meta">${formatDate(reply.createdAt)}</div>
-                </div>
-                <div class="comment-body">
-                    <p>${reply.content}</p>
-                </div>
-                <div class="comment-footer">
-                    <button class="comment-action upvote" data-id="${reply.id}">
-                        <span class="material-symbols-rounded">thumb_up</span>
-                        <span class="count">${reply.upvotes || 0}</span>
-                    </button>
-                    <button class="comment-action reply-to-thread" data-author="${reply.authorName || 'Anonymous'}">
-                        <span class="material-symbols-rounded">reply</span>
-                        Reply
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
-}
-
 // Setup thread reply buttons
 function setupThreadReplyButtons() {
     const threadReplyButtons = document.querySelectorAll('.comment-action.reply-to-thread');
@@ -1551,75 +1524,61 @@ function setupThreadReplyButtons() {
             
             // Get the author from data attribute
             const authorName = this.getAttribute('data-author');
+            // Get the reply ID from data attribute (for nested replies)
+            const replyId = this.getAttribute('data-reply-id');
             
-            // Get the parent reply element
-            const threadReply = this.closest('.thread-reply');
-            if (!threadReply) {
-                // If replying to the original comment
-                const originalComment = document.querySelector('.thread-original-comment');
-                if (originalComment) {
-                    const parentId = originalComment.dataset.id;
-                    replyInput.dataset.replyToId = parentId;
-                    
-                    // Only add @ mention if author name is available
-                    if (authorName) {
-                        replyInput.value = `@${authorName} `;
-                        replyInput.setSelectionRange(authorName.length + 2, authorName.length + 2);
-                    }
-                }
-                return;
-            }
-            
-            // Store the ID of the comment being replied to
-            const parentId = threadReply.dataset.id;
-            replyInput.dataset.replyToId = parentId;
-            
-            // Add visual indicator to show which comment is being replied to
-            document.querySelectorAll('.thread-reply').forEach(reply => {
-                reply.classList.remove('is-replying-to');
-            });
-            threadReply.classList.add('is-replying-to');
-            
-            // Add @ mention if available
             if (authorName) {
                 replyInput.value = `@${authorName} `;
                 replyInput.setSelectionRange(authorName.length + 2, authorName.length + 2);
+            } else {
+                // Fallback to finding author in parent element
+                const authorElement = this.closest('.thread-reply, .thread-original-comment').querySelector('.comment-author');
+                if (authorElement) {
+                    const name = authorElement.textContent.trim();
+                    replyInput.value = `@${name} `;
+                    replyInput.setSelectionRange(name.length + 2, name.length + 2);
+                }
             }
             
-            // Create a "replying to" indicator above the input
-            const replyingToIndicator = document.createElement('div');
-            replyingToIndicator.className = 'replying-to-indicator';
-            
-            // Remove any existing indicator
-            const existingIndicator = replyForm.querySelector('.replying-to-indicator');
-            if (existingIndicator) {
-                existingIndicator.remove();
+            // Store the parent ID of this reply
+            if (replyId) {
+                // If replying to a nested reply, use that reply's ID as the parent
+                replyInput.dataset.replyToId = replyId;
+            } else {
+                // If replying directly to a comment or the parent can't be determined
+                const threadReply = this.closest('.thread-reply');
+                if (threadReply) {
+                    const parentId = threadReply.dataset.id;
+                    replyInput.dataset.replyToId = parentId;
+                } else {
+                    // If replying to the original comment
+                    const originalComment = document.querySelector('.thread-original-comment');
+                    if (originalComment) {
+                        const parentId = originalComment.dataset.id;
+                        replyInput.dataset.replyToId = parentId;
+                    }
+                }
             }
             
-            replyingToIndicator.innerHTML = `
-                <div class="replying-to-text">
-                    <span class="material-symbols-rounded">reply</span>
-                    Replying to ${authorName || 'comment'}
-                </div>
-                <button class="cancel-reply-to" type="button">
-                    <span class="material-symbols-rounded">close</span>
-                </button>
-            `;
+            // Add visual indicator showing which comment is being replied to
+            const allReplies = document.querySelectorAll('.thread-reply, .thread-original-comment');
+            allReplies.forEach(reply => reply.classList.remove('replying-to'));
             
-            replyForm.insertBefore(replyingToIndicator, replyForm.firstChild);
-            
-            // Add cancel button event listener
-            const cancelButton = replyingToIndicator.querySelector('.cancel-reply-to');
-            if (cancelButton) {
-                cancelButton.addEventListener('click', function() {
-                    replyingToIndicator.remove();
-                    replyInput.dataset.replyToId = '';
-                    replyInput.value = '';
-                    threadReply.classList.remove('is-replying-to');
-                });
+            // Highlight the comment being replied to
+            if (replyId) {
+                const replyElement = document.querySelector(`.thread-reply[data-id="${replyId}"]`);
+                if (replyElement) {
+                    replyElement.classList.add('replying-to');
+                }
+            } else {
+                // If no specific reply ID, highlight the containing element
+                const container = this.closest('.thread-reply, .thread-original-comment');
+                if (container) {
+                    container.classList.add('replying-to');
+                }
             }
             
-            // Scroll to reply form
+            // Scroll the reply form into view
             replyForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         });
     });
@@ -1651,8 +1610,8 @@ function setupThreadReplyForm() {
                 // Determine the parent ID
                 let parentId;
                 
-                // If replying to a reply (nested comment) and content starts with @
-                if (content.startsWith('@') && replyInput.dataset.replyToId) {
+                // If replying to a reply (nested comment)
+                if (content.startsWith('@')) {
                     // Get the ID from the replyInput's data attribute
                     parentId = replyInput.dataset.replyToId;
                 } else {
@@ -1679,23 +1638,7 @@ function setupThreadReplyForm() {
                 
                 // Clear input
                 replyInput.value = '';
-                
-                // Remove any replying-to indicator
-                const replyingToIndicator = document.querySelector('.replying-to-indicator');
-                if (replyingToIndicator) {
-                    replyingToIndicator.remove();
-                }
-                
-                // Clear reply-to data (but keep parentId as the main comment)
-                if (content.startsWith('@')) {
-                    // If this was a reply to a specific comment, reset to main comment
-                    replyInput.dataset.replyToId = replySubmit.dataset.parentId;
-                }
-                
-                // Remove any highlighting
-                document.querySelectorAll('.thread-reply.is-replying-to').forEach(reply => {
-                    reply.classList.remove('is-replying-to');
-                });
+                replyInput.dataset.replyToId = '';
                 
                 // Reload comments
                 await loadComments();
@@ -1714,8 +1657,24 @@ function setupThreadReplyForm() {
             } finally {
                 // Re-enable button
                 replySubmit.disabled = false;
-                replySubmit.innerHTML = 'Reply';
+                replySubmit.textContent = 'Reply';
             }
         });
     }
+}
+
+// Update UI based on auth state
+function updateUIForAuthState(user) {
+    // Update comment form avatar
+    const commentAvatar = document.querySelector('.comment-avatar img');
+    if (commentAvatar) {
+        const avatarUrl = user?.photoURL || user?.profile?.avatarUrl || 'images/default-avatar.png';
+        commentAvatar.src = avatarUrl;
+        commentAvatar.onerror = function() {
+            this.src = 'images/default-avatar.png';
+        };
+    }
+    
+    // Update other UI elements...
+    // ... existing code ...
 } 

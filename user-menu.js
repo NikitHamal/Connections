@@ -123,6 +123,12 @@ function setupUserMenuToggle() {
             userMenuContainers.forEach(otherContainer => {
                 if (otherContainer !== container) {
                     otherContainer.classList.remove('active');
+                    const dropdown = otherContainer.querySelector('.user-menu-dropdown');
+                    if (dropdown) {
+                        dropdown.style.display = 'none';
+                        dropdown.style.opacity = '0';
+                        dropdown.style.visibility = 'hidden';
+                    }
                 }
             });
             
@@ -132,9 +138,37 @@ function setupUserMenuToggle() {
             // Force dropdown to be visible if it's not
             const dropdown = container.querySelector('.user-menu-dropdown');
             if (dropdown) {
-                dropdown.style.display = container.classList.contains('active') ? 'block' : 'none';
-                dropdown.style.opacity = container.classList.contains('active') ? '1' : '0';
-                dropdown.style.visibility = container.classList.contains('active') ? 'visible' : 'hidden';
+                if (container.classList.contains('active')) {
+                    dropdown.style.display = 'block';
+                    dropdown.style.opacity = '1';
+                    dropdown.style.visibility = 'visible';
+                    
+                    // Position the dropdown
+                    const rect = trigger.getBoundingClientRect();
+                    const dropdownRect = dropdown.getBoundingClientRect();
+                    
+                    // Check if dropdown would go off screen to the right
+                    if (rect.left + dropdownRect.width > window.innerWidth) {
+                        dropdown.style.right = '0';
+                        dropdown.style.left = 'auto';
+                    } else {
+                        dropdown.style.left = '0';
+                        dropdown.style.right = 'auto';
+                    }
+                    
+                    // Check if dropdown would go off screen to the bottom
+                    if (rect.bottom + dropdownRect.height > window.innerHeight) {
+                        dropdown.style.bottom = '100%';
+                        dropdown.style.top = 'auto';
+                    } else {
+                        dropdown.style.top = '100%';
+                        dropdown.style.bottom = 'auto';
+                    }
+                } else {
+                    dropdown.style.display = 'none';
+                    dropdown.style.opacity = '0';
+                    dropdown.style.visibility = 'hidden';
+                }
             }
             
             // Add click event listener to document to close menu when clicking outside
